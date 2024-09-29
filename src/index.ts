@@ -18,6 +18,8 @@ export class TradeManager {
       toToken: params.toToken,
       amount: params.amount,
       type: params.type,
+      srcWalletAddress: params.srcWalletAddress,
+      dstWalletAddress: params?.dstWalletAddress,
     };
 
     function handleQuote(quote: IQuote) {

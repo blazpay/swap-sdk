@@ -6,6 +6,8 @@ export interface IQuoteParams {
   fromToken: IToken;
   toToken: IToken;
   amount: number;
+  srcWalletAddress: string;
+  dstWalletAddress?: string;
   type: "SWAP" | "BRIDGE";
 }
 

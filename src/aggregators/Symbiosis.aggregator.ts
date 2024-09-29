@@ -1,5 +1,7 @@
+import { formatUnits, parseUnits } from "ethers";
 import { IQuote, IQuoteParams } from "../@types/index.js";
 import { Base } from "./index.js";
+import { apiCall } from "../utils/axios.js";
 
 export default class Symbiosis extends Base {
   BASE_URL: string;
@@ -7,14 +9,49 @@ export default class Symbiosis extends Base {
   constructor() {
     super();
 
-    this.BASE_URL = "https://api.symbiosis.finance/crosschain";
+    this.BASE_URL = "https://api.symbiosis.finance/crosschain/v1/swap";
     this.slippage = 1;
   }
 
   async getQuotes(params: IQuoteParams): Promise<IQuote> {
+    const amount = parseUnits(
+      String(params.amount),
+      params.fromToken.decimals
+    ).toString();
+
+    const payload = {
+      tokenAmountIn: {
+        address: params?.fromToken.address,
+        symbol: params?.fromToken.symbol,
+        amount,
+        chainId: Number(params?.fromChain.id),
+        decimals: params?.fromToken.decimals,
+      },
+      tokenOut: {
+        chainId: Number(params?.toChain.id),
+        address: params?.toToken.address,
+        symbol: params?.toToken.symbol,
+        decimals: params?.toToken.symbol,
+      },
+      from: params?.srcWalletAddress,
+      to: params?.dstWalletAddress
+        ? params.dstWalletAddress
+        : params.srcWalletAddress,
+      slippage: 300,
+    };
+
+    const data = await apiCall({
+      method: "POST",
+      url: this.BASE_URL,
+      data: payload,
+    });
+
     async function swap() {}
 
-    const swapAmount = "021";
+    const swapAmount = formatUnits(
+      data?.tokenAmountOut?.amount,
+      data?.tokenAmountOut?.decimals
+    ).toString();
 
     return {
       source: "Symbiosis",
@@ -24,7 +61,7 @@ export default class Symbiosis extends Base {
       networkFee: 0,
       platformFee: 0,
       priceImpact: 0,
-      slippage: 0,
+      slippage: this.slippage,
       swap,
     };
   }
