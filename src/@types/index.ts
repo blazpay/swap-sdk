@@ -1,3 +1,7 @@
 export type { IChain, IToken } from "./chain.type.js";
 
-export { IQuoteParams, IQuote, IBaseQuoteParams } from "./aggregator.js";
+export type {
+  IQuoteParams,
+  IQuote,
+  IBaseQuoteParams,
+} from "./aggregator.type.js";

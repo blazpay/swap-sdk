@@ -6,6 +6,7 @@ export interface IQuoteParams {
   fromToken: IToken;
   toToken: IToken;
   amount: number;
+  type: "SWAP" | "BRIDGE";
 }
 
 export interface IQuote {
@@ -17,7 +18,10 @@ export interface IQuote {
   platformFee: number;
   priceImpact: number;
   slippage: number;
+
   swap: VoidFunction;
 }
 
-export interface IBaseQuoteParams extends IQuoteParams {}
+export interface IBaseQuoteParams extends IQuoteParams {
+  onNewQuote: (quote: IQuote) => Promise<void>;
+}

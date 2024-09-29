@@ -7,6 +7,7 @@ interface ApiCallParams {
   data?: Record<string, any>;
   params?: Record<string, any>;
   headers?: AxiosRequestHeaders;
+  timeout?: number; // Optional timeout in milliseconds
 }
 
 export const apiCall = async ({
@@ -15,6 +16,7 @@ export const apiCall = async ({
   data = {},
   params = {},
   headers,
+  timeout = 5000, // Default timeout of 5 seconds
 }: ApiCallParams): Promise<any> => {
   try {
     const response = await axios({
@@ -23,6 +25,7 @@ export const apiCall = async ({
       data,
       params,
       headers,
+      timeout, // Add the timeout property here
     });
     return response.data;
   } catch (error) {
