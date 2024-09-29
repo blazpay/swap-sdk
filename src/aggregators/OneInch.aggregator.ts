@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
-import { IOneInchParams, IQuote } from "../@types/index.js";
+import { parseUnits, formatUnits } from "ethers";
+import { IQuoteParams, IQuote } from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 
@@ -16,7 +16,7 @@ export default class OneInchAggregator extends Base {
     this.tradeFee = 0;
   }
 
-  async getQuotes(params: IOneInchParams): Promise<IQuote> {
+  async getQuotes(params: IQuoteParams): Promise<IQuote> {
     const query = {
       src:
         params.fromToken.address === addressZero
@@ -26,9 +26,10 @@ export default class OneInchAggregator extends Base {
         params.toToken.address === addressZero
           ? addressZero1Inch
           : params.toToken.address,
-      amount: (ethers as any).utils
-        .parseUnits(params.amount, params.fromToken.decimals)
-        .toString(),
+      amount: parseUnits(
+        String(params.amount),
+        params.fromToken.decimals
+      ).toString(),
       fee: this.tradeFee,
       includeTokensInfo: true,
       includeProtocols: true,
@@ -41,10 +42,7 @@ export default class OneInchAggregator extends Base {
       data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
     });
 
-    const swapAmount = (ethers as any).utils.formatUnits(
-      quote?.dstAmount,
-      quote?.dstToken?.decimals
-    );
+    const swapAmount = formatUnits(quote?.dstAmount, quote?.dstToken?.decimals);
 
     async function swap() {}
 

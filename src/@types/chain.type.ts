@@ -35,11 +35,15 @@ export interface IChain {
   name: string;
   nativeToken: NativeToken;
   tokenlistUrl: string;
+
   Exchanges?: any[];
 }
 
 export interface IToken extends NativeToken {
   _id: string;
+  balance?: string;
+  usdBalance: string;
+  coingeckoId?: string;
   changellySymbol?: string;
   transacCryptoId?: string;
 }

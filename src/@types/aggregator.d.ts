@@ -1,6 +1,6 @@
 import { IChain, IToken } from "./index.js";
 
-export interface IOneInchParams {
+export interface IQuoteParams {
   fromChain: IChain;
   toChain: IChain;
   fromToken: IToken;
@@ -19,3 +19,5 @@ export interface IQuote {
   slippage: number;
   swap: VoidFunction;
 }
+
+export interface IBaseQuoteParams extends IQuoteParams {}
