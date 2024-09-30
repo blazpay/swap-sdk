@@ -3,7 +3,7 @@ import { IQuote, IQuoteParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 
-export default class Symbiosis extends Base {
+export default class SymbiosisAggregator extends Base {
   BASE_URL: string;
   slippage: number;
   constructor() {
@@ -31,7 +31,7 @@ export default class Symbiosis extends Base {
         chainId: Number(params?.toChain.id),
         address: params?.toToken.address,
         symbol: params?.toToken.symbol,
-        decimals: params?.toToken.symbol,
+        decimals: params?.toToken.decimals,
       },
       from: params?.srcWalletAddress,
       to: params?.dstWalletAddress

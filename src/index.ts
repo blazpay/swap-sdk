@@ -1,13 +1,19 @@
 import { IBaseQuoteParams, IQuote, IQuoteParams } from "./@types/index.js";
-import { NitroAggregator, OneInchAggregator } from "./aggregators/index.js";
+import {
+  NitroAggregator,
+  OneInchAggregator,
+  SymbiosisAggregator,
+} from "./aggregators/index.js";
 
 export class TradeManager {
   oneInchAggregator: OneInchAggregator;
   nitroAggregator: NitroAggregator;
+  symbiosisAggregator: SymbiosisAggregator;
 
   constructor() {
     this.oneInchAggregator = new OneInchAggregator();
     this.nitroAggregator = new NitroAggregator();
+    this.symbiosisAggregator = new SymbiosisAggregator();
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -39,5 +45,10 @@ export class TradeManager {
       .getQuotes(quoteParams)
       .then((quote: IQuote) => handleQuote(quote))
       .catch((error) => console.error("error: nitro ", error));
+
+    this.symbiosisAggregator
+      .getQuotes(quoteParams)
+      .then((quote: IQuote) => handleQuote(quote))
+      .catch((error) => console.error("error: symbiosis ", error));
   }
 }
