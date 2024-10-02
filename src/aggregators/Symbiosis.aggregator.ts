@@ -1,5 +1,5 @@
-import { formatUnits, parseUnits } from "ethers";
-import { IQuote, IQuoteParams } from "../@types/index.js";
+import { ethers } from "ethers";
+import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 
@@ -14,16 +14,13 @@ export default class SymbiosisAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<IQuote> {
-    const amount = parseUnits(
-      String(params.amount),
-      params.fromToken.decimals
-    ).toString();
-
     const payload = {
       tokenAmountIn: {
         address: params?.fromToken.address,
         symbol: params?.fromToken.symbol,
-        amount,
+        amount: ethers.utils
+          .parseUnits(String(params.amount), params.fromToken.decimals)
+          .toString(),
         chainId: Number(params?.fromChain.id),
         decimals: params?.fromToken.decimals,
       },
@@ -46,12 +43,11 @@ export default class SymbiosisAggregator extends Base {
       data: payload,
     });
 
-    async function swap() {}
+    async function swap({ provider }: SwapParams) {}
 
-    const swapAmount = formatUnits(
-      data?.tokenAmountOut?.amount,
-      data?.tokenAmountOut?.decimals
-    ).toString();
+    const swapAmount = ethers.utils
+      .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
+      .toString();
 
     return {
       source: "Symbiosis",

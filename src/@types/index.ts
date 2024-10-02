@@ -4,4 +4,5 @@ export type {
   IQuoteParams,
   IQuote,
   IBaseQuoteParams,
+  SwapParams,
 } from "./aggregator.type.js";

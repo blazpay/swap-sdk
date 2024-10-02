@@ -1,5 +1,5 @@
-import { parseUnits, formatUnits } from "ethers";
-import { IQuoteParams, IQuote } from "../@types/index.js";
+import { BigNumber, ethers, providers } from "ethers";
+import { IQuoteParams, IQuote, SwapParams } from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 
@@ -26,10 +26,9 @@ export default class OneInchAggregator extends Base {
         params.toToken.address === addressZero
           ? addressZero1Inch
           : params.toToken.address,
-      amount: parseUnits(
-        String(params.amount),
-        params.fromToken.decimals
-      ).toString(),
+      amount: ethers.utils
+        .parseUnits(String(params.amount), params.fromToken.decimals)
+        .toString(),
       fee: this.tradeFee,
       includeTokensInfo: true,
       includeProtocols: true,
@@ -42,9 +41,65 @@ export default class OneInchAggregator extends Base {
       data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
     });
 
-    const swapAmount = formatUnits(quote?.dstAmount, quote?.dstToken?.decimals);
+    const swapAmount = ethers.utils.formatUnits(
+      quote?.dstAmount,
+      quote?.dstToken?.decimals
+    );
 
-    async function swap() {}
+    const swap = async ({
+      provider,
+      receiver,
+      slippageTolerance = 0.1,
+    }: SwapParams) => {
+      const signer = await provider.getSigner();
+      const walletAddress = await signer.getAddress();
+      const spender = await this.get1InchSepender(Number(params.fromChain.id));
+
+      await this.setAllowance(
+        params.fromToken.address,
+        spender,
+        provider,
+        params.fromChain.id,
+        BigNumber.from(
+          ethers.utils
+            .parseUnits(String(params.amount), params.fromToken.decimals)
+            .toString()
+        ),
+        "1inch"
+      );
+
+      const res = await apiCall({
+        url: "/defi/1inch",
+        method: "POST",
+        data: {
+          query: {
+            ...query,
+            includeTokensInfo: true,
+            includeProtocols: true,
+            includeGas: true,
+            from: walletAddress,
+            slippage: slippageTolerance,
+            receiver: receiver || walletAddress,
+          },
+          path: `/swap/v6.0/${params.fromChain.id}/swap`,
+        },
+      });
+
+      const txdata = res.data.tx;
+
+      const tx = await signer.sendTransaction({
+        gasLimit: 500000,
+        data: txdata.data,
+        from: txdata.from,
+        to: txdata.to,
+        gasPrice: txdata.gasPrice,
+        value: txdata.value,
+      });
+
+      await tx.wait();
+
+      return tx;
+    };
 
     return {
       source: "One Inch",
@@ -57,5 +112,21 @@ export default class OneInchAggregator extends Base {
       slippage: 0,
       swap,
     };
+  }
+
+  async get1InchSepender(chainId: number) {
+    try {
+      const { data } = await apiCall({
+        url: "/defi/1inch/getspender",
+        method: "POST",
+        data: {
+          chain: chainId,
+        },
+      });
+      return data.spender;
+    } catch (error) {
+      console.log(error, "error");
+      throw error;
+    }
   }
 }

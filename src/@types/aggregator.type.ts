@@ -1,3 +1,4 @@
+import { providers } from "ethers";
 import { IChain, IToken } from "./index.js";
 
 export interface IQuoteParams {
@@ -11,6 +12,12 @@ export interface IQuoteParams {
   type: "SWAP" | "BRIDGE";
 }
 
+export interface SwapParams {
+  provider: providers.Web3Provider;
+  receiver?: string;
+  slippageTolerance?: number;
+}
+
 export interface IQuote {
   source: string;
   route: string;
@@ -21,7 +28,7 @@ export interface IQuote {
   priceImpact: number;
   slippage: number;
 
-  swap: VoidFunction;
+  swap: (params: SwapParams) => void;
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {
