@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
@@ -43,7 +43,59 @@ export default class SymbiosisAggregator extends Base {
       data: payload,
     });
 
-    async function swap({ provider }: SwapParams) {}
+    const swap = async ({ provider }: SwapParams) => {
+      await this.setAllowance(
+        params.fromToken.address,
+        data?.approveTo,
+        provider,
+        params.fromChain.id,
+        BigNumber.from(
+          ethers.utils
+            .parseUnits(String(params.amount), params.fromToken.decimals)
+            .toString()
+        ),
+        "Symbiosis"
+      );
+
+      const hexData = data?.tx?.data;
+      const contractAddress = data?.tx?.to;
+
+      let txn: any;
+
+      if (data.type === "tron") {
+        if (!window.tronWeb) {
+          console.log("log: tron is not defiled");
+          return;
+        }
+        const transaction =
+          await this.tronWeb.transactionBuilder.triggerSmartContract(
+            contractAddress,
+            "",
+            {
+              callValue: 0,
+              feeLimit: this.tronFeeLimit,
+            },
+            [
+              {
+                type: "bytes",
+                value: hexData,
+              },
+            ],
+            this.tronWeb.defaultAddress.base58
+          );
+        txn = transaction?.transaction;
+      } else {
+        txn = data?.tx;
+      }
+
+      const { walletAddress, tx } = await this.triggerContract(
+        params.fromChain.id,
+        provider,
+        txn
+      );
+
+      return tx;
+    };
 
     const swapAmount = ethers.utils
       .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
