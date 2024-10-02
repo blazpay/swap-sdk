@@ -1,13 +1,12 @@
 import axios, { AxiosRequestHeaders, Method } from "axios";
 
-// Define the types for the function parameters and return value
 interface ApiCallParams {
   method: Method;
   url: string;
   data?: Record<string, any>;
   params?: Record<string, any>;
   headers?: AxiosRequestHeaders;
-  timeout?: number; // Optional timeout in milliseconds
+  timeout?: number;
 }
 
 export const apiCall = async ({
@@ -16,7 +15,7 @@ export const apiCall = async ({
   data = {},
   params = {},
   headers,
-  timeout = 5000, // Default timeout of 5 seconds
+  timeout = 5000,
 }: ApiCallParams): Promise<any> => {
   try {
     const response = await axios({
@@ -25,7 +24,7 @@ export const apiCall = async ({
       data,
       params,
       headers,
-      timeout, // Add the timeout property here
+      timeout,
     });
     return response.data;
   } catch (error) {
