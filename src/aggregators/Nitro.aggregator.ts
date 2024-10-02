@@ -1,14 +1,16 @@
-import { IQuote, IQuoteParams } from "../@types/index.js";
-import { ethers, formatUnits, parseUnits } from "ethers";
+import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
+import { BigNumber, ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
+import Base from "./base.aggregator.js";
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
-export default class NitroAggregator {
+export default class NitroAggregator extends Base {
   BASE_URL: string;
   nitroPartnerId: number;
 
   constructor() {
+    super();
     this.BASE_URL = "https://api-beta.pathfinder.routerprotocol.com/api";
     this.nitroPartnerId = 60;
   }
@@ -16,17 +18,16 @@ export default class NitroAggregator {
   async getQuotes(params: IQuoteParams): Promise<IQuote> {
     const body = {
       fromTokenAddress:
-        params.fromToken.address === ethers.ZeroAddress
+        params.fromToken.address === ethers.constants.AddressZero
           ? addressZero
           : params.fromToken.address,
       toTokenAddress:
-        params.toToken.address === ethers.ZeroAddress
+        params.toToken.address === ethers.constants.AddressZero
           ? addressZero
           : params.toToken.address,
-      amount: parseUnits(
-        String(params.amount),
-        params.fromToken.decimals
-      ).toString(),
+      amount: ethers.utils
+        .parseUnits(String(params.amount), params.fromToken.decimals)
+        .toString(),
 
       fromTokenChainId: params.fromChain.id,
       toTokenChainId: params.toChain.id === 102 ? 900 : params.toChain.id,
@@ -40,12 +41,45 @@ export default class NitroAggregator {
       timeout: 20000,
     });
 
-    async function swap() {}
+    const swap = async ({
+      provider,
+      receiver,
+      slippageTolerance = 0.5,
+    }: SwapParams) => {
+      const response = await apiCall({
+        url: this.BASE_URL + "/v2/transaction",
+        method: "POST",
+        data: {
+          ...data,
+          slippageTolerance,
+          senderAddress: this.senderTronNitro || this.senderAddress,
+          receiverAddress: receiver || this.senderAddress,
+        },
 
-    const swapAmount = "021";
+        timeout: 20000,
+      });
+      await this.setAllowance(
+        params.fromToken.address,
+        data.allowanceTo,
+        provider,
+        params.fromChain.id,
+        BigNumber.from(data.source.tokenAmount),
+        "nitro"
+      );
+
+      const { walletAddress, tx } = await this.triggerContract(
+        params.fromChain.id,
+        provider,
+        response.data.txn
+      );
+
+      return tx;
+    };
 
     const platformFee = data.bridgeFee.amount
-      ? Number(Number(formatUnits(data.bridgeFee.amount)).toFixed(4))
+      ? Number(
+          Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)
+        )
       : 0;
 
     return {
@@ -53,7 +87,7 @@ export default class NitroAggregator {
       route: "nitro",
       amount: Number(
         Number(
-          formatUnits(
+          ethers.utils.formatUnits(
             data.destination.tokenAmount,
             data.destination.asset.decimals
           )
