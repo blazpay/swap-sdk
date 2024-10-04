@@ -5,7 +5,7 @@ interface ApiCallParams {
   url: string;
   data?: Record<string, any>;
   params?: Record<string, any>;
-  headers?: AxiosRequestHeaders;
+  headers?: any;
   timeout?: number;
 }
 

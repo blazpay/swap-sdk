@@ -113,6 +113,9 @@ export default class Base {
       const data = await apiCall({
         method: "GET",
         url: `https://open-api.openocean.finance/v4/${chainId}/gasPrice`,
+        headers: {
+          apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
+        },
       });
 
       return data?.data;

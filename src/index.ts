@@ -2,6 +2,7 @@ import { IBaseQuoteParams, IQuote, IQuoteParams } from "./@types/index.js";
 import {
   NitroAggregator,
   OneInchAggregator,
+  OpenOceanAggregator,
   SymbiosisAggregator,
 } from "./aggregators/index.js";
 
@@ -9,11 +10,13 @@ export class TradeManager {
   oneInchAggregator: OneInchAggregator;
   nitroAggregator: NitroAggregator;
   symbiosisAggregator: SymbiosisAggregator;
+  openOceanAggregator: OpenOceanAggregator;
 
   constructor() {
     this.oneInchAggregator = new OneInchAggregator();
     this.nitroAggregator = new NitroAggregator();
     this.symbiosisAggregator = new SymbiosisAggregator();
+    this.openOceanAggregator = new OpenOceanAggregator();
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -29,8 +32,6 @@ export class TradeManager {
     };
 
     function handleQuote(quote: IQuote) {
-      console.log("log:: get quotes", quote);
-
       params.onNewQuote(quote);
     }
 
@@ -50,5 +51,9 @@ export class TradeManager {
       .getQuotes(quoteParams)
       .then((quote: IQuote) => handleQuote(quote))
       .catch((error) => console.error("error: symbiosis ", error));
+    this.openOceanAggregator
+      .getQuotes(quoteParams)
+      .then((quote: IQuote) => handleQuote(quote))
+      .catch((error) => console.error("error: open-ocean ", error));
   }
 }

@@ -8,7 +8,7 @@ export default class OpenOceanAggregator extends Base {
   slippage: number;
   constructor() {
     super();
-    this.BASE_URL = "";
+    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/openocean";
     this.slippage = 0.5;
   }
 
@@ -19,7 +19,7 @@ export default class OpenOceanAggregator extends Base {
       outTokenAddress: params.toToken.address,
       amount: Number(params.amount),
       slippage: 0.5,
-      gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard,
+      gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
       account: params.srcWalletAddress,
     };
 
@@ -62,17 +62,17 @@ export default class OpenOceanAggregator extends Base {
     };
 
     const swapAmount = ethers.utils
-      .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
+      .formatUnits(data?.outAmount, data?.outToken?.decimals)
       .toString();
 
     return {
       source: "OpenOcean",
       route: "OpenOcean",
       amount: Number(Number(swapAmount).toFixed(4)),
-      usdAmount: 0,
+      usdAmount: data?.outToken?.usd,
       networkFee: 0,
       platformFee: 0,
-      priceImpact: 0,
+      priceImpact: data?.price_impact?.replace("%", ""),
       slippage: this.slippage,
       swap,
     };

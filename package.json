@@ -1,14 +1,14 @@
 {
   "name": "swap-sdk",
   "version": "1.0.0",
-  "main": "build/src/index.js",
+  "main": "build/index.js",
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "scripts": {
-    "dev": "ts-node-dev index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
