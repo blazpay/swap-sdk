@@ -4,6 +4,7 @@ import {
   OneInchAggregator,
   OpenOceanAggregator,
   SymbiosisAggregator,
+  UnizenAggregator,
 } from "./aggregators/index.js";
 
 export class TradeManager {
@@ -11,12 +12,14 @@ export class TradeManager {
   nitroAggregator: NitroAggregator;
   symbiosisAggregator: SymbiosisAggregator;
   openOceanAggregator: OpenOceanAggregator;
+  unizenAggregator: UnizenAggregator;
 
   constructor() {
     this.oneInchAggregator = new OneInchAggregator();
     this.nitroAggregator = new NitroAggregator();
     this.symbiosisAggregator = new SymbiosisAggregator();
     this.openOceanAggregator = new OpenOceanAggregator();
+    this.unizenAggregator = new UnizenAggregator();
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -55,5 +58,9 @@ export class TradeManager {
       .getQuotes(quoteParams)
       .then((quote: IQuote) => handleQuote(quote))
       .catch((error) => console.error("error: open-ocean ", error));
+    this.unizenAggregator
+      .getQuotes(quoteParams)
+      .then((quote: IQuote) => handleQuote(quote))
+      .catch((error) => console.error("error: unizen ", error));
   }
 }
