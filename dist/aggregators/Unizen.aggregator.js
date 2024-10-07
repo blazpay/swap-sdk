@@ -6,7 +6,7 @@ export default class UnizenAggregator extends Base {
     slippage;
     constructor() {
         super();
-        this.BASE_URL = "http://localhost:5000/utizen-quote";
+        this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen/quotes";
         this.slippage = 0.05;
     }
     async getQuotes(params) {
@@ -22,11 +22,12 @@ export default class UnizenAggregator extends Base {
             type: params.type,
             destinationChainId: params.toChain.id,
         };
-        const data = await apiCall({
+        const res = await apiCall({
             method: "POST",
             url: this.BASE_URL,
             data: payload,
         });
+        const data = res?.data;
         const swap = async ({ provider }) => {
             const payload = {
                 transactionData: data?.transactionData,

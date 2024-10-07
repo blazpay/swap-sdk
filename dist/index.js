@@ -1,16 +1,18 @@
-import { NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, } from "./aggregators/index.js";
+import { ChangeNowAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, } from "./aggregators/index.js";
 export class TradeManager {
     oneInchAggregator;
     nitroAggregator;
     symbiosisAggregator;
     openOceanAggregator;
     unizenAggregator;
+    changeNowAggregator;
     constructor() {
         this.oneInchAggregator = new OneInchAggregator();
         this.nitroAggregator = new NitroAggregator();
         this.symbiosisAggregator = new SymbiosisAggregator();
         this.openOceanAggregator = new OpenOceanAggregator();
         this.unizenAggregator = new UnizenAggregator();
+        this.changeNowAggregator = new ChangeNowAggregator();
     }
     async getQuotes(params) {
         const quoteParams = {
@@ -48,6 +50,10 @@ export class TradeManager {
             .getQuotes(quoteParams)
             .then((quote) => handleQuote(quote))
             .catch((error) => console.error("error: unizen ", error));
+        this.changeNowAggregator
+            .getQuotes(quoteParams)
+            .then((quote) => handleQuote(quote))
+            .catch((error) => console.error("error: change_now ", error));
     }
 }
 //# sourceMappingURL=index.js.map

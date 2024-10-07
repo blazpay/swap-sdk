@@ -1,5 +1,6 @@
 import { IBaseQuoteParams, IQuote, IQuoteParams } from "./@types/index.js";
 import {
+  ChangeNowAggregator,
   NitroAggregator,
   OneInchAggregator,
   OpenOceanAggregator,
@@ -13,6 +14,7 @@ export class TradeManager {
   symbiosisAggregator: SymbiosisAggregator;
   openOceanAggregator: OpenOceanAggregator;
   unizenAggregator: UnizenAggregator;
+  changeNowAggregator: ChangeNowAggregator;
 
   constructor() {
     this.oneInchAggregator = new OneInchAggregator();
@@ -20,6 +22,7 @@ export class TradeManager {
     this.symbiosisAggregator = new SymbiosisAggregator();
     this.openOceanAggregator = new OpenOceanAggregator();
     this.unizenAggregator = new UnizenAggregator();
+    this.changeNowAggregator = new ChangeNowAggregator();
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -62,5 +65,9 @@ export class TradeManager {
       .getQuotes(quoteParams)
       .then((quote: IQuote) => handleQuote(quote))
       .catch((error) => console.error("error: unizen ", error));
+    this.changeNowAggregator
+      .getQuotes(quoteParams)
+      .then((quote: IQuote) => handleQuote(quote))
+      .catch((error) => console.error("error: change_now ", error));
   }
 }

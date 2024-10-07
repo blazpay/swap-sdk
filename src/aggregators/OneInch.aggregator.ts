@@ -117,7 +117,7 @@ export default class OneInchAggregator extends Base {
   async get1InchSepender(chainId: number) {
     try {
       const { data } = await apiCall({
-        url: "/defi/1inch/getspender",
+        url: this.BASE_URL + "/getspender",
         method: "POST",
         data: {
           chain: chainId,
