@@ -2,8 +2,10 @@ import { ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 export default class ChangeNowAggregator extends Base {
+    BASE_URL;
     constructor() {
         super();
+        this.BASE_URL = "https://api.changenow.io/v2/exchange";
     }
     async getQuotes(params) {
         const query = {
@@ -16,7 +18,7 @@ export default class ChangeNowAggregator extends Base {
             fromAmount: params.amount,
         };
         const res = await apiCall({
-            url: "https://api.changenow.io/v2/exchange/estimated-amount",
+            url: this.BASE_URL + "/estimated-amount",
             method: "GET",
             params: query,
             headers: {
@@ -24,20 +26,20 @@ export default class ChangeNowAggregator extends Base {
             },
         });
         const value = JSON.stringify({
-            fromCurrency: "btc",
-            toCurrency: "usdt",
-            fromNetwork: "btc",
-            toNetwork: "eth",
-            fromAmount: "0.1",
+            fromCurrency: params.fromToken.symbol.toLowerCase(),
+            toCurrency: params.toToken.symbol.toLowerCase(),
+            fromNetwork: params.fromChain.name.toLowerCase(),
+            toNetwork: params.toChain.name.toLowerCase(),
+            fromAmount: String(params.amount),
             address: params.srcWalletAddress,
             flow: "standard",
             type: "direct",
-            rateId: "",
+            rateId: res?.rateId || "",
         });
         const swap = async ({ provider }) => {
             const signer = await provider.getSigner();
             const data = await apiCall({
-                url: "https://api.changenow.io/v2/exchange",
+                url: this.BASE_URL,
                 method: "POST",
                 data: value,
                 headers: {

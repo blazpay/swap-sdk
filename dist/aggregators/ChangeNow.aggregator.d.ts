@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { IQuoteParams, SwapParams } from "../@types/aggregator.type.js";
 import { Base } from "./index.js";
 export default class ChangeNowAggregator extends Base {
+    BASE_URL: string;
     constructor();
     getQuotes(params: IQuoteParams): Promise<{
         source: string;

@@ -5,5 +5,5 @@ export default class OneInchAggregator extends Base {
     tradeFee: number;
     constructor();
     getQuotes(params: IQuoteParams): Promise<IQuote>;
-    get1InchSepender(chainId: number): Promise<any>;
+    get1InchSpender(chainId: number): Promise<any>;
 }

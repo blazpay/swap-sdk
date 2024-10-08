@@ -17,6 +17,10 @@ export default class Base {
     this.tronFeeLimit = 1000000000;
   }
 
+  async setSenderAddress(address: string) {
+    this.senderAddress = address;
+  }
+
   async setAllowance(
     tokenAddress: string,
     approvalAddress: string,
@@ -62,11 +66,11 @@ export default class Base {
     }
 
     const erc20 = new Contract(tokenAddress, tokenAbi, provider.getSigner());
+
     const allowance = await erc20.allowance(
       this.senderAddress,
       approvalAddress
     );
-
     if (allowance.lt(amount)) {
       const approveTx = await erc20.approve(approvalAddress, amount, {
         gasPrice: await provider.getGasPrice(),

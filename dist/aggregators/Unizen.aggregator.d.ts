@@ -5,4 +5,5 @@ export default class UnizenAggregator extends Base {
     slippage: number;
     constructor();
     getQuotes(params: IQuoteParams): Promise<IQuote>;
+    getSpender(chainId: number): Promise<any>;
 }

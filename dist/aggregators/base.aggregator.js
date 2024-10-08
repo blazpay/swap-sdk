@@ -14,6 +14,9 @@ export default class Base {
         this.senderTronNitro = null;
         this.tronFeeLimit = 1000000000;
     }
+    async setSenderAddress(address) {
+        this.senderAddress = address;
+    }
     async setAllowance(tokenAddress, approvalAddress, provider, chainId, amount = ethers.constants.MaxUint256, router) {
         if (tokenAddress === ethers.constants.AddressZero ||
             tokenAddress === addressZero) {

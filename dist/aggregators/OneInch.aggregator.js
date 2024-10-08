@@ -27,21 +27,22 @@ export default class OneInchAggregator extends Base {
             includeProtocols: true,
             includeGas: true,
         };
+        this.setSenderAddress(params.srcWalletAddress);
         const quote = await apiCall({
             method: "POST",
             url: this.BASE_URL,
             data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
         });
         const swapAmount = ethers.utils.formatUnits(quote?.dstAmount, quote?.dstToken?.decimals);
-        const swap = async ({ provider, receiver, slippageTolerance = 0.1, }) => {
+        const swap = async ({ provider, receiver, slippageTolerance = 0.5, }) => {
             const signer = await provider.getSigner();
             const walletAddress = await signer.getAddress();
-            const spender = await this.get1InchSepender(Number(params.fromChain.id));
+            const spender = await this.get1InchSpender(Number(params.fromChain.id));
             await this.setAllowance(params.fromToken.address, spender, provider, params.fromChain.id, BigNumber.from(ethers.utils
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString()), "1inch");
             const res = await apiCall({
-                url: "/defi/1inch",
+                url: this.BASE_URL,
                 method: "POST",
                 data: {
                     query: {
@@ -56,7 +57,7 @@ export default class OneInchAggregator extends Base {
                     path: `/swap/v6.0/${params.fromChain.id}/swap`,
                 },
             });
-            const txdata = res.data.tx;
+            const txdata = res.tx;
             const tx = await signer.sendTransaction({
                 gasLimit: 500000,
                 data: txdata.data,
@@ -80,9 +81,9 @@ export default class OneInchAggregator extends Base {
             swap,
         };
     }
-    async get1InchSepender(chainId) {
+    async get1InchSpender(chainId) {
         try {
-            const { data } = await apiCall({
+            const data = await apiCall({
                 url: this.BASE_URL + "/getspender",
                 method: "POST",
                 data: {

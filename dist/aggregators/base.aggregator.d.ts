@@ -6,6 +6,7 @@ export default class Base {
     senderTronNitro?: string | null;
     tronFeeLimit: number;
     constructor();
+    setSenderAddress(address: string): Promise<void>;
     setAllowance(tokenAddress: string, approvalAddress: string, provider: any, chainId: number, amount: ethers.BigNumber | undefined, router: string): Promise<void>;
     triggerContract(chainId: number, provider: providers.Web3Provider, txn: any): Promise<{
         walletAddress: any;

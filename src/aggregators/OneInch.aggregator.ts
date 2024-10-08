@@ -35,6 +35,8 @@ export default class OneInchAggregator extends Base {
       includeGas: true,
     };
 
+    this.setSenderAddress(params.srcWalletAddress);
+
     const quote = await apiCall({
       method: "POST",
       url: this.BASE_URL,
@@ -49,11 +51,11 @@ export default class OneInchAggregator extends Base {
     const swap = async ({
       provider,
       receiver,
-      slippageTolerance = 0.1,
+      slippageTolerance = 0.5,
     }: SwapParams) => {
       const signer = await provider.getSigner();
       const walletAddress = await signer.getAddress();
-      const spender = await this.get1InchSepender(Number(params.fromChain.id));
+      const spender = await this.get1InchSpender(Number(params.fromChain.id));
 
       await this.setAllowance(
         params.fromToken.address,
@@ -67,9 +69,8 @@ export default class OneInchAggregator extends Base {
         ),
         "1inch"
       );
-
       const res = await apiCall({
-        url: "/defi/1inch",
+        url: this.BASE_URL,
         method: "POST",
         data: {
           query: {
@@ -85,7 +86,7 @@ export default class OneInchAggregator extends Base {
         },
       });
 
-      const txdata = res.data.tx;
+      const txdata = res.tx;
 
       const tx = await signer.sendTransaction({
         gasLimit: 500000,
@@ -114,9 +115,9 @@ export default class OneInchAggregator extends Base {
     };
   }
 
-  async get1InchSepender(chainId: number) {
+  async get1InchSpender(chainId: number) {
     try {
-      const { data } = await apiCall({
+      const data = await apiCall({
         url: this.BASE_URL + "/getspender",
         method: "POST",
         data: {

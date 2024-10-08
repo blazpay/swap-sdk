@@ -13,6 +13,7 @@ export default class OpenOceanAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<IQuote> {
+    this.setSenderAddress(params.srcWalletAddress);
     const query = {
       chain: params.fromChain.id,
       inTokenAddress: params.fromToken.address,
