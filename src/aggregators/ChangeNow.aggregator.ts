@@ -7,58 +7,67 @@ export default class ChangeNowAggregator extends Base {
   BASE_URL: string;
   constructor() {
     super();
-    this.BASE_URL = "https://api.changenow.io/v2/exchange";
+    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/change-now";
   }
 
   async getQuotes(params: IQuoteParams) {
+    let fromCurrency =
+      params.fromToken.symbol.toLowerCase() === "pol"
+        ? "matic"
+        : params.fromToken.symbol.toLowerCase();
+    let toCurrency =
+      params.toToken.symbol.toLowerCase() === "pol"
+        ? "matic"
+        : params.toToken.symbol.toLowerCase();
+
+    let fromNetwork =
+      params.fromChain.name.toLowerCase() === "polygon"
+        ? "matic"
+        : params.fromChain.name.toLowerCase();
+    let toNetwork =
+      params.toChain.name.toLowerCase() === "polygon"
+        ? "matic"
+        : params.toChain.name.toLowerCase();
+
     const query = {
-      fromCurrency: params.fromToken.symbol.toLowerCase(),
-      toCurrency: params.toToken.symbol.toLowerCase(),
-      fromNetwork: params.fromChain.name.toLowerCase(),
-      toNetwork: params.toChain.name.toLowerCase(),
+      fromCurrency,
+      toCurrency,
+      fromNetwork,
+      toNetwork,
       // flow: "",
       // type: "",
       fromAmount: params.amount,
     };
 
     const res = await apiCall({
-      url: this.BASE_URL + "/estimated-amount",
-      method: "GET",
-      params: query,
-      headers: {
-        "x-changenow-api-key":
-          "b0a58f1627972eb6ef73b03ccdc33a5aed8656caa369015cd5e2854ff2985999",
-      },
+      url: this.BASE_URL + "/quotes",
+      method: "POST",
+      data: query,
     });
 
-    const value = JSON.stringify({
-      fromCurrency: params.fromToken.symbol.toLowerCase(),
-      toCurrency: params.toToken.symbol.toLowerCase(),
-      fromNetwork: params.fromChain.name.toLowerCase(),
-      toNetwork: params.toChain.name.toLowerCase(),
+    const value = {
+      fromCurrency,
+      toCurrency,
+      fromNetwork,
+      toNetwork,
       fromAmount: String(params.amount),
       address: params.srcWalletAddress,
       flow: "standard",
       type: "direct",
-      rateId: res?.rateId || "",
-    });
+      rateId: res?.data?.rateId || "",
+    };
 
     const swap = async ({ provider }: SwapParams) => {
       const signer = await provider.getSigner();
 
       const data = await apiCall({
-        url: this.BASE_URL,
+        url: this.BASE_URL + "/swap",
         method: "POST",
         data: value,
-        headers: {
-          "Content-Type": "application/json",
-          "x-changenow-api-key":
-            "b0a58f1627972eb6ef73b03ccdc33a5aed8656caa369015cd5e2854ff2985999",
-        },
       });
 
       const tx = await signer.sendTransaction({
-        to: data?.payinAddress,
+        to: data?.data?.payinAddress,
         value: ethers.utils.parseEther(params.amount.toString()),
         gasLimit: 60,
       });
@@ -71,9 +80,9 @@ export default class ChangeNowAggregator extends Base {
     return {
       source: "Change Now",
       route: "Change Now",
-      amount: res?.toAmount,
+      amount: res?.data?.toAmount,
       usdAmount: 0,
-      networkFee: res?.depositFee,
+      networkFee: res?.data?.depositFee,
       platformFee: 0,
       priceImpact: 0,
       slippage: 0,

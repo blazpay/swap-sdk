@@ -9,7 +9,7 @@ export default class UnizenAggregator extends Base {
   slippage: number;
   constructor() {
     super();
-    this.BASE_URL = "http://localhost:5000/api/defi/unizen";
+    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen";
     this.slippage = 0.05;
   }
 

@@ -7,7 +7,7 @@ export default class UnizenAggregator extends Base {
     slippage;
     constructor() {
         super();
-        this.BASE_URL = "http://localhost:5000/api/defi/unizen";
+        this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen";
         this.slippage = 0.05;
     }
     async getQuotes(params) {
@@ -33,7 +33,6 @@ export default class UnizenAggregator extends Base {
         const swap = async ({ provider }) => {
             const signer = provider.getSigner();
             const spender = await this.getSpender(params.fromChain.id);
-            console.log("log: sp", spender);
             await this.setAllowance(params.fromToken.address, spender, provider, params.fromChain.id, BigNumber.from(ethers.utils
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString()), "Utizen");
@@ -54,7 +53,6 @@ export default class UnizenAggregator extends Base {
                 data: payload,
             });
             const txData = res?.data;
-            console.log("log:: ttx", data);
             const contractAddress = getContractAddressByChainId(params.fromChain.id);
             const tx = await signer.sendTransaction({
                 from: params.srcWalletAddress,
