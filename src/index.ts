@@ -7,22 +7,58 @@ import {
   SymbiosisAggregator,
   UnizenAggregator,
 } from "./aggregators/index.js";
+import { AGGREGATORS } from "./enums/aggregator.enum.js";
 
-export class TradeManager {
-  oneInchAggregator: OneInchAggregator;
-  nitroAggregator: NitroAggregator;
-  symbiosisAggregator: SymbiosisAggregator;
-  openOceanAggregator: OpenOceanAggregator;
-  unizenAggregator: UnizenAggregator;
-  changeNowAggregator: ChangeNowAggregator;
+class AggregatorFactory {
+  private aggregators: Map<string, any>;
 
   constructor() {
-    this.oneInchAggregator = new OneInchAggregator();
-    this.nitroAggregator = new NitroAggregator();
-    this.symbiosisAggregator = new SymbiosisAggregator();
-    this.openOceanAggregator = new OpenOceanAggregator();
-    this.unizenAggregator = new UnizenAggregator();
-    this.changeNowAggregator = new ChangeNowAggregator();
+    this.aggregators = new Map();
+  }
+
+  register(name: string, aggregator: any) {
+    this.aggregators.set(name, aggregator);
+  }
+
+  getAggregator(name: string) {
+    this.aggregators.get(name);
+  }
+
+  async getQuotes(params: IQuoteParams, cb: (quote: IQuote) => void) {
+    for (const aggregator of this.aggregators.values()) {
+      try {
+        const quote = await aggregator.getQuotes(params);
+        cb(quote);
+      } catch (error) {
+        console.error(`Error from ${aggregator.constructor.name}:`, error);
+      }
+    }
+  }
+}
+
+export class TradeManager {
+  aggregatorFactory: AggregatorFactory;
+
+  constructor() {
+    this.aggregatorFactory = new AggregatorFactory();
+    this.aggregatorFactory.register(
+      AGGREGATORS.ONE_INCH,
+      new OneInchAggregator()
+    );
+    this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
+    this.aggregatorFactory.register(
+      AGGREGATORS.SYMBIOSIS,
+      new SymbiosisAggregator()
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.OPEN_OCEAN,
+      new OpenOceanAggregator()
+    );
+    this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
+    this.aggregatorFactory.register(
+      AGGREGATORS.CHANGE_NOW,
+      new ChangeNowAggregator()
+    );
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -41,33 +77,6 @@ export class TradeManager {
       params.onNewQuote(quote);
     }
 
-    if (params.type === "SWAP") {
-      this.oneInchAggregator
-        .getQuotes(quoteParams)
-        .then((quote: IQuote) => handleQuote(quote))
-        .catch((error) => console.error("error: 1inch ", error));
-    }
-
-    this.nitroAggregator
-      .getQuotes(quoteParams)
-      .then((quote: IQuote) => handleQuote(quote))
-      .catch((error) => console.error("error: nitro ", error));
-
-    this.symbiosisAggregator
-      .getQuotes(quoteParams)
-      .then((quote: IQuote) => handleQuote(quote))
-      .catch((error) => console.error("error: symbiosis ", error));
-    this.openOceanAggregator
-      .getQuotes(quoteParams)
-      .then((quote: IQuote) => handleQuote(quote))
-      .catch((error) => console.error("error: open-ocean ", error));
-    this.unizenAggregator
-      .getQuotes(quoteParams)
-      .then((quote: IQuote) => handleQuote(quote))
-      .catch((error) => console.error("error: unizen ", error));
-    this.changeNowAggregator
-      .getQuotes(quoteParams)
-      .then((quote: IQuote) => handleQuote(quote))
-      .catch((error) => console.error("error: change_now ", error));
+    this.aggregatorFactory.getQuotes(quoteParams, handleQuote);
   }
 }

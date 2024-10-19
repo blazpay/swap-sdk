@@ -2,6 +2,7 @@ import { BigNumber, ethers, providers } from "ethers";
 import { IQuoteParams, IQuote, SwapParams } from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
+import Quote from "../utils/quote.js";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -47,6 +48,8 @@ export default class OneInchAggregator extends Base {
       quote?.dstAmount,
       quote?.dstToken?.decimals
     );
+
+    const n = new Quote(quote);
 
     const swap = async ({
       provider,
