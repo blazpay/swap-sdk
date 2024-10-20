@@ -1,4 +1,7 @@
+import { AggregatorFactory } from "../agreegator.factory.js";
+
 export default class Quote {
+  aggregatorFactory: AggregatorFactory;
   data: any;
 
   constructor(data: any) {
@@ -15,5 +18,13 @@ export default class Quote {
     };
   }
 
-  getTransactionData() {}
+  getTransactionData() {
+    const aggregator = this.aggregatorFactory.getAggregator(this.data.provider);
+
+    return aggregator.getTransactionData(this.data);
+  }
+
+  toJSON() {
+    return this.data;
+  }
 }
