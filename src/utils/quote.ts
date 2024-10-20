@@ -1,4 +1,4 @@
-import { AggregatorFactory } from "../agreegator.factory.js";
+import aggregatorFactory, { AggregatorFactory } from "../agreegator.factory.js";
 
 export default class Quote {
   aggregatorFactory: AggregatorFactory;
@@ -6,12 +6,13 @@ export default class Quote {
 
   constructor(data: any) {
     this.data = data;
+    this.aggregatorFactory = aggregatorFactory;
   }
 
   getMeta() {
     return {
       id: this.data?.id,
-      provider: "providerA",
+      provider: this.data.provider,
       fromAmount: "",
       toAmount: "",
       slippage: "",

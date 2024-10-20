@@ -7,14 +7,15 @@ import {
   SymbiosisAggregator,
   UnizenAggregator,
 } from "./aggregators/index.js";
-import { AggregatorFactory } from "./agreegator.factory.js";
+import aggregatorFactory, { AggregatorFactory } from "./agreegator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
 
   constructor() {
-    this.aggregatorFactory = new AggregatorFactory();
+    this.aggregatorFactory = aggregatorFactory;
+
     this.aggregatorFactory.register(
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator()

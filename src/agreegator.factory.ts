@@ -26,3 +26,7 @@ export class AggregatorFactory {
     }
   }
 }
+
+const aggregatorFactory = new AggregatorFactory();
+
+export default aggregatorFactory;
