@@ -7,7 +7,7 @@ import {
   SymbiosisAggregator,
   UnizenAggregator,
 } from "./aggregators/index.js";
-import aggregatorFactory, { AggregatorFactory } from "./agreegator.factory.js";
+import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 
 export class TradeManager {

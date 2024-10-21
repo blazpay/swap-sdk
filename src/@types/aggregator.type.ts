@@ -28,7 +28,7 @@ export interface IQuote {
   priceImpact: number;
   slippage: number;
 
-  swap: (params: SwapParams) => void;
+  swap?: (params: SwapParams) => void;
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {

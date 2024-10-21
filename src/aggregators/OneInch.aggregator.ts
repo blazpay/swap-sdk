@@ -38,18 +38,30 @@ export default class OneInchAggregator extends Base {
 
     this.setSenderAddress(params.srcWalletAddress);
 
-    const quote = await apiCall({
+    const response = await apiCall({
       method: "POST",
       url: this.BASE_URL,
       data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
     });
 
     const swapAmount = ethers.utils.formatUnits(
-      quote?.dstAmount,
-      quote?.dstToken?.decimals
+      response?.dstAmount,
+      response?.dstToken?.decimals
     );
 
-    const n = new Quote(quote);
+    const meta = {
+      source: "One Inch",
+      route: "One Inch",
+      amount: Number(Number(response).toFixed(4)),
+      usdAmount: 0,
+      networkFee: 0,
+      platformFee: 0,
+      priceImpact: 0,
+      slippage: 0,
+    };
+
+    //todo with new quote
+    const quote = new Quote(response, meta);
 
     const swap = async ({
       provider,

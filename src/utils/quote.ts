@@ -1,22 +1,19 @@
-import aggregatorFactory, { AggregatorFactory } from "../agreegator.factory.js";
+import { IQuote } from "../@types/index.js";
+import aggregatorFactory, { AggregatorFactory } from "../aggregator.factory.js";
 
 export default class Quote {
   aggregatorFactory: AggregatorFactory;
   data: any;
+  meta: IQuote;
 
-  constructor(data: any) {
+  constructor(data: any, meta: IQuote) {
     this.data = data;
+    this.meta = meta;
     this.aggregatorFactory = aggregatorFactory;
   }
 
   getMeta() {
-    return {
-      id: this.data?.id,
-      provider: this.data.provider,
-      fromAmount: "",
-      toAmount: "",
-      slippage: "",
-    };
+    return this.meta;
   }
 
   getTransactionData() {
