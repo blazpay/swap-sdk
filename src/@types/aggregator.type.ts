@@ -1,5 +1,6 @@
 import { providers } from "ethers";
 import { IChain, IToken } from "./index.js";
+import Quote from "../utils/quote.js";
 
 export interface IQuoteParams {
   fromChain: IChain;
@@ -19,7 +20,8 @@ export interface SwapParams {
 }
 
 export interface IQuote {
-  source: string;
+  id?: string;
+  aggregator: string;
   route: string;
   amount: number;
   usdAmount: number;
@@ -32,5 +34,5 @@ export interface IQuote {
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {
-  onNewQuote: (quote: IQuote) => Promise<void>;
+  onNewQuote: (quote: Quote) => Promise<void>;
 }

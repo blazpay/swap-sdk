@@ -1,4 +1,5 @@
 import { IQuote, IQuoteParams } from "./@types/aggregator.type.js";
+import Quote from "./utils/quote.js";
 
 export class AggregatorFactory {
   private aggregators: Map<string, any>;
@@ -15,7 +16,7 @@ export class AggregatorFactory {
     return this.aggregators.get(name);
   }
 
-  async getQuotes(params: IQuoteParams, cb: (quote: IQuote) => void) {
+  async getQuotes(params: IQuoteParams, cb: (quote: Quote) => void) {
     for (const aggregator of this.aggregators.values()) {
       try {
         const quote = await aggregator.getQuotes(params);

@@ -9,6 +9,7 @@ import {
 } from "./aggregators/index.js";
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
+import Quote from "./utils/quote.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -20,20 +21,20 @@ export class TradeManager {
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator()
     );
-    this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
-    this.aggregatorFactory.register(
-      AGGREGATORS.SYMBIOSIS,
-      new SymbiosisAggregator()
-    );
-    this.aggregatorFactory.register(
-      AGGREGATORS.OPEN_OCEAN,
-      new OpenOceanAggregator()
-    );
-    this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
-    this.aggregatorFactory.register(
-      AGGREGATORS.CHANGE_NOW,
-      new ChangeNowAggregator()
-    );
+    // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
+    // this.aggregatorFactory.register(
+    //   AGGREGATORS.SYMBIOSIS,
+    //   new SymbiosisAggregator()
+    // );
+    // this.aggregatorFactory.register(
+    //   AGGREGATORS.OPEN_OCEAN,
+    //   new OpenOceanAggregator()
+    // );
+    // this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
+    // this.aggregatorFactory.register(
+    //   AGGREGATORS.CHANGE_NOW,
+    //   new ChangeNowAggregator()
+    // );
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -48,7 +49,7 @@ export class TradeManager {
       dstWalletAddress: params?.dstWalletAddress,
     };
 
-    function handleQuote(quote: IQuote) {
+    function handleQuote(quote: Quote) {
       params.onNewQuote(quote);
     }
 

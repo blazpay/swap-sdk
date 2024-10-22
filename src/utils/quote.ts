@@ -12,12 +12,14 @@ export default class Quote {
     this.aggregatorFactory = aggregatorFactory;
   }
 
-  getMeta() {
-    return this.meta;
+  getMeta(id?: string) {
+    return { id, ...this.meta };
   }
 
   getTransactionData() {
-    const aggregator = this.aggregatorFactory.getAggregator(this.data.provider);
+    const aggregator = this.aggregatorFactory.getAggregator(
+      this.meta.aggregator
+    );
 
     return aggregator.getTransactionData(this.data);
   }

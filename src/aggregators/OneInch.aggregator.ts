@@ -1,8 +1,9 @@
-import { BigNumber, ethers, providers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { IQuoteParams, IQuote, SwapParams } from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -17,7 +18,7 @@ export default class OneInchAggregator extends Base {
     this.tradeFee = 0;
   }
 
-  async getQuotes(params: IQuoteParams): Promise<IQuote> {
+  async getQuotes(params: IQuoteParams): Promise<Quote> {
     const query = {
       src:
         params.fromToken.address === addressZero
@@ -48,20 +49,6 @@ export default class OneInchAggregator extends Base {
       response?.dstAmount,
       response?.dstToken?.decimals
     );
-
-    const meta = {
-      source: "One Inch",
-      route: "One Inch",
-      amount: Number(Number(response).toFixed(4)),
-      usdAmount: 0,
-      networkFee: 0,
-      platformFee: 0,
-      priceImpact: 0,
-      slippage: 0,
-    };
-
-    //todo with new quote
-    const quote = new Quote(response, meta);
 
     const swap = async ({
       provider,
@@ -117,8 +104,8 @@ export default class OneInchAggregator extends Base {
       return tx;
     };
 
-    return {
-      source: "One Inch",
+    const meta = {
+      aggregator: AGGREGATORS.ONE_INCH,
       route: "One Inch",
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
@@ -128,6 +115,32 @@ export default class OneInchAggregator extends Base {
       slippage: 0,
       swap,
     };
+
+    const quote = new Quote(response, meta);
+
+  quote.getMeta().id;
+
+    return quote;
+  }
+
+  async getTransactionData(data:any) {
+
+     const res = await apiCall({
+       url: this.BASE_URL,
+       method: "POST",
+       data: {
+         query: {
+           ...query,
+           includeTokensInfo: true,
+           includeProtocols: true,
+           includeGas: true,
+           from: walletAddress,
+           slippage: slippageTolerance,
+           receiver: receiver || walletAddress,
+         },
+         path: `/swap/v6.0/${params.fromChain.id}/swap`,
+       },
+     });
   }
 
   async get1InchSpender(chainId: number) {
@@ -146,3 +159,5 @@ export default class OneInchAggregator extends Base {
     }
   }
 }
+
+const s = new OneInchAggregator();
