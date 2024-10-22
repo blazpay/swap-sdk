@@ -1,5 +1,10 @@
 import { BigNumber, ethers } from "ethers";
-import { IQuoteParams, IQuote, SwapParams } from "../@types/index.js";
+import {
+  IQuoteParams,
+  IQuote,
+  SwapParams,
+  IRestQuoteProps,
+} from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
@@ -113,34 +118,38 @@ export default class OneInchAggregator extends Base {
       platformFee: 0,
       priceImpact: 0,
       slippage: 0,
-      swap,
     };
 
-    const quote = new Quote(response, meta);
-
-  quote.getMeta().id;
+    const quote = new Quote(response, meta, {
+      srcWalletAddress: params.srcWalletAddress,
+      dstWalletAddress: params.dstWalletAddress,
+      fromChainId: params.fromChain.id,
+      slippageTolerance: params.slippage ?? 0.5,
+      params: query,
+    });
 
     return quote;
   }
 
-  async getTransactionData(data:any) {
+  async getTransactionData(data: IRestQuoteProps) {
+    const res = await apiCall({
+      url: this.BASE_URL,
+      method: "POST",
+      data: {
+        query: {
+          ...data?.params,
+          includeTokensInfo: true,
+          includeProtocols: true,
+          includeGas: true,
+          from: data.srcWalletAddress,
+          slippage: data.slippageTolerance,
+          receiver: data.dstWalletAddress || data.srcWalletAddress,
+        },
+        path: `/swap/v6.0/${data.fromChainId}/swap`,
+      },
+    });
 
-     const res = await apiCall({
-       url: this.BASE_URL,
-       method: "POST",
-       data: {
-         query: {
-           ...query,
-           includeTokensInfo: true,
-           includeProtocols: true,
-           includeGas: true,
-           from: walletAddress,
-           slippage: slippageTolerance,
-           receiver: receiver || walletAddress,
-         },
-         path: `/swap/v6.0/${params.fromChain.id}/swap`,
-       },
-     });
+    return res?.tx;
   }
 
   async get1InchSpender(chainId: number) {

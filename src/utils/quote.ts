@@ -1,27 +1,25 @@
-import { IQuote } from "../@types/index.js";
+import { IQuote, IRestQuoteProps } from "../@types/index.js";
 import aggregatorFactory, { AggregatorFactory } from "../aggregator.factory.js";
 
 export default class Quote {
-  aggregatorFactory: AggregatorFactory;
   data: any;
   meta: IQuote;
+  restProps: IRestQuoteProps;
 
-  constructor(data: any, meta: IQuote) {
+  constructor(data: any, meta: IQuote, restProps: IRestQuoteProps) {
     this.data = data;
     this.meta = meta;
-    this.aggregatorFactory = aggregatorFactory;
+    this.restProps = restProps;
   }
 
-  getMeta(id?: string) {
-    return { id, ...this.meta };
+  getMeta() {
+    return { id: "random_id", ...this.meta };
   }
 
-  getTransactionData() {
-    const aggregator = this.aggregatorFactory.getAggregator(
-      this.meta.aggregator
-    );
+  async getTransactionData() {
+    const aggregator = aggregatorFactory.getAggregator(this.meta.aggregator);
 
-    return aggregator.getTransactionData(this.data);
+    return await aggregator.getTransactionData(this.restProps);
   }
 
   toJSON() {

@@ -8,6 +8,7 @@ export interface IQuoteParams {
   fromToken: IToken;
   toToken: IToken;
   amount: number;
+  slippage?: number;
   srcWalletAddress: string;
   dstWalletAddress?: string;
   type: "SWAP" | "BRIDGE";
@@ -29,8 +30,6 @@ export interface IQuote {
   platformFee: number;
   priceImpact: number;
   slippage: number;
-
-  swap?: (params: SwapParams) => void;
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {

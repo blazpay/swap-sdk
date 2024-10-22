@@ -6,3 +6,5 @@ export type {
   IBaseQuoteParams,
   SwapParams,
 } from "./aggregator.type.js";
+
+export { IRestQuoteProps } from "./quote.type.js";
