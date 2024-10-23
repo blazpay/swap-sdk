@@ -1,18 +1,25 @@
-import { ChangeNowAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, } from "./aggregators/index.js";
+import { OneInchAggregator, } from "./aggregators/index.js";
+import aggregatorFactory from "./aggregator.factory.js";
+import { AGGREGATORS } from "./enums/aggregator.enum.js";
 export class TradeManager {
-    oneInchAggregator;
-    nitroAggregator;
-    symbiosisAggregator;
-    openOceanAggregator;
-    unizenAggregator;
-    changeNowAggregator;
+    aggregatorFactory;
     constructor() {
-        this.oneInchAggregator = new OneInchAggregator();
-        this.nitroAggregator = new NitroAggregator();
-        this.symbiosisAggregator = new SymbiosisAggregator();
-        this.openOceanAggregator = new OpenOceanAggregator();
-        this.unizenAggregator = new UnizenAggregator();
-        this.changeNowAggregator = new ChangeNowAggregator();
+        this.aggregatorFactory = aggregatorFactory;
+        this.aggregatorFactory.register(AGGREGATORS.ONE_INCH, new OneInchAggregator());
+        // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
+        // this.aggregatorFactory.register(
+        //   AGGREGATORS.SYMBIOSIS,
+        //   new SymbiosisAggregator()
+        // );
+        // this.aggregatorFactory.register(
+        //   AGGREGATORS.OPEN_OCEAN,
+        //   new OpenOceanAggregator()
+        // );
+        // this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
+        // this.aggregatorFactory.register(
+        //   AGGREGATORS.CHANGE_NOW,
+        //   new ChangeNowAggregator()
+        // );
     }
     async getQuotes(params) {
         const quoteParams = {
@@ -28,32 +35,7 @@ export class TradeManager {
         function handleQuote(quote) {
             params.onNewQuote(quote);
         }
-        if (params.type === "SWAP") {
-            this.oneInchAggregator
-                .getQuotes(quoteParams)
-                .then((quote) => handleQuote(quote))
-                .catch((error) => console.error("error: 1inch ", error));
-        }
-        this.nitroAggregator
-            .getQuotes(quoteParams)
-            .then((quote) => handleQuote(quote))
-            .catch((error) => console.error("error: nitro ", error));
-        this.symbiosisAggregator
-            .getQuotes(quoteParams)
-            .then((quote) => handleQuote(quote))
-            .catch((error) => console.error("error: symbiosis ", error));
-        this.openOceanAggregator
-            .getQuotes(quoteParams)
-            .then((quote) => handleQuote(quote))
-            .catch((error) => console.error("error: open-ocean ", error));
-        this.unizenAggregator
-            .getQuotes(quoteParams)
-            .then((quote) => handleQuote(quote))
-            .catch((error) => console.error("error: unizen ", error));
-        this.changeNowAggregator
-            .getQuotes(quoteParams)
-            .then((quote) => handleQuote(quote))
-            .catch((error) => console.error("error: change_now ", error));
+        this.aggregatorFactory.getQuotes(quoteParams, handleQuote);
     }
 }
 //# sourceMappingURL=index.js.map

@@ -1,11 +1,13 @@
 import { providers } from "ethers";
 import { IChain, IToken } from "./index.js";
+import Quote from "../utils/quote.js";
 export interface IQuoteParams {
     fromChain: IChain;
     toChain: IChain;
     fromToken: IToken;
     toToken: IToken;
     amount: number;
+    slippage?: number;
     srcWalletAddress: string;
     dstWalletAddress?: string;
     type: "SWAP" | "BRIDGE";
@@ -16,7 +18,8 @@ export interface SwapParams {
     slippageTolerance?: number;
 }
 export interface IQuote {
-    source: string;
+    id?: string;
+    aggregator: string;
     route: string;
     amount: number;
     usdAmount: number;
@@ -24,8 +27,7 @@ export interface IQuote {
     platformFee: number;
     priceImpact: number;
     slippage: number;
-    swap: (params: SwapParams) => void;
 }
 export interface IBaseQuoteParams extends IQuoteParams {
-    onNewQuote: (quote: IQuote) => Promise<void>;
+    onNewQuote: (quote: Quote) => Promise<void>;
 }

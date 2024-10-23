@@ -2,6 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { getContractAddressByChainId } from "../utils/constants.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 export default class UnizenAggregator extends Base {
     BASE_URL;
     slippage;
@@ -69,7 +70,7 @@ export default class UnizenAggregator extends Base {
             .formatUnits(data?.toTokenAmount, data?.tokenTo?.decimals)
             .toString();
         return {
-            source: "Unizen",
+            aggregator: AGGREGATORS.UNIZEN,
             route: "Unizen",
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: 0,
@@ -77,7 +78,6 @@ export default class UnizenAggregator extends Base {
             platformFee: 0,
             priceImpact: 0,
             slippage: this.slippage,
-            swap,
         };
     }
     async getSpender(chainId) {

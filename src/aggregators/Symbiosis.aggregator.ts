@@ -2,6 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 export default class SymbiosisAggregator extends Base {
   BASE_URL: string;
@@ -102,7 +103,7 @@ export default class SymbiosisAggregator extends Base {
       .toString();
 
     return {
-      source: "Symbiosis",
+      aggregator: AGGREGATORS.SYMBIOSIS,
       route: "Symbiosis",
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
@@ -110,7 +111,6 @@ export default class SymbiosisAggregator extends Base {
       platformFee: 0,
       priceImpact: 0,
       slippage: this.slippage,
-      swap,
     };
   }
 }

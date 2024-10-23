@@ -2,6 +2,7 @@ import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
 import { BigNumber, ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
@@ -83,7 +84,7 @@ export default class NitroAggregator extends Base {
       : 0;
 
     return {
-      source: "nitro",
+      aggregator: AGGREGATORS.NITRO,
       route: "nitro",
       amount: Number(
         Number(
@@ -98,7 +99,6 @@ export default class NitroAggregator extends Base {
       platformFee,
       priceImpact: data.source.priceImpact,
       slippage: data.slippageTolerance,
-      swap,
     };
   }
 }

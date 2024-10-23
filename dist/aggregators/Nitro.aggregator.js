@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export default class NitroAggregator extends Base {
     BASE_URL;
@@ -51,7 +52,7 @@ export default class NitroAggregator extends Base {
             ? Number(Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4))
             : 0;
         return {
-            source: "nitro",
+            aggregator: AGGREGATORS.NITRO,
             route: "nitro",
             amount: Number(Number(ethers.utils.formatUnits(data.destination.tokenAmount, data.destination.asset.decimals)).toFixed(4)),
             usdAmount: 0,
@@ -59,7 +60,6 @@ export default class NitroAggregator extends Base {
             platformFee,
             priceImpact: data.source.priceImpact,
             slippage: data.slippageTolerance,
-            swap,
         };
     }
 }

@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 export default class OpenOceanAggregator extends Base {
     BASE_URL;
     slippage;
@@ -46,7 +47,7 @@ export default class OpenOceanAggregator extends Base {
             .formatUnits(data?.outAmount, data?.outToken?.decimals)
             .toString();
         return {
-            source: "OpenOcean",
+            aggregator: AGGREGATORS.OPEN_OCEAN,
             route: "OpenOcean",
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: data?.outToken?.usd,
@@ -54,7 +55,6 @@ export default class OpenOceanAggregator extends Base {
             platformFee: 0,
             priceImpact: data?.price_impact?.replace("%", ""),
             slippage: this.slippage,
-            swap,
         };
     }
 }
