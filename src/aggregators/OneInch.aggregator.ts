@@ -9,6 +9,7 @@ import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import { v4 as uuidv4 } from "uuid";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -110,6 +111,7 @@ export default class OneInchAggregator extends Base {
     };
 
     const meta = {
+      id: uuidv4(),
       aggregator: AGGREGATORS.ONE_INCH,
       route: "One Inch",
       amount: Number(Number(swapAmount).toFixed(4)),

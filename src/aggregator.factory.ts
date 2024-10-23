@@ -1,4 +1,4 @@
-import { IQuote, IQuoteParams } from "./@types/aggregator.type.js";
+import { IQuoteParams } from "./@types/aggregator.type.js";
 import Quote from "./utils/quote.js";
 
 export class AggregatorFactory {

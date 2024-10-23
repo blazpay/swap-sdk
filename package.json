@@ -1,6 +1,6 @@
 {
   "name": "swap-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "type": "module",
   "keywords": [],
@@ -14,9 +14,11 @@
   "dependencies": {
     "axios": "^1.7.7",
     "ethers": "^5.7.2",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   }
