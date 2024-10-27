@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
@@ -41,9 +41,18 @@ export default class OneInchAggregator extends Base {
             const signer = await provider.getSigner();
             const walletAddress = await signer.getAddress();
             const spender = await this.get1InchSpender(Number(params.fromChain.id));
-            await this.setAllowance(params.fromToken.address, spender, provider, params.fromChain.id, BigNumber.from(ethers.utils
-                .parseUnits(String(params.amount), params.fromToken.decimals)
-                .toString()), "1inch");
+            // await this.setAllowance(
+            //   params.fromToken.address,
+            //   spender,
+            //   provider,
+            //   params.fromChain.id,
+            //   BigNumber.from(
+            //     ethers.utils
+            //       .parseUnits(String(params.amount), params.fromToken.decimals)
+            //       .toString()
+            //   ),
+            //   "1inch"
+            // );
             const res = await apiCall({
                 url: this.BASE_URL,
                 method: "POST",

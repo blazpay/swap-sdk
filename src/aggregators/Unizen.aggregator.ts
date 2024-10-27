@@ -42,18 +42,18 @@ export default class UnizenAggregator extends Base {
 
       const spender = await this.getSpender(params.fromChain.id);
 
-      await this.setAllowance(
-        params.fromToken.address,
-        spender,
-        provider,
-        params.fromChain.id,
-        BigNumber.from(
-          ethers.utils
-            .parseUnits(String(params.amount), params.fromToken.decimals)
-            .toString()
-        ),
-        "Utizen"
-      );
+      // await this.setAllowance(
+      //   params.fromToken.address,
+      //   spender,
+      //   provider,
+      //   params.fromChain.id,
+      //   BigNumber.from(
+      //     ethers.utils
+      //       .parseUnits(String(params.amount), params.fromToken.decimals)
+      //       .toString()
+      //   ),
+      //   "Utizen"
+      // );
       const payload: any = {
         transactionData: data?.transactionData,
         nativeValue: data?.nativeValue,

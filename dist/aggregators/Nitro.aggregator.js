@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
@@ -44,9 +44,20 @@ export default class NitroAggregator extends Base {
                 },
                 timeout: 20000,
             });
-            await this.setAllowance(params.fromToken.address, data.allowanceTo, provider, params.fromChain.id, BigNumber.from(data.source.tokenAmount), "nitro");
-            const { walletAddress, tx } = await this.triggerContract(params.fromChain.id, provider, response.data.txn);
-            return tx;
+            // await this.setAllowance(
+            //   params.fromToken.address,
+            //   data.allowanceTo,
+            //   provider,
+            //   params.fromChain.id,
+            //   BigNumber.from(data.source.tokenAmount),
+            //   "nitro"
+            // );
+            // const { walletAddress, tx } = await this.triggerContract(
+            //   params.fromChain.id,
+            //   provider,
+            //   response.data.txn
+            // );
+            return "";
         };
         const platformFee = data.bridgeFee.amount
             ? Number(Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4))

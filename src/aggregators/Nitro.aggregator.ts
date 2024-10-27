@@ -59,22 +59,22 @@ export default class NitroAggregator extends Base {
 
         timeout: 20000,
       });
-      await this.setAllowance(
-        params.fromToken.address,
-        data.allowanceTo,
-        provider,
-        params.fromChain.id,
-        BigNumber.from(data.source.tokenAmount),
-        "nitro"
-      );
+      // await this.setAllowance(
+      //   params.fromToken.address,
+      //   data.allowanceTo,
+      //   provider,
+      //   params.fromChain.id,
+      //   BigNumber.from(data.source.tokenAmount),
+      //   "nitro"
+      // );
 
-      const { walletAddress, tx } = await this.triggerContract(
-        params.fromChain.id,
-        provider,
-        response.data.txn
-      );
+      // const { walletAddress, tx } = await this.triggerContract(
+      //   params.fromChain.id,
+      //   provider,
+      //   response.data.txn
+      // );
 
-      return tx;
+      return "";
     };
 
     const platformFee = data.bridgeFee.amount

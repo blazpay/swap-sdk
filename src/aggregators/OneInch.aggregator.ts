@@ -65,18 +65,18 @@ export default class OneInchAggregator extends Base {
       const walletAddress = await signer.getAddress();
       const spender = await this.get1InchSpender(Number(params.fromChain.id));
 
-      await this.setAllowance(
-        params.fromToken.address,
-        spender,
-        provider,
-        params.fromChain.id,
-        BigNumber.from(
-          ethers.utils
-            .parseUnits(String(params.amount), params.fromToken.decimals)
-            .toString()
-        ),
-        "1inch"
-      );
+      // await this.setAllowance(
+      //   params.fromToken.address,
+      //   spender,
+      //   provider,
+      //   params.fromChain.id,
+      //   BigNumber.from(
+      //     ethers.utils
+      //       .parseUnits(String(params.amount), params.fromToken.decimals)
+      //       .toString()
+      //   ),
+      //   "1inch"
+      // );
       const res = await apiCall({
         url: this.BASE_URL,
         method: "POST",

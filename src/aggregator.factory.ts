@@ -16,15 +16,22 @@ export class AggregatorFactory {
     return this.aggregators.get(name);
   }
 
-  async getQuotes(params: IQuoteParams, cb: (quote: Quote) => void) {
+  async getQuotes(
+    params: IQuoteParams,
+    cb: (quote: Quote) => void,
+    onLastQuote: (isLastQuote: boolean) => void
+  ) {
     for (const aggregator of this.aggregators.values()) {
       try {
         const quote = await aggregator.getQuotes(params);
         cb(quote);
+        onLastQuote(false);
       } catch (error) {
         console.error(`Error from ${aggregator.constructor.name}:`, error);
       }
     }
+
+    onLastQuote(true);
   }
 }
 

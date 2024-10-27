@@ -30,4 +30,5 @@ export interface IQuote {
 }
 export interface IBaseQuoteParams extends IQuoteParams {
     onNewQuote: (quote: Quote) => Promise<void>;
+    onLastQuote: (isLastQuote: boolean) => boolean;
 }

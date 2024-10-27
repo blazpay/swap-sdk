@@ -13,10 +13,11 @@ import Quote from "./utils/quote.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
+  isLastQuote: boolean;
 
   constructor() {
     this.aggregatorFactory = aggregatorFactory;
-
+    this.isLastQuote = false;
     this.aggregatorFactory.register(
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator()
@@ -53,6 +54,10 @@ export class TradeManager {
       params.onNewQuote(quote);
     }
 
-    this.aggregatorFactory.getQuotes(quoteParams, handleQuote);
+    const handleLastQuote = (isLastQuote: boolean) => {
+      params.onLastQuote(isLastQuote);
+    };
+
+    this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
   }
 }

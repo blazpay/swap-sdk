@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { getContractAddressByChainId } from "../utils/constants.js";
@@ -34,9 +34,18 @@ export default class UnizenAggregator extends Base {
         const swap = async ({ provider }) => {
             const signer = provider.getSigner();
             const spender = await this.getSpender(params.fromChain.id);
-            await this.setAllowance(params.fromToken.address, spender, provider, params.fromChain.id, BigNumber.from(ethers.utils
-                .parseUnits(String(params.amount), params.fromToken.decimals)
-                .toString()), "Utizen");
+            // await this.setAllowance(
+            //   params.fromToken.address,
+            //   spender,
+            //   provider,
+            //   params.fromChain.id,
+            //   BigNumber.from(
+            //     ethers.utils
+            //       .parseUnits(String(params.amount), params.fromToken.decimals)
+            //       .toString()
+            //   ),
+            //   "Utizen"
+            // );
             const payload = {
                 transactionData: data?.transactionData,
                 nativeValue: data?.nativeValue,

@@ -4,17 +4,7 @@ export default class Quote {
     meta: IQuote;
     restProps: IRestQuoteProps;
     constructor(data: any, meta: IQuote, restProps: IRestQuoteProps);
-    getMeta(): {
-        id: string;
-        aggregator: string;
-        route: string;
-        amount: number;
-        usdAmount: number;
-        networkFee: number;
-        platformFee: number;
-        priceImpact: number;
-        slippage: number;
-    };
+    getMeta(): IQuote;
     getTransactionData(): Promise<any>;
     toJSON(): any;
 }

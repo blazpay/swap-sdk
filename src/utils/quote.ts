@@ -13,7 +13,7 @@ export default class Quote {
   }
 
   getMeta() {
-    return { id: "random_id", ...this.meta };
+    return this.meta;
   }
 
   async getTransactionData() {

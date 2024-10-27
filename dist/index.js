@@ -3,8 +3,10 @@ import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 export class TradeManager {
     aggregatorFactory;
+    isLastQuote;
     constructor() {
         this.aggregatorFactory = aggregatorFactory;
+        this.isLastQuote = false;
         this.aggregatorFactory.register(AGGREGATORS.ONE_INCH, new OneInchAggregator());
         // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
         // this.aggregatorFactory.register(
@@ -35,7 +37,10 @@ export class TradeManager {
         function handleQuote(quote) {
             params.onNewQuote(quote);
         }
-        this.aggregatorFactory.getQuotes(quoteParams, handleQuote);
+        const handleLastQuote = (isLastQuote) => {
+            params.onLastQuote(isLastQuote);
+        };
+        this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
     }
 }
 //# sourceMappingURL=index.js.map

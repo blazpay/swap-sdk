@@ -9,7 +9,7 @@ export default class Quote {
         this.restProps = restProps;
     }
     getMeta() {
-        return { id: "random_id", ...this.meta };
+        return this.meta;
     }
     async getTransactionData() {
         const aggregator = aggregatorFactory.getAggregator(this.meta.aggregator);

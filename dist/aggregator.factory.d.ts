@@ -5,7 +5,7 @@ export declare class AggregatorFactory {
     constructor();
     register(name: string, aggregator: any): void;
     getAggregator(name: string): any;
-    getQuotes(params: IQuoteParams, cb: (quote: Quote) => void): Promise<void>;
+    getQuotes(params: IQuoteParams, cb: (quote: Quote) => void, onLastQuote: (isLastQuote: boolean) => void): Promise<void>;
 }
 declare const aggregatorFactory: AggregatorFactory;
 export default aggregatorFactory;

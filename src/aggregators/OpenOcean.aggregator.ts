@@ -36,18 +36,18 @@ export default class OpenOceanAggregator extends Base {
     const swap = async ({ provider }: SwapParams) => {
       const signer = await provider.getSigner();
 
-      await this.setAllowance(
-        params.fromToken.address,
-        data?.to,
-        provider,
-        params.fromChain.id,
-        BigNumber.from(
-          ethers.utils
-            .parseUnits(String(params.amount), params.fromToken.decimals)
-            .toString()
-        ),
-        "openocean"
-      );
+      // await this.setAllowance(
+      //   params.fromToken.address,
+      //   data?.to,
+      //   provider,
+      //   params.fromChain.id,
+      //   BigNumber.from(
+      //     ethers.utils
+      //       .parseUnits(String(params.amount), params.fromToken.decimals)
+      //       .toString()
+      //   ),
+      //   "openocean"
+      // );
 
       const tx = await signer.sendTransaction({
         data: data?.data,
