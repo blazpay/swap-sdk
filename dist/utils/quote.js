@@ -1,4 +1,5 @@
 import aggregatorFactory from "../aggregator.factory.js";
+//data = quote response
 export default class Quote {
     data;
     meta;
@@ -13,7 +14,7 @@ export default class Quote {
     }
     async getTransactionData() {
         const aggregator = aggregatorFactory.getAggregator(this.meta.aggregator);
-        return await aggregator.getTransactionData(this.restProps);
+        return await aggregator.getTransactionData(this.data, this.restProps);
     }
     toJSON() {
         return this.data;

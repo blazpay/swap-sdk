@@ -1,8 +1,15 @@
-import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
+import {
+  IQuote,
+  IQuoteParams,
+  IRestQuoteProps,
+  SwapParams,
+} from "../@types/index.js";
+import { v4 as uuidv4 } from "uuid";
 import { BigNumber, ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import Quote from "../utils/quote.js";
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
@@ -13,10 +20,10 @@ export default class NitroAggregator extends Base {
   constructor() {
     super();
     this.BASE_URL = "https://api-beta.pathfinder.routerprotocol.com/api";
-    this.nitroPartnerId = 60;
+    this.nitroPartnerId = 0;
   }
 
-  async getQuotes(params: IQuoteParams): Promise<IQuote> {
+  async getQuotes(params: IQuoteParams): Promise<Quote> {
     const body = {
       fromTokenAddress:
         params.fromToken.address === ethers.constants.AddressZero
@@ -40,6 +47,40 @@ export default class NitroAggregator extends Base {
       url: this.BASE_URL + "/v2/quote",
       params: body,
       timeout: 20000,
+    });
+
+    const platformFee = data.bridgeFee.amount
+      ? Number(
+          Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)
+        )
+      : 0;
+
+    const meta = {
+      id: uuidv4(),
+      aggregator: AGGREGATORS.NITRO,
+      route: "nitro",
+      amount: Number(
+        Number(
+          ethers.utils.formatUnits(
+            data.destination.tokenAmount,
+            data.destination.asset.decimals
+          )
+        ).toFixed(4)
+      ),
+      usdAmount: 0,
+      networkFee: 0,
+      platformFee,
+      priceImpact: data.source.priceImpact,
+      slippage: data.slippageTolerance,
+    };
+
+    const quote = new Quote(data, meta, {
+      fromChainId: params.fromChain.id,
+      toChainId: params.toChain.id,
+      slippageTolerance: params.slippage ?? 0.5,
+      srcWalletAddress: params.srcWalletAddress,
+      dstWalletAddress: params.dstWalletAddress,
+      quotePayload: body,
     });
 
     const swap = async ({
@@ -77,28 +118,29 @@ export default class NitroAggregator extends Base {
       return "";
     };
 
-    const platformFee = data.bridgeFee.amount
-      ? Number(
-          Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)
-        )
-      : 0;
+    return quote;
+  }
+
+  async getTransactionData(
+    data: any,
+    restProps: IRestQuoteProps
+  ): Promise<{ tx: any; spender: string }> {
+    const res = await apiCall({
+      url: this.BASE_URL + "/v2/transaction",
+      method: "POST",
+      data: {
+        ...data,
+        slippageTolerance: restProps.slippageTolerance,
+        senderAddress: restProps.srcWalletAddress,
+        receiverAddress: restProps.dstWalletAddress,
+      },
+
+      timeout: 20000,
+    });
 
     return {
-      aggregator: AGGREGATORS.NITRO,
-      route: "nitro",
-      amount: Number(
-        Number(
-          ethers.utils.formatUnits(
-            data.destination.tokenAmount,
-            data.destination.asset.decimals
-          )
-        ).toFixed(4)
-      ),
-      usdAmount: 0,
-      networkFee: 0,
-      platformFee,
-      priceImpact: data.source.priceImpact,
-      slippage: data.slippageTolerance,
+      tx: res?.data?.txn,
+      spender: data?.allowanceTo,
     };
   }
 }

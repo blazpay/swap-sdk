@@ -1,15 +1,10 @@
-import { BigNumber, ethers } from "ethers";
-import {
-  IQuoteParams,
-  IQuote,
-  SwapParams,
-  IRestQuoteProps,
-} from "../@types/index.js";
+import { ethers } from "ethers";
+import { v4 as uuidv4 } from "uuid";
+import { IQuoteParams, IRestQuoteProps } from "../@types/index.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
-import { v4 as uuidv4 } from "uuid";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -56,60 +51,6 @@ export default class OneInchAggregator extends Base {
       response?.dstToken?.decimals
     );
 
-    const swap = async ({
-      provider,
-      receiver,
-      slippageTolerance = 0.5,
-    }: SwapParams) => {
-      const signer = await provider.getSigner();
-      const walletAddress = await signer.getAddress();
-      const spender = await this.get1InchSpender(Number(params.fromChain.id));
-
-      // await this.setAllowance(
-      //   params.fromToken.address,
-      //   spender,
-      //   provider,
-      //   params.fromChain.id,
-      //   BigNumber.from(
-      //     ethers.utils
-      //       .parseUnits(String(params.amount), params.fromToken.decimals)
-      //       .toString()
-      //   ),
-      //   "1inch"
-      // );
-      const res = await apiCall({
-        url: this.BASE_URL,
-        method: "POST",
-        data: {
-          query: {
-            ...query,
-            includeTokensInfo: true,
-            includeProtocols: true,
-            includeGas: true,
-            from: walletAddress,
-            slippage: slippageTolerance,
-            receiver: receiver || walletAddress,
-          },
-          path: `/swap/v6.0/${params.fromChain.id}/swap`,
-        },
-      });
-
-      const txdata = res.tx;
-
-      const tx = await signer.sendTransaction({
-        gasLimit: 500000,
-        data: txdata.data,
-        from: txdata.from,
-        to: txdata.to,
-        gasPrice: txdata.gasPrice,
-        value: txdata.value,
-      });
-
-      await tx.wait();
-
-      return tx;
-    };
-
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.ONE_INCH,
@@ -127,19 +68,22 @@ export default class OneInchAggregator extends Base {
       dstWalletAddress: params.dstWalletAddress,
       fromChainId: params.fromChain.id,
       slippageTolerance: params.slippage ?? 0.5,
-      params: query,
+      quotePayload: query,
     });
 
     return quote;
   }
 
-  async getTransactionData(data: IRestQuoteProps) {
+  async getTransactionData(
+    _: any,
+    data: IRestQuoteProps
+  ): Promise<{ tx: any; spender: string }> {
     const res = await apiCall({
       url: this.BASE_URL,
       method: "POST",
       data: {
         query: {
-          ...data?.params,
+          ...data?.quotePayload,
           includeTokensInfo: true,
           includeProtocols: true,
           includeGas: true,
@@ -151,7 +95,10 @@ export default class OneInchAggregator extends Base {
       },
     });
 
-    return res?.tx;
+    return {
+      tx: res?.tx,
+      spender: await this.get1InchSpender(data.fromChainId),
+    };
   }
 
   async get1InchSpender(chainId: number) {
@@ -170,5 +117,3 @@ export default class OneInchAggregator extends Base {
     }
   }
 }
-
-const s = new OneInchAggregator();

@@ -13,24 +13,22 @@ import Quote from "./utils/quote.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
-  isLastQuote: boolean;
 
   constructor() {
     this.aggregatorFactory = aggregatorFactory;
-    this.isLastQuote = false;
     this.aggregatorFactory.register(
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator()
     );
     // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
-    // this.aggregatorFactory.register(
-    //   AGGREGATORS.SYMBIOSIS,
-    //   new SymbiosisAggregator()
-    // );
-    // this.aggregatorFactory.register(
-    //   AGGREGATORS.OPEN_OCEAN,
-    //   new OpenOceanAggregator()
-    // );
+    this.aggregatorFactory.register(
+      AGGREGATORS.SYMBIOSIS,
+      new SymbiosisAggregator()
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.OPEN_OCEAN,
+      new OpenOceanAggregator()
+    );
     // this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
     // this.aggregatorFactory.register(
     //   AGGREGATORS.CHANGE_NOW,

@@ -4,5 +4,5 @@ export interface IRestQuoteProps {
   fromChainId: number;
   toChainId?: number;
   dstWalletAddress?: string;
-  params?: any;
+  quotePayload?: any;
 }

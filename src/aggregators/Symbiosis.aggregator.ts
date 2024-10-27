@@ -1,8 +1,15 @@
 import { BigNumber, ethers } from "ethers";
-import { IQuote, IQuoteParams, SwapParams } from "../@types/index.js";
+import { v4 as uuidv4 } from "uuid";
+import {
+  IQuote,
+  IQuoteParams,
+  IRestQuoteProps,
+  SwapParams,
+} from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import Quote from "../utils/quote.js";
 
 export default class SymbiosisAggregator extends Base {
   BASE_URL: string;
@@ -14,7 +21,7 @@ export default class SymbiosisAggregator extends Base {
     this.slippage = 1;
   }
 
-  async getQuotes(params: IQuoteParams): Promise<IQuote> {
+  async getQuotes(params: IQuoteParams): Promise<Quote> {
     const payload = {
       tokenAmountIn: {
         address: params?.fromToken.address,
@@ -42,6 +49,31 @@ export default class SymbiosisAggregator extends Base {
       method: "POST",
       url: this.BASE_URL,
       data: payload,
+    });
+
+    const swapAmount = ethers.utils
+      .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
+      .toString();
+
+    const meta = {
+      id: uuidv4(),
+      aggregator: AGGREGATORS.SYMBIOSIS,
+      route: "Symbiosis",
+      amount: Number(Number(swapAmount).toFixed(4)),
+      usdAmount: 0,
+      networkFee: 0,
+      platformFee: 0,
+      priceImpact: 0,
+      slippage: this.slippage,
+    };
+
+    const quote = new Quote(data, meta, {
+      fromChainId: params.fromChain.id,
+      toChainId: params.toChain.id,
+      slippageTolerance: this.slippage || 0.5,
+      srcWalletAddress: params.srcWalletAddress,
+      dstWalletAddress: params.dstWalletAddress,
+      quotePayload: payload,
     });
 
     const swap = async ({ provider }: SwapParams) => {
@@ -98,19 +130,16 @@ export default class SymbiosisAggregator extends Base {
       return "";
     };
 
-    const swapAmount = ethers.utils
-      .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
-      .toString();
+    return quote;
+  }
 
+  async getTransactionData(
+    data: any,
+    restProps: IRestQuoteProps
+  ): Promise<{ tx: any; spender: string }> {
     return {
-      aggregator: AGGREGATORS.SYMBIOSIS,
-      route: "Symbiosis",
-      amount: Number(Number(swapAmount).toFixed(4)),
-      usdAmount: 0,
-      networkFee: 0,
-      platformFee: 0,
-      priceImpact: 0,
-      slippage: this.slippage,
+      tx: data?.tx,
+      spender: data?.approveTo,
     };
   }
 }

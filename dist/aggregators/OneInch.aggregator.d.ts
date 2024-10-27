@@ -6,6 +6,9 @@ export default class OneInchAggregator extends Base {
     tradeFee: number;
     constructor();
     getQuotes(params: IQuoteParams): Promise<Quote>;
-    getTransactionData(data: IRestQuoteProps): Promise<any>;
+    getTransactionData(_: any, data: IRestQuoteProps): Promise<{
+        tx: any;
+        spender: string;
+    }>;
     get1InchSpender(chainId: number): Promise<any>;
 }

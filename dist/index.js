@@ -1,18 +1,13 @@
-import { OneInchAggregator, } from "./aggregators/index.js";
+import { OneInchAggregator, SymbiosisAggregator, } from "./aggregators/index.js";
 import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 export class TradeManager {
     aggregatorFactory;
-    isLastQuote;
     constructor() {
         this.aggregatorFactory = aggregatorFactory;
-        this.isLastQuote = false;
         this.aggregatorFactory.register(AGGREGATORS.ONE_INCH, new OneInchAggregator());
         // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
-        // this.aggregatorFactory.register(
-        //   AGGREGATORS.SYMBIOSIS,
-        //   new SymbiosisAggregator()
-        // );
+        this.aggregatorFactory.register(AGGREGATORS.SYMBIOSIS, new SymbiosisAggregator());
         // this.aggregatorFactory.register(
         //   AGGREGATORS.OPEN_OCEAN,
         //   new OpenOceanAggregator()
