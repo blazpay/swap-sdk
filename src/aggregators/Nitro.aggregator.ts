@@ -20,7 +20,7 @@ export default class NitroAggregator extends Base {
   constructor() {
     super();
     this.BASE_URL = "https://api-beta.pathfinder.routerprotocol.com/api";
-    this.nitroPartnerId = 0;
+    this.nitroPartnerId = 60;
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
