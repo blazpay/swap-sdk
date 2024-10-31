@@ -29,7 +29,7 @@ export class TradeManager {
       AGGREGATORS.OPEN_OCEAN,
       new OpenOceanAggregator()
     );
-    // this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
     // this.aggregatorFactory.register(
     //   AGGREGATORS.CHANGE_NOW,
     //   new ChangeNowAggregator()

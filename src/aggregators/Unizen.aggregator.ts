@@ -1,20 +1,23 @@
-import { BigNumber, ethers } from "ethers";
-import { IQuote, IQuoteParams, SwapParams } from "../@types/aggregator.type.js";
+import { ethers } from "ethers";
+import { IQuoteParams, ITxnRes, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { getContractAddressByChainId } from "../utils/constants.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import Quote from "../utils/quote.js";
+import { v4 as uuidv4 } from "uuid";
+import { IRestQuoteProps } from "../@types/quote.type.js";
 
 export default class UnizenAggregator extends Base {
   BASE_URL: string;
   slippage: number;
   constructor() {
     super();
-    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen";
     this.slippage = 0.05;
+    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen";
   }
 
-  async getQuotes(params: IQuoteParams): Promise<IQuote> {
+  async getQuotes(params: IQuoteParams): Promise<Quote> {
     this.setSenderAddress(params.srcWalletAddress);
     const payload = {
       fromTokenAddress: params.fromToken.address,
@@ -36,6 +39,32 @@ export default class UnizenAggregator extends Base {
     });
 
     const data = res?.data;
+
+    const swapAmount = ethers.utils
+      .formatUnits(data?.toTokenAmount, data?.tokenTo?.decimals)
+      .toString();
+
+    const meta = {
+      id: uuidv4(),
+      aggregator: AGGREGATORS.UNIZEN,
+      route: "Unizen",
+      amount: Number(Number(swapAmount).toFixed(4)),
+      usdAmount: 0,
+      networkFee: 0,
+      platformFee: 0,
+      priceImpact: 0,
+      slippage: this.slippage,
+    };
+
+    const quote = new Quote(data, meta, {
+      fromChainId: params.fromChain.id,
+      toChainId: params.toChain.id,
+      slippageTolerance: this.slippage || 0.5,
+      srcWalletAddress: params.srcWalletAddress,
+      dstWalletAddress: params.dstWalletAddress,
+      quotePayload: payload,
+      type: params.type,
+    });
 
     const swap = async ({ provider }: SwapParams) => {
       const signer = provider.getSigner();
@@ -91,21 +120,49 @@ export default class UnizenAggregator extends Base {
       return tx;
     };
 
-    const swapAmount = ethers.utils
-      .formatUnits(data?.toTokenAmount, data?.tokenTo?.decimals)
-      .toString();
+    return quote;
+  }
+
+  async getTransactionData(
+    data: any,
+    restProps: IRestQuoteProps
+  ): Promise<ITxnRes> {
+    const payload: any = {
+      transactionData: data?.transactionData,
+      nativeValue: data?.nativeValue,
+      account: restProps?.srcWalletAddress,
+      toChainId: restProps.toChainId,
+      fromChainId: restProps.fromChainId,
+      type: restProps.type,
+    };
+
+    if (restProps.type === "SWAP") {
+      payload.tradeType = data?.tradeType;
+    }
+
+    const res = await apiCall({
+      method: "POST",
+      url: this.BASE_URL + "/swap",
+      data: payload,
+    });
+
+    const contractAddress = getContractAddressByChainId(restProps.fromChainId);
+
+    const txData = res?.data;
 
     return {
-      aggregator: AGGREGATORS.UNIZEN,
-      route: "Unizen",
-      amount: Number(Number(swapAmount).toFixed(4)),
-      usdAmount: 0,
-      networkFee: 0,
-      platformFee: 0,
-      priceImpact: 0,
-      slippage: this.slippage,
+      tx: {
+        from: restProps.srcWalletAddress,
+        to: contractAddress,
+        gasLimit: txData?.estimateGas,
+        data: txData?.data,
+        gasPrice: txData?.gasPrice,
+        value: txData?.nativeValue,
+      },
+      spender: await this.getSpender(restProps.fromChainId),
     };
   }
+
   async getSpender(chainId: number) {
     try {
       const data = await apiCall({
