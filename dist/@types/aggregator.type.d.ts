@@ -32,3 +32,7 @@ export interface IBaseQuoteParams extends IQuoteParams {
     onNewQuote: (quote: Quote) => Promise<void>;
     onLastQuote: (isLastQuote: boolean) => boolean;
 }
+export interface ITxnRes {
+    tx: any;
+    spender: string;
+}

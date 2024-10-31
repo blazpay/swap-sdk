@@ -20,7 +20,7 @@ export class TradeManager {
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator()
     );
-    // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
     this.aggregatorFactory.register(
       AGGREGATORS.SYMBIOSIS,
       new SymbiosisAggregator()

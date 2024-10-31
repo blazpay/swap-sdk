@@ -5,4 +5,5 @@ export interface IRestQuoteProps {
     toChainId?: number;
     dstWalletAddress?: string;
     quotePayload?: any;
+    type?: "SWAP" | "BRIDGE";
 }
