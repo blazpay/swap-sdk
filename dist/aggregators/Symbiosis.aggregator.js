@@ -53,6 +53,7 @@ export default class SymbiosisAggregator extends Base {
             platformFee: 0,
             priceImpact: 0,
             slippage: this.slippage,
+            allowanceTo: data?.approveTo,
         };
         const quote = new Quote(data, meta, {
             fromChainId: params.fromChain.id,

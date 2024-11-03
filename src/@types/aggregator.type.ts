@@ -30,6 +30,7 @@ export interface IQuote {
   platformFee: number;
   priceImpact: number;
   slippage: number;
+  allowanceTo: string;
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {

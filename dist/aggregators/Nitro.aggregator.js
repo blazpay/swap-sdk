@@ -47,6 +47,7 @@ export default class NitroAggregator extends Base {
             platformFee,
             priceImpact: data.source.priceImpact,
             slippage: data.slippageTolerance,
+            allowanceTo: data?.allowanceTo,
         };
         const quote = new Quote(data, meta, {
             fromChainId: params.fromChain.id,

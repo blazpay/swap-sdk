@@ -37,6 +37,7 @@ export default class OneInchAggregator extends Base {
             data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
         });
         const swapAmount = ethers.utils.formatUnits(response?.dstAmount, response?.dstToken?.decimals);
+        let allowanceTo = await this.get1InchSpender(params.fromChain.id);
         const meta = {
             id: uuidv4(),
             aggregator: AGGREGATORS.ONE_INCH,
@@ -47,6 +48,7 @@ export default class OneInchAggregator extends Base {
             platformFee: 0,
             priceImpact: 0,
             slippage: 0,
+            allowanceTo,
         };
         const quote = new Quote(response, meta, {
             srcWalletAddress: params.srcWalletAddress,

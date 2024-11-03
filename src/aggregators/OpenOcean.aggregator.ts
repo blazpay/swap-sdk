@@ -50,6 +50,7 @@ export default class OpenOceanAggregator extends Base {
       platformFee: 0,
       priceImpact: data?.price_impact?.replace("%", ""),
       slippage: this.slippage,
+      allowanceTo: data?.to,
     };
 
     const quote = new Quote(data, meta, {

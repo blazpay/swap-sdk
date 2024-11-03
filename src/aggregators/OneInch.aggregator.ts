@@ -51,6 +51,8 @@ export default class OneInchAggregator extends Base {
       response?.dstToken?.decimals
     );
 
+    let allowanceTo = await this.get1InchSpender(params.fromChain.id);
+
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.ONE_INCH,
@@ -61,6 +63,7 @@ export default class OneInchAggregator extends Base {
       platformFee: 0,
       priceImpact: 0,
       slippage: 0,
+      allowanceTo,
     };
 
     const quote = new Quote(response, meta, {

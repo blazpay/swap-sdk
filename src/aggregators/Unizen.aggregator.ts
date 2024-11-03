@@ -44,6 +44,8 @@ export default class UnizenAggregator extends Base {
       .formatUnits(data?.toTokenAmount, data?.tokenTo?.decimals)
       .toString();
 
+    let allowanceTo = await this.getSpender(params.fromChain.id);
+
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.UNIZEN,
@@ -54,6 +56,7 @@ export default class UnizenAggregator extends Base {
       platformFee: 0,
       priceImpact: 0,
       slippage: this.slippage,
+      allowanceTo,
     };
 
     const quote = new Quote(data, meta, {
