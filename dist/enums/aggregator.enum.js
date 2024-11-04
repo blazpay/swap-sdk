@@ -7,5 +7,7 @@ export var AGGREGATORS;
     AGGREGATORS["SQUID_ROUTER"] = "squid_router";
     AGGREGATORS["SYMBIOSIS"] = "symbiosis";
     AGGREGATORS["UNIZEN"] = "unizen";
+    AGGREGATORS["ICECREAM_SWAP"] = "icecream_swap";
+    AGGREGATORS["KYBER_SWAP"] = "kyber_swap";
 })(AGGREGATORS || (AGGREGATORS = {}));
 //# sourceMappingURL=aggregator.enum.js.map

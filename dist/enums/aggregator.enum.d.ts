@@ -5,5 +5,7 @@ export declare enum AGGREGATORS {
     OPEN_OCEAN = "open_ocean",
     SQUID_ROUTER = "squid_router",
     SYMBIOSIS = "symbiosis",
-    UNIZEN = "unizen"
+    UNIZEN = "unizen",
+    ICECREAM_SWAP = "icecream_swap",
+    KYBER_SWAP = "kyber_swap"
 }

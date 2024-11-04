@@ -1,11 +1,13 @@
 import { IBaseQuoteParams, IQuote, IQuoteParams } from "./@types/index.js";
 import {
   ChangeNowAggregator,
+  IceCreamAggregator,
   NitroAggregator,
   OneInchAggregator,
   OpenOceanAggregator,
   SymbiosisAggregator,
   UnizenAggregator,
+  KyberSwap,
 } from "./aggregators/index.js";
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
@@ -34,6 +36,12 @@ export class TradeManager {
     //   AGGREGATORS.CHANGE_NOW,
     //   new ChangeNowAggregator()
     // );
+
+    this.aggregatorFactory.register(
+      AGGREGATORS.ICECREAM_SWAP,
+      new IceCreamAggregator()
+    );
+    this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
   }
 
   async getQuotes(params: IBaseQuoteParams) {

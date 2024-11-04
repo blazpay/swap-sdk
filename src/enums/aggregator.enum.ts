@@ -6,4 +6,7 @@ export enum AGGREGATORS {
   SQUID_ROUTER = "squid_router",
   SYMBIOSIS = "symbiosis",
   UNIZEN = "unizen",
+
+  ICECREAM_SWAP = "icecream_swap",
+  KYBER_SWAP = "kyber_swap",
 }
