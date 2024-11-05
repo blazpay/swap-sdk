@@ -4,7 +4,7 @@ import { apiCall } from "../utils/axios.js";
 import Quote from "../utils/quote.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
-
+import { v4 as uuidv4 } from "uuid";
 export default class KyberSwap extends Base {
   BASE_URL: string;
 
@@ -48,10 +48,11 @@ export default class KyberSwap extends Base {
     const data = await res?.data;
 
     const swapAmount = ethers.utils
-      .formatUnits(data?.routeSummary?.amountOut, params.toToken.address)
+      .formatUnits(data?.routeSummary?.amountOut, params.toToken.decimals)
       .toString();
 
     const meta = {
+      id: uuidv4(),
       aggregator: AGGREGATORS.KYBER_SWAP,
       route: "KyberSwap",
       amount: Number(Number(swapAmount).toFixed(4)),
@@ -64,8 +65,14 @@ export default class KyberSwap extends Base {
     };
 
     const quote = new Quote(data, meta, {
-      fromChainId: params.fromChain.id,
-      toChainId: params.toChain.id,
+      fromChain: {
+        id: params.fromChain.id,
+        name: params.fromChain.name.toLowerCase(),
+      },
+      toChain: {
+        id: params.toChain.id,
+        name: params.toChain.name.toLowerCase(),
+      },
       slippageTolerance: params.slippage ?? 0.5,
       srcWalletAddress: params.srcWalletAddress,
       dstWalletAddress: params.dstWalletAddress,
@@ -79,9 +86,35 @@ export default class KyberSwap extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
+    const payload = {
+      routeSummary: data?.routeSummary,
+      sender: restProps.srcWalletAddress,
+      recipient: restProps.dstWalletAddress,
+      slippageTolerance: restProps.slippageTolerance,
+      source: "blazpay",
+    };
+
+    const res = await apiCall({
+      method: "POST",
+      url: this.BASE_URL + `/${restProps.fromChain.name}/api/v1/route/build`,
+      data: payload,
+      headers: { "X-Client-Id": "blazpay" },
+    });
+
+    const txData = res?.data;
+
+    const tx = {
+      data: txData?.data,
+      from: restProps.srcWalletAddress,
+      to: txData?.routerAddress,
+      value: txData?.amountIn,
+      gasLimit: txData?.gas,
+      maxFeePerGas: txData?.gas,
+    };
+
     return {
-      tx: data?.tx,
-      spender: data?.tx?.to,
+      tx,
+      spender: data?.routerAddress,
     };
   }
 }

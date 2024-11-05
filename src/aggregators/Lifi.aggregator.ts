@@ -1,48 +1,52 @@
 import { ethers } from "ethers";
-import { IQuoteParams, IRestQuoteProps } from "../@types/index.js";
-import Quote from "../utils/quote.js";
-import { Base } from "./index.js";
+import { IQuoteParams } from "../@types/index.js";
+import Base from "./base.aggregator.js";
 import { apiCall } from "../utils/axios.js";
-import { v4 as uuidv4 } from "uuid";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import Quote from "../utils/quote.js";
+import { v4 as uuidv4 } from "uuid";
 
-export default class IceCreamAggregator extends Base {
+export default class LifiAggregator extends Base {
   BASE_URL: string;
   constructor() {
     super();
-    this.BASE_URL = "https://aggregator.icecreamswap.com";
+    this.BASE_URL = "https://li.quest/v1/quote";
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
     const query = {
-      src: params.fromToken.address,
-      dst: params.toToken.address,
-      amount: ethers.utils
+      fromChain: params.fromChain.id,
+      toChain: params.toChain.id,
+      fromToken: params.fromToken.address,
+      toToken: params.toToken.address,
+      fromAmount: ethers.utils
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
-      from: params.srcWalletAddress,
+      fromAddress: params.srcWalletAddress,
     };
+
     const data = await apiCall({
       method: "GET",
-      url: this.BASE_URL + `/${params.fromChain.id}`,
+      url: this.BASE_URL,
       params: query,
     });
 
-    const swapAmount = (data?.toAmount / 10 ** params.toToken.decimals).toFixed(
-      4
+    const swapAmount = ethers.utils.formatUnits(
+      data?.estimate?.toAmount,
+      params.toToken.decimals
     );
 
-    let meta = {
+    const meta = {
       id: uuidv4(),
-      aggregator: AGGREGATORS.ICECREAM_SWAP,
-      route: "IceCream Swap",
-      amount: Number(swapAmount),
+      aggregator: AGGREGATORS.LIFI,
+      route: data?.tool || "Lifi",
+      amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
       networkFee: 0,
       platformFee: 0,
       priceImpact: 0,
-      slippage: params.slippage || 0.5,
-      allowanceTo: data?.tx?.to,
+      slippage: data?.action?.slippage || params.slippage || 0.5,
+      allowanceTo: data?.transactionRequest?.to,
     };
 
     const quote = new Quote(data, meta, {
@@ -63,13 +67,5 @@ export default class IceCreamAggregator extends Base {
     return quote;
   }
 
-  async getTransactionData(
-    data: any,
-    restProps: IRestQuoteProps
-  ): Promise<{ tx: any; spender: string }> {
-    return {
-      tx: data?.tx,
-      spender: data?.tx?.to,
-    };
-  }
+  async getTransactionData() {}
 }

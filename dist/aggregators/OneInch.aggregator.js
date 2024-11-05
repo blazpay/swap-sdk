@@ -53,7 +53,14 @@ export default class OneInchAggregator extends Base {
         const quote = new Quote(response, meta, {
             srcWalletAddress: params.srcWalletAddress,
             dstWalletAddress: params.dstWalletAddress,
-            fromChainId: params.fromChain.id,
+            fromChain: {
+                id: params.fromChain.id,
+                name: params.fromChain.name.toLowerCase(),
+            },
+            toChain: {
+                id: params.toChain.id,
+                name: params.toChain.name.toLowerCase(),
+            },
             slippageTolerance: params.slippage ?? 0.5,
             quotePayload: query,
         });
@@ -73,12 +80,12 @@ export default class OneInchAggregator extends Base {
                     slippage: data.slippageTolerance,
                     receiver: data.dstWalletAddress || data.srcWalletAddress,
                 },
-                path: `/swap/v6.0/${data.fromChainId}/swap`,
+                path: `/swap/v6.0/${data.fromChain.id}/swap`,
             },
         });
         return {
             tx: res?.tx,
-            spender: await this.get1InchSpender(data.fromChainId),
+            spender: await this.get1InchSpender(data.fromChain.id),
         };
     }
     async get1InchSpender(chainId) {

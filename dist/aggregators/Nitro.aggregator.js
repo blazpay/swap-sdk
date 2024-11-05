@@ -50,8 +50,14 @@ export default class NitroAggregator extends Base {
             allowanceTo: data?.allowanceTo,
         };
         const quote = new Quote(data, meta, {
-            fromChainId: params.fromChain.id,
-            toChainId: params.toChain.id,
+            fromChain: {
+                id: params.fromChain.id,
+                name: params.fromChain.name.toLowerCase(),
+            },
+            toChain: {
+                id: params.toChain.id,
+                name: params.toChain.name.toLowerCase(),
+            },
             slippageTolerance: params.slippage ?? 0.5,
             srcWalletAddress: params.srcWalletAddress,
             dstWalletAddress: params.dstWalletAddress,

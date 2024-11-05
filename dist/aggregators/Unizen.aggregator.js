@@ -50,8 +50,14 @@ export default class UnizenAggregator extends Base {
             allowanceTo,
         };
         const quote = new Quote(data, meta, {
-            fromChainId: params.fromChain.id,
-            toChainId: params.toChain.id,
+            fromChain: {
+                id: params.fromChain.id,
+                name: params.fromChain.name.toLowerCase(),
+            },
+            toChain: {
+                id: params.toChain.id,
+                name: params.toChain.name.toLowerCase(),
+            },
             slippageTolerance: this.slippage || 0.5,
             srcWalletAddress: params.srcWalletAddress,
             dstWalletAddress: params.dstWalletAddress,
@@ -109,8 +115,8 @@ export default class UnizenAggregator extends Base {
             transactionData: data?.transactionData,
             nativeValue: data?.nativeValue,
             account: restProps?.srcWalletAddress,
-            toChainId: restProps.toChainId,
-            fromChainId: restProps.fromChainId,
+            toChainId: restProps.toChain.id,
+            fromChainId: restProps.fromChain.id,
             type: restProps.type,
         };
         if (restProps.type === "SWAP") {
@@ -121,7 +127,7 @@ export default class UnizenAggregator extends Base {
             url: this.BASE_URL + "/swap",
             data: payload,
         });
-        const contractAddress = getContractAddressByChainId(restProps.fromChainId);
+        const contractAddress = getContractAddressByChainId(restProps.fromChain.id);
         const txData = res?.data;
         return {
             tx: {
@@ -132,7 +138,7 @@ export default class UnizenAggregator extends Base {
                 gasPrice: txData?.gasPrice,
                 value: txData?.nativeValue,
             },
-            spender: await this.getSpender(restProps.fromChainId),
+            spender: await this.getSpender(restProps.fromChain.id),
         };
     }
     async getSpender(chainId) {

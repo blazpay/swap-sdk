@@ -8,6 +8,7 @@ import {
   SymbiosisAggregator,
   UnizenAggregator,
   KyberSwap,
+  LifiAggregator,
 } from "./aggregators/index.js";
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
@@ -42,6 +43,7 @@ export class TradeManager {
       new IceCreamAggregator()
     );
     this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
+    this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {

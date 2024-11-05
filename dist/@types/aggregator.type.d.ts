@@ -18,7 +18,7 @@ export interface SwapParams {
     slippageTolerance?: number;
 }
 export interface IQuote {
-    id?: string;
+    id: string;
     aggregator: string;
     route: string;
     amount: number;

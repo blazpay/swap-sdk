@@ -21,7 +21,7 @@ export interface SwapParams {
 }
 
 export interface IQuote {
-  id?: string;
+  id: string;
   aggregator: string;
   route: string;
   amount: number;

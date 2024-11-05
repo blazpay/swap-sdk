@@ -1,4 +1,4 @@
-import { IceCreamAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, KyberSwap, } from "./aggregators/index.js";
+import { IceCreamAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, KyberSwap, LifiAggregator, } from "./aggregators/index.js";
 import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 export class TradeManager {
@@ -16,6 +16,7 @@ export class TradeManager {
         // );
         this.aggregatorFactory.register(AGGREGATORS.ICECREAM_SWAP, new IceCreamAggregator());
         this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
+        this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
     }
     async getQuotes(params) {
         const quoteParams = {

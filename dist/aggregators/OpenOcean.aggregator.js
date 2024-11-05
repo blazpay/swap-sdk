@@ -47,7 +47,14 @@ export default class OpenOceanAggregator extends Base {
         const quote = new Quote(data, meta, {
             srcWalletAddress: params.srcWalletAddress,
             dstWalletAddress: params.dstWalletAddress,
-            fromChainId: params.fromChain.id,
+            fromChain: {
+                id: params.fromChain.id,
+                name: params.fromChain.name.toLowerCase(),
+            },
+            toChain: {
+                id: params.toChain.id,
+                name: params.toChain.name.toLowerCase(),
+            },
             slippageTolerance: params.slippage ?? 0.5,
             quotePayload: query,
         });

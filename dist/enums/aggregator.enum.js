@@ -9,5 +9,6 @@ export var AGGREGATORS;
     AGGREGATORS["UNIZEN"] = "unizen";
     AGGREGATORS["ICECREAM_SWAP"] = "icecream_swap";
     AGGREGATORS["KYBER_SWAP"] = "kyber_swap";
+    AGGREGATORS["LIFI"] = "lifi";
 })(AGGREGATORS || (AGGREGATORS = {}));
 //# sourceMappingURL=aggregator.enum.js.map

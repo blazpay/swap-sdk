@@ -7,4 +7,5 @@ export { default as ChangeNowAggregator } from "./ChangeNow.aggregator.js";
 export { default as UnizenAggregator } from "./Unizen.aggregator.js";
 export { default as IceCreamAggregator } from "./IceCream.aggregator.js";
 export { default as KyberSwap } from "./KyberSwap.aggregator.js";
+export { default as LifiAggregator } from "./Lifi.aggregator.js";
 //# sourceMappingURL=index.js.map
