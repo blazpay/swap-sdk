@@ -55,6 +55,19 @@ export default class LifiAggregator extends Base {
         });
         return quote;
     }
-    async getTransactionData() { }
+    async getTransactionData(data, restProps) {
+        const tx = {
+            from: data?.transactionRequest?.from,
+            to: data?.transactionRequest?.to,
+            value: data?.transactionRequest?.value,
+            data: data?.transactionRequest?.data,
+            gasPrice: data?.transactionRequest?.gasPrice,
+            gasLimit: data?.transactionRequest?.gasLimit,
+        };
+        return {
+            tx,
+            spender: data?.transactionRequest?.to,
+        };
+    }
 }
 //# sourceMappingURL=Lifi.aggregator.js.map

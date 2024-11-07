@@ -98,7 +98,7 @@ export default class KyberSwap extends Base {
       method: "POST",
       url: this.BASE_URL + `/${restProps.fromChain.name}/api/v1/route/build`,
       data: payload,
-      headers: { "X-Client-Id": "blazpay" },
+      headers: { "X-Client-Id": "blazpay", "Content-Type": "application/json" },
     });
 
     const txData = res?.data;

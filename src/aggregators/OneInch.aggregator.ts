@@ -51,6 +51,7 @@ export default class OneInchAggregator extends Base {
       response?.dstToken?.decimals
     );
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     let allowanceTo = await this.get1InchSpender(params.fromChain.id);
 
     const meta = {
@@ -104,6 +105,8 @@ export default class OneInchAggregator extends Base {
         path: `/swap/v6.0/${data.fromChain.id}/swap`,
       },
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return {
       tx: res?.tx,

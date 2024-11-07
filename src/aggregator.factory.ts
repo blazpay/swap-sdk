@@ -21,17 +21,31 @@ export class AggregatorFactory {
     cb: (quote: Quote) => void,
     onLastQuote: (isLastQuote: boolean) => void
   ) {
-    for (const aggregator of this.aggregators.values()) {
-      try {
-        const quote = await aggregator.getQuotes(params);
-        cb(quote);
-        onLastQuote(false);
-      } catch (error) {
-        console.error(`Error from ${aggregator.constructor.name}:`, error);
+    const promises = Array.from(this.aggregators.values()).map(
+      async (aggregator) => {
+        try {
+          const quote = await aggregator.getQuotes(params);
+          cb(quote);
+        } catch (error) {
+          console.error(`Error from ${aggregator.constructor.name}:`, error);
+        }
       }
-    }
+    );
 
+    await Promise.all(promises);
     onLastQuote(true);
+
+    // for (const aggregator of this.aggregators.values()) {
+    //   try {
+    //     const quote = await aggregator.getQuotes(params);
+    //     cb(quote);
+    //     onLastQuote(false);
+    //   } catch (error) {
+    //     console.error(`Error from ${aggregator.constructor.name}:`, error);
+    //   }
+    // }
+
+    // onLastQuote(true);
   }
 }
 

@@ -10,17 +10,27 @@ export class AggregatorFactory {
         return this.aggregators.get(name);
     }
     async getQuotes(params, cb, onLastQuote) {
-        for (const aggregator of this.aggregators.values()) {
+        const promises = Array.from(this.aggregators.values()).map(async (aggregator) => {
             try {
                 const quote = await aggregator.getQuotes(params);
                 cb(quote);
-                onLastQuote(false);
             }
             catch (error) {
                 console.error(`Error from ${aggregator.constructor.name}:`, error);
             }
-        }
+        });
+        await Promise.all(promises);
         onLastQuote(true);
+        // for (const aggregator of this.aggregators.values()) {
+        //   try {
+        //     const quote = await aggregator.getQuotes(params);
+        //     cb(quote);
+        //     onLastQuote(false);
+        //   } catch (error) {
+        //     console.error(`Error from ${aggregator.constructor.name}:`, error);
+        //   }
+        // }
+        // onLastQuote(true);
     }
 }
 const aggregatorFactory = new AggregatorFactory();

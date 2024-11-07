@@ -37,6 +37,7 @@ export default class OneInchAggregator extends Base {
             data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
         });
         const swapAmount = ethers.utils.formatUnits(response?.dstAmount, response?.dstToken?.decimals);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         let allowanceTo = await this.get1InchSpender(params.fromChain.id);
         const meta = {
             id: uuidv4(),
@@ -83,6 +84,7 @@ export default class OneInchAggregator extends Base {
                 path: `/swap/v6.0/${data.fromChain.id}/swap`,
             },
         });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         return {
             tx: res?.tx,
             spender: await this.get1InchSpender(data.fromChain.id),

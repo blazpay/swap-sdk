@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { IQuoteParams } from "../@types/index.js";
+import { IQuoteParams, IRestQuoteProps } from "../@types/index.js";
 import Base from "./base.aggregator.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
@@ -67,5 +67,22 @@ export default class LifiAggregator extends Base {
     return quote;
   }
 
-  async getTransactionData() {}
+  async getTransactionData(
+    data: any,
+    restProps: IRestQuoteProps
+  ): Promise<{ tx: any; spender: string }> {
+    const tx = {
+      from: data?.transactionRequest?.from,
+      to: data?.transactionRequest?.to,
+      value: data?.transactionRequest?.value,
+      data: data?.transactionRequest?.data,
+      gasPrice: data?.transactionRequest?.gasPrice,
+      gasLimit: data?.transactionRequest?.gasLimit,
+    };
+
+    return {
+      tx,
+      spender: data?.transactionRequest?.to,
+    };
+  }
 }
