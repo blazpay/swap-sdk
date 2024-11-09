@@ -69,54 +69,6 @@ export default class SymbiosisAggregator extends Base {
             dstWalletAddress: params.dstWalletAddress,
             quotePayload: payload,
         });
-        const swap = async ({ provider }) => {
-            // await this.setAllowance(
-            //   params.fromToken.address,
-            //   data?.approveTo,
-            //   provider,
-            //   params.fromChain.id,
-            //   BigNumber.from(
-            //     ethers.utils
-            //       .parseUnits(String(params.amount), params.fromToken.decimals)
-            //       .toString()
-            //   ),
-            //   "Symbiosis"
-            // );
-            const hexData = data?.tx?.data;
-            const contractAddress = data?.tx?.to;
-            let txn;
-            // if (data.type === "tron") {
-            //   if (!window.tronWeb) {
-            //     console.log("log: tron is not defiled");
-            //     return;
-            //   }
-            //   const transaction =
-            //     await this.tronWeb.transactionBuilder.triggerSmartContract(
-            //       contractAddress,
-            //       "",
-            //       {
-            //         callValue: 0,
-            //         feeLimit: this.tronFeeLimit,
-            //       },
-            //       [
-            //         {
-            //           type: "bytes",
-            //           value: hexData,
-            //         },
-            //       ],
-            //       this.tronWeb.defaultAddress.base58
-            //     );
-            //   txn = transaction?.transaction;
-            // } else {
-            //   txn = data?.tx;
-            // }
-            // const { walletAddress, tx } = await this.triggerContract(
-            //   params.fromChain.id,
-            //   provider,
-            //   txn
-            // );
-            return "";
-        };
         return quote;
     }
     async getTransactionData(data, restProps) {

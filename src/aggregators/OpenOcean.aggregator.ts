@@ -12,29 +12,58 @@ export default class OpenOceanAggregator extends Base {
   slippage: number;
   constructor() {
     super();
-    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/openocean";
+    this.BASE_URL = "";
     this.slippage = 0.5;
+  }
+
+  getBaseUrl(type: string, chain: number) {
+    if (type === "SWAP")
+      return `https://open-api-pro.openocean.finance/v3/${chain}/swap_quote`;
+    else
+      return `https://open-api.openocean.finance/cross_chain/v1/cross/quoteByOO`;
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
     this.setSenderAddress(params.srcWalletAddress);
-    const query = {
-      chain: params.fromChain.id,
-      inTokenAddress: params.fromToken.address,
-      outTokenAddress: params.toToken.address,
-      amount: Number(params.amount),
-      slippage: 0.5,
-      gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
-      account: params.srcWalletAddress,
-    };
+    let query: any = {};
+
+    if (params.type === "SWAP") {
+      query = {
+        chain: params.fromChain.id,
+        inTokenAddress: params.fromToken.address,
+        outTokenAddress: params.toToken.address,
+        amount: Number(params.amount),
+        slippage: 0.5,
+        gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
+        account: params.srcWalletAddress,
+        referrer: "0x2Ed05570214f6C0F7612B580aB37C163076e0162",
+      };
+    } else {
+      query = {
+        fromChainId: params.fromChain.id,
+        toChainId: params.toChain.id,
+        fromSymbol: params?.fromToken.symbol,
+        toSymbol: params?.toToken.symbol,
+        amount: ethers.utils
+          .parseUnits(String(params.amount), params.fromToken.decimals)
+          .toString(),
+        referrer: "0x2Ed05570214f6C0F7612B580aB37C163076e0162",
+      };
+    }
 
     const res = await apiCall({
-      method: "POST",
-      url: this.BASE_URL,
+      method: "GET",
+      url: this.getBaseUrl(params.type, params.fromChain.id),
       params: query,
+      headers: {
+        apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
+        "Content-Type": "application/json",
+      },
     });
 
-    const data = res?.data?.data;
+    const data = res?.data;
+
+    console.log("log:: res", res, params.type);
 
     const swapAmount = ethers.utils
       .formatUnits(data?.outAmount, data?.outToken?.decimals)

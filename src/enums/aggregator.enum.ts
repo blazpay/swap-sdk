@@ -10,4 +10,5 @@ export enum AGGREGATORS {
   ICECREAM_SWAP = "icecream_swap",
   KYBER_SWAP = "kyber_swap",
   LIFI = "lifi",
+  BUTTER_NETWORK = "butter_network",
 }

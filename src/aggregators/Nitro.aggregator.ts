@@ -1,9 +1,4 @@
-import {
-  IQuote,
-  IQuoteParams,
-  IRestQuoteProps,
-  SwapParams,
-} from "../@types/index.js";
+import { IQuoteParams, IRestQuoteProps, SwapParams } from "../@types/index.js";
 import { v4 as uuidv4 } from "uuid";
 import { BigNumber, ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";

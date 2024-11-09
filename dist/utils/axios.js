@@ -12,7 +12,7 @@ export const apiCall = async ({ method, url, data = {}, params = {}, headers, ti
         return response.data;
     }
     catch (error) {
-        console.error("API call error:", error);
+        // console.error("API call error:", error);
         throw error;
     }
 };

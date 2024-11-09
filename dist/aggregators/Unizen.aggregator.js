@@ -21,7 +21,7 @@ export default class UnizenAggregator extends Base {
             amount: ethers.utils
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString(),
-            sender: params.srcWalletAddress,
+            senderAddress: params.srcWalletAddress,
             slippage: this.slippage,
             fromChainId: params.fromChain.id,
             type: params.type,
@@ -34,7 +34,11 @@ export default class UnizenAggregator extends Base {
         });
         const data = res?.data;
         const swapAmount = ethers.utils
-            .formatUnits(data?.toTokenAmount, data?.tokenTo?.decimals)
+            .formatUnits(params.type === "SWAP"
+            ? data?.toTokenAmount
+            : data?.srcTrade?.toTokenAmount, params.type === "SWAP"
+            ? data?.tokenTo?.decimals
+            : params.toToken.decimals)
             .toString();
         let allowanceTo = await this.getSpender(params.fromChain.id);
         const meta = {
@@ -42,7 +46,9 @@ export default class UnizenAggregator extends Base {
             aggregator: AGGREGATORS.UNIZEN,
             route: "Unizen",
             amount: Number(Number(swapAmount).toFixed(4)),
-            usdAmount: 0,
+            usdAmount: params.type === "SWAP"
+                ? data?.tokenTo?.priceInUsd
+                : data?.srcTrade?.tokenTo?.priceInUsd,
             networkFee: 0,
             platformFee: 0,
             priceImpact: 0,
@@ -64,50 +70,6 @@ export default class UnizenAggregator extends Base {
             quotePayload: payload,
             type: params.type,
         });
-        const swap = async ({ provider }) => {
-            const signer = provider.getSigner();
-            const spender = await this.getSpender(params.fromChain.id);
-            // await this.setAllowance(
-            //   params.fromToken.address,
-            //   spender,
-            //   provider,
-            //   params.fromChain.id,
-            //   BigNumber.from(
-            //     ethers.utils
-            //       .parseUnits(String(params.amount), params.fromToken.decimals)
-            //       .toString()
-            //   ),
-            //   "Utizen"
-            // );
-            const payload = {
-                transactionData: data?.transactionData,
-                nativeValue: data?.nativeValue,
-                account: params?.srcWalletAddress,
-                toChainId: params.toChain.id,
-                fromChainId: params.fromChain.id,
-                type: params.type,
-            };
-            if (params.type === "SWAP") {
-                payload.tradeType = data?.tradeType;
-            }
-            const res = await apiCall({
-                method: "POST",
-                url: this.BASE_URL + "/swap",
-                data: payload,
-            });
-            const txData = res?.data;
-            const contractAddress = getContractAddressByChainId(params.fromChain.id);
-            const tx = await signer.sendTransaction({
-                from: params.srcWalletAddress,
-                to: contractAddress,
-                gasLimit: txData?.estimateGas,
-                data: txData?.data,
-                gasPrice: txData?.gasPrice,
-                value: txData?.nativeValue,
-            });
-            await tx.wait();
-            return tx;
-        };
         return quote;
     }
     async getTransactionData(data, restProps) {

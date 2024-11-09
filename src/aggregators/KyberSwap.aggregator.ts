@@ -34,8 +34,6 @@ export default class KyberSwap extends Base {
       source: "blazpay",
     };
 
-    console.log("log: params", query);
-
     const res = await apiCall({
       method: "GET",
       url:
@@ -73,7 +71,7 @@ export default class KyberSwap extends Base {
         id: params.toChain.id,
         name: params.toChain.name.toLowerCase(),
       },
-      slippageTolerance: params.slippage ?? 0.5,
+      slippageTolerance: (params.slippage || 0.5) * 100,
       srcWalletAddress: params.srcWalletAddress,
       dstWalletAddress: params.dstWalletAddress,
       quotePayload: query,
@@ -97,7 +95,7 @@ export default class KyberSwap extends Base {
     const res = await apiCall({
       method: "POST",
       url: this.BASE_URL + `/${restProps.fromChain.name}/api/v1/route/build`,
-      data: payload,
+      data: JSON.stringify(payload),
       headers: { "X-Client-Id": "blazpay", "Content-Type": "application/json" },
     });
 
@@ -109,7 +107,6 @@ export default class KyberSwap extends Base {
       to: txData?.routerAddress,
       value: txData?.amountIn,
       gasLimit: txData?.gas,
-      maxFeePerGas: txData?.gas,
     };
 
     return {

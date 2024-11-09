@@ -6,6 +6,7 @@ export default class OpenOceanAggregator extends Base {
     BASE_URL: string;
     slippage: number;
     constructor();
+    getBaseUrl(type: string, chain: number): string;
     getQuotes(params: IQuoteParams): Promise<Quote>;
     getTransactionData(data: any, restProps: IRestQuoteProps): Promise<{
         tx: any;

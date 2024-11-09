@@ -9,6 +9,7 @@ import {
   UnizenAggregator,
   KyberSwap,
   LifiAggregator,
+  ButterNetworkAggregator,
 } from "./aggregators/index.js";
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
@@ -44,6 +45,10 @@ export class TradeManager {
     );
     this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
     this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
+    this.aggregatorFactory.register(
+      AGGREGATORS.BUTTER_NETWORK,
+      new ButterNetworkAggregator()
+    );
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -59,7 +64,7 @@ export class TradeManager {
     };
 
     function handleQuote(quote: Quote) {
-      params.onNewQuote(quote);
+      if (quote) params.onNewQuote(quote);
     }
 
     const handleLastQuote = (isLastQuote: boolean) => {
