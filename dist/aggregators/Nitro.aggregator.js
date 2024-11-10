@@ -30,8 +30,8 @@ export default class NitroAggregator extends Base {
         };
         const data = await apiCall({
             method: "GET",
-            url: "https://api-beta.pathfinder.routerprotocol.com/api/v2/quote?fromTokenAddress=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&toTokenAddress=0xc2132D05D31c914a87C6611C10748AEb04B58e8F&amount=1000000000000000000&fromTokenChainId=137&toTokenChainId=137&partnerId=60",
-            // params: body,
+            url: this.BASE_URL + "/v2/quote",
+            params: body,
             timeout: 20000,
             headers: {
                 Accept: "application/json, text/plain, */*",
