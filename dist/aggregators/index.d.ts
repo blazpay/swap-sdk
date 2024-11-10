@@ -9,3 +9,4 @@ export { default as IceCreamAggregator } from "./IceCream.aggregator.js";
 export { default as KyberSwap } from "./KyberSwap.aggregator.js";
 export { default as LifiAggregator } from "./Lifi.aggregator.js";
 export { default as ButterNetworkAggregator } from "./ButterNetwork.aggregator.js";
+export { default as SquidRouterAggregator } from "./SquidRouter.aggregator.js";

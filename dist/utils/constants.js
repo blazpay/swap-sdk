@@ -90,4 +90,6 @@ export function getContractAddressByChainId(chainIdUnizen) {
     };
     return contractAddressMapping[chainIdUnizen];
 }
+export const addressZero = "0x0000000000000000000000000000000000000000";
+export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 //# sourceMappingURL=constants.js.map

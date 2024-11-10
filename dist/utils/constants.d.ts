@@ -55,3 +55,5 @@ export declare enum ChainIdUnizen {
 }
 export declare function getChainNameById(chainId: ChainId): ChainName | undefined;
 export declare function getContractAddressByChainId(chainIdUnizen: ChainIdUnizen): string | undefined;
+export declare const addressZero = "0x0000000000000000000000000000000000000000";
+export declare const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";

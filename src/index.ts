@@ -10,6 +10,7 @@ import {
   KyberSwap,
   LifiAggregator,
   ButterNetworkAggregator,
+  SquidRouterAggregator,
 } from "./aggregators/index.js";
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
@@ -48,6 +49,10 @@ export class TradeManager {
     this.aggregatorFactory.register(
       AGGREGATORS.BUTTER_NETWORK,
       new ButterNetworkAggregator()
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.SQUID_ROUTER,
+      new SquidRouterAggregator()
     );
   }
 

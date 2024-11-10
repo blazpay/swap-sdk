@@ -51,7 +51,7 @@ export default class OneInchAggregator extends Base {
       response?.dstToken?.decimals
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
     let allowanceTo = await this.get1InchSpender(params.fromChain.id);
 
     const meta = {
@@ -106,7 +106,7 @@ export default class OneInchAggregator extends Base {
       },
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     return {
       tx: res?.tx,

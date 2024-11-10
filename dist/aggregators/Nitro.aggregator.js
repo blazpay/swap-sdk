@@ -30,9 +30,15 @@ export default class NitroAggregator extends Base {
         };
         const data = await apiCall({
             method: "GET",
-            url: this.BASE_URL + "/v2/quote",
-            params: body,
+            url: "https://api-beta.pathfinder.routerprotocol.com/api/v2/quote?fromTokenAddress=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&toTokenAddress=0xc2132D05D31c914a87C6611C10748AEb04B58e8F&amount=1000000000000000000&fromTokenChainId=137&toTokenChainId=137&partnerId=60",
+            // params: body,
             timeout: 20000,
+            headers: {
+                Accept: "application/json, text/plain, */*",
+                Origin: "https://defi.blazpay.com",
+                Referer: "https://defi.blazpay.com",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+            },
         });
         const platformFee = data.bridgeFee.amount
             ? Number(Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4))

@@ -42,6 +42,13 @@ export default class NitroAggregator extends Base {
       url: this.BASE_URL + "/v2/quote",
       params: body,
       timeout: 20000,
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Origin: "https://defi.blazpay.com",
+        Referer: "https://defi.blazpay.com",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+      },
     });
 
     const platformFee = data.bridgeFee.amount
