@@ -71,7 +71,7 @@ export default class KyberSwap extends Base {
             routeSummary: data?.routeSummary,
             sender: restProps.srcWalletAddress,
             recipient: restProps.dstWalletAddress,
-            slippageTolerance: restProps.slippageTolerance,
+            slippageTolerance: 50,
             source: "blazpay",
         };
         const res = await apiCall({
