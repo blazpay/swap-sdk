@@ -1,6 +1,7 @@
 import { IceCreamAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggregator, SymbiosisAggregator, UnizenAggregator, KyberSwap, LifiAggregator, ButterNetworkAggregator, SquidRouterAggregator, } from "./aggregators/index.js";
 import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
+import RelayerFactory from "./relayer.js";
 export class TradeManager {
     aggregatorFactory;
     constructor() {
@@ -39,6 +40,10 @@ export class TradeManager {
             params.onLastQuote(isLastQuote);
         };
         this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
+    }
+    async triggerTransaction(provider, relayerTxData) {
+        const relayerFactory = new RelayerFactory(provider);
+        return await relayerFactory.triggerContract(relayerTxData);
     }
 }
 //# sourceMappingURL=index.js.map

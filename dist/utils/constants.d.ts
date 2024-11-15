@@ -57,3 +57,16 @@ export declare function getChainNameById(chainId: ChainId): ChainName | undefine
 export declare function getContractAddressByChainId(chainIdUnizen: ChainIdUnizen): string | undefined;
 export declare const addressZero = "0x0000000000000000000000000000000000000000";
 export declare const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+export declare const relayerAddresses: {
+    [key: number]: string;
+};
+export declare const MESSAGE_TYPES: {
+    EIP712Domain: {
+        name: string;
+        type: string;
+    }[];
+    MetaTransaction: {
+        name: string;
+        type: string;
+    }[];
+};
