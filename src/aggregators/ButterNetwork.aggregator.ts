@@ -44,8 +44,8 @@ export default class ButterNetworkAggregator extends Base {
           Number(parseFloat(quote?.route?.srcChain?.totalAmountOut)).toFixed(4)
         ),
         usdAmount: 0,
-        networkFee: 0,
-        platformFee: quote?.route?.bridgeFee?.amount || 0,
+        networkFee: Number(quote?.route?.gasFee?.inUSD).toFixed(6),
+        platformFee: 0,
         priceImpact: quote?.route?.srcChain?.route[0]?.priceImpact || 0,
         slippage: 1,
         allowanceTo: quote?.route?.contract,
@@ -75,7 +75,6 @@ export default class ButterNetworkAggregator extends Base {
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
     const txData = data?.txParam?.data[0];
-    console.log("log:  ", JSON.stringify(data, null, 2));
 
     const tx = {
       data: txData?.data,

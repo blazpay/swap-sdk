@@ -70,3 +70,4 @@ export declare const MESSAGE_TYPES: {
         type: string;
     }[];
 };
+export declare const baseUrl = "http://localhost:5000/api/defi";

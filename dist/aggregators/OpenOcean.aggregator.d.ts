@@ -5,10 +5,11 @@ import { IRestQuoteProps } from "../@types/quote.type.js";
 export default class OpenOceanAggregator extends Base {
     BASE_URL: string;
     slippage: number;
+    bridgeUrl: string;
     constructor();
     getBaseUrl(type: string, chain: number): string;
-    getQuotes(params: IQuoteParams): Promise<Quote>;
-    getTransactionData(data: any, restProps: IRestQuoteProps): Promise<{
+    getQuotes(params: IQuoteParams): Promise<Quote | Quote[]>;
+    getTransactionData(data: any, restProps: IRestQuoteProps, meta: any): Promise<{
         tx: any;
         spender: string;
     }>;

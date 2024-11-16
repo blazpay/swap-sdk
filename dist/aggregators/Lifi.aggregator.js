@@ -33,7 +33,7 @@ export default class LifiAggregator extends Base {
             route: data?.tool || "Lifi",
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: 0,
-            networkFee: 0,
+            networkFee: data?.estimate?.gasCosts[0]?.amountUSD,
             platformFee: 0,
             priceImpact: 0,
             slippage: data?.action?.slippage || params.slippage || 0.5,

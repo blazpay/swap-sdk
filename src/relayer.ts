@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { MESSAGE_TYPES, relayerAddresses } from "./utils/constants.js";
-import relayerAbi from "./utils/jsons/relayer.json"
-import { IRelayerTxData } from "./@types/relayer.type.js";
+import relayerAbi from "./utils/jsons/relayer.json" with { type: 'json' };
+import { IRelayerTxData } from "./@types/relayer.type.js"; 
 
 export class RelayerFactory {
   private provider: ethers.providers.Web3Provider
@@ -32,8 +32,10 @@ export class RelayerFactory {
       name: "BlazpayRelayer",
       version: "1",
       chainId: chainId,
-      verifyingContract: address,
+      verifyingContract: relayerAddress,
     }
+
+    console.log(domain, "domain")
 
     const signature = await signer._signTypedData(
       domain,

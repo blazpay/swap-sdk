@@ -115,3 +115,5 @@ export const MESSAGE_TYPES = {
       { name: "nonce", type: "uint256" },
   ],
 };
+
+export const baseUrl = "http://localhost:5000/api/defi" 

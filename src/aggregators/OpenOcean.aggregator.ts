@@ -10,20 +10,22 @@ import { IRestQuoteProps } from "../@types/quote.type.js";
 export default class OpenOceanAggregator extends Base {
   BASE_URL: string;
   slippage: number;
+  bridgeUrl: string;
   constructor() {
     super();
     this.BASE_URL = "";
     this.slippage = 0.5;
+    this.bridgeUrl = "https://open-api.openocean.finance/cross_chain/v1/cross"
   }
 
   getBaseUrl(type: string, chain: number) {
     if (type === "SWAP")
       return `https://open-api-pro.openocean.finance/v3/${chain}/swap_quote`;
     else
-      return `https://open-api.openocean.finance/cross_chain/v1/cross/quoteByOO`;
+      return this.bridgeUrl + `/quoteByOO`;
   }
 
-  async getQuotes(params: IQuoteParams): Promise<Quote> {
+  async getQuotes(params: IQuoteParams): Promise<Quote | Quote[]> {
     this.setSenderAddress(params.srcWalletAddress);
     let query: any = {};
 
@@ -37,6 +39,7 @@ export default class OpenOceanAggregator extends Base {
         gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
         account: params.srcWalletAddress,
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
+        referrerFee: 0.01
       };
     } else {
       query = {
@@ -48,6 +51,7 @@ export default class OpenOceanAggregator extends Base {
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
+        referrerFee: 0.01
       };
     }
 
@@ -63,87 +67,118 @@ export default class OpenOceanAggregator extends Base {
 
     const data = res?.data;
 
-    console.log("log:: res", res, params.type);
+    if (params.type === "SWAP") {
+      const swapAmount = ethers.utils
+        .formatUnits(data?.outAmount, data?.outToken?.decimals)
+        .toString();
 
-    const swapAmount = ethers.utils
-      .formatUnits(data?.outAmount, data?.outToken?.decimals)
-      .toString();
+      const meta = {
+        id: uuidv4(),
+        aggregator: AGGREGATORS.OPEN_OCEAN,
+        route: "OpenOcean",
+        amount: Number(Number(swapAmount).toFixed(4)),
+        usdAmount: data?.outToken?.usd,
+        networkFee: `${Number(ethers.utils.formatEther(((Number(data?.estimatedGas) * Number(data?.gasPrice)).toString())))?.toFixed(6)} NATIVE`,
+        platformFee: 0,
+        priceImpact: data?.price_impact?.replace("%", ""),
+        slippage: this.slippage,
+        allowanceTo: data?.to,
+      };
 
-    const meta = {
-      id: uuidv4(),
-      aggregator: AGGREGATORS.OPEN_OCEAN,
-      route: "OpenOcean",
-      amount: Number(Number(swapAmount).toFixed(4)),
-      usdAmount: data?.outToken?.usd,
-      networkFee: 0,
-      platformFee: 0,
-      priceImpact: data?.price_impact?.replace("%", ""),
-      slippage: this.slippage,
-      allowanceTo: data?.to,
-    };
-
-    const quote = new Quote(data, meta, {
-      srcWalletAddress: params.srcWalletAddress,
-      dstWalletAddress: params.dstWalletAddress,
-      fromChain: {
-        id: params.fromChain.id,
-        name: params.fromChain.name.toLowerCase(),
-      },
-      toChain: {
-        id: params.toChain.id,
-        name: params.toChain.name.toLowerCase(),
-      },
-      slippageTolerance: params.slippage ?? 0.5,
-      quotePayload: query,
-    });
-
-    const swap = async ({ provider }: SwapParams) => {
-      const signer = await provider.getSigner();
-
-      // await this.setAllowance(
-      //   params.fromToken.address,
-      //   data?.to,
-      //   provider,
-      //   params.fromChain.id,
-      //   BigNumber.from(
-      //     ethers.utils
-      //       .parseUnits(String(params.amount), params.fromToken.decimals)
-      //       .toString()
-      //   ),
-      //   "openocean"
-      // );
-
-      const tx = await signer.sendTransaction({
-        data: data?.data,
-        from: data?.from,
-        to: data?.to,
-        gasLimit: data?.estimatedGas,
-        gasPrice: data?.gasPrice * 3,
-        value: data?.value ? data?.value : data?.inAmount,
+      const quote = new Quote(data, meta, {
+        srcWalletAddress: params.srcWalletAddress,
+        dstWalletAddress: params.dstWalletAddress,
+        fromChain: {
+          id: params.fromChain.id,
+          name: params.fromChain.name.toLowerCase(),
+        },
+        toChain: {
+          id: params.toChain.id,
+          name: params.toChain.name.toLowerCase(),
+        },
+        slippageTolerance: params.slippage ?? 0.5,
+        quotePayload: query,
       });
+      return quote;
+    }
+    else {
+      const quotes: Quote[] = data?.routes
+        ?.filter((route: any) => route !== null)
+        .map((route: any) => {
+          const swapAmount = ethers.utils
+            .formatUnits(route.bridgeRoute?.outputAmount, route.bridgeRoute?.toAsset?.decimals)
+            .toString();
 
-      await tx.wait();
+          const meta = {
+            id: uuidv4(),
+            aggregator: AGGREGATORS.OPEN_OCEAN,
+            route: route?.bridgeRoute?.bridgeInfo?.code,
+            amount: Number(Number(swapAmount).toFixed(4)),
+            usdAmount: 0,
+            networkFee: Number(route?.fees?.gasLimit[0]?.value)?.toFixed(6) || 0,
+            platformFee: route?.fees?.bridgeFee?.amount ? `${Number(ethers.utils.formatUnits(route?.fees?.bridgeFee?.amount, route?.fees?.bridgeFee?.decimals))?.toFixed(6)} ${route?.fees?.bridgeFee?.symbol}` : 0,
+            priceImpact: data?.price_impact?.replace("%", "") || 0,
+            slippage: this.slippage,
+            allowanceTo: route?.allowanceTarget,
+            routeObj: route
+          };
 
-      return tx;
-    };
+          return new Quote(data, meta, {
+            srcWalletAddress: params.srcWalletAddress,
+            dstWalletAddress: params.dstWalletAddress,
+            fromChain: {
+              id: params.fromChain.id,
+              name: params.fromChain.name.toLowerCase(),
+            },
+            toChain: {
+              id: params.toChain.id,
+              name: params.toChain.name.toLowerCase(),
+            },
+            slippageTolerance: params.slippage ?? 0.5,
+            quotePayload: query,
+          });
+        });
 
-    return quote;
+      return quotes
+    }
   }
 
   async getTransactionData(
     data: any,
-    restProps: IRestQuoteProps
+    restProps: IRestQuoteProps,
+    meta: any
   ): Promise<{ tx: any; spender: string }> {
-    return {
-      tx: {
-        data: data?.data,
-        from: data?.from,
-        to: data?.to,
-        gasLimit: data?.estimatedGas,
-        gasPrice: data?.gasPrice * 3,
-        value: data?.value ? data?.value : data?.inAmount,
-      },
-      spender: data?.to,
-    };
+    if (data?.fromChainId === data?.toChainId)
+      return {
+        tx: {
+          data: data?.data,
+          from: data?.from,
+          to: data?.to,
+          gasLimit: data?.estimatedGas,
+          gasPrice: data?.gasPrice * 3,
+          value: data?.value ? data?.value : data?.inAmount,
+        },
+        spender: data?.to,
+      };
+    else {
+      const res = await apiCall({
+        method: "POST",
+        url: `${this.bridgeUrl}/${meta?.route}/swap`,
+        data: {
+          route: meta?.routeObj,
+          plat: meta?.route,
+          account: restProps?.srcWalletAddress
+        },
+        headers: {
+          apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
+          "Content-Type": "application/json",
+        },
+      });
+
+      return {
+        tx: res?.data,
+        spender: meta?.allowanceTo
+      }
+    }
   }
 }

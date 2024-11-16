@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { IQuoteParams, ITxnRes, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
-import { getContractAddressByChainId } from "../utils/constants.js";
+import { baseUrl, getContractAddressByChainId } from "../utils/constants.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
@@ -14,7 +14,7 @@ export default class UnizenAggregator extends Base {
   constructor() {
     super();
     this.slippage = 0.05;
-    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/unizen";
+    this.BASE_URL = baseUrl + "/unizen";
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
@@ -44,7 +44,7 @@ export default class UnizenAggregator extends Base {
       .formatUnits(
         params.type === "SWAP"
           ? data?.toTokenAmount
-          : data?.srcTrade?.toTokenAmount,
+          : data?.dstTrade?.toTokenAmount,
         params.type === "SWAP"
           ? data?.tokenTo?.decimals
           : params.toToken.decimals
@@ -62,9 +62,9 @@ export default class UnizenAggregator extends Base {
         params.type === "SWAP"
           ? data?.tokenTo?.priceInUsd
           : data?.srcTrade?.tokenTo?.priceInUsd,
-      networkFee: 0,
+      networkFee: `${Number(ethers.utils.formatEther((Number(data?.estimateGas) * Number(data?.gasPrice))?.toString()))?.toFixed(6)} NATIVE`,
       platformFee: 0,
-      priceImpact: 0,
+      priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,
       allowanceTo,
     };

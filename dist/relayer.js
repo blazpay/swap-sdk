@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { MESSAGE_TYPES, relayerAddresses } from "./utils/constants.js";
-import relayerAbi from "./utils/jsons/relayer.json";
+import relayerAbi from "./utils/jsons/relayer.json" with { type: 'json' };
 export class RelayerFactory {
     provider;
     constructor(_provider) {
@@ -22,8 +22,9 @@ export class RelayerFactory {
             name: "BlazpayRelayer",
             version: "1",
             chainId: chainId,
-            verifyingContract: address,
+            verifyingContract: relayerAddress,
         };
+        console.log(domain, "domain");
         const signature = await signer._signTypedData(domain, {
             MetaTransaction: MESSAGE_TYPES.MetaTransaction
         }, metaTransaction);
