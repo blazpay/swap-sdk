@@ -62,7 +62,7 @@ export default class LifiAggregator extends Base {
             value: data?.transactionRequest?.value,
             data: data?.transactionRequest?.data,
             gasPrice: data?.transactionRequest?.gasPrice,
-            gasLimit: data?.transactionRequest?.gasLimit,
+            gasLimit: data?.transactionRequest?.gasLimit * 2,
         };
         return {
             tx,

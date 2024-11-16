@@ -30,7 +30,10 @@ export default class KyberSwap extends Base {
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       gasInclude: true,
-      //   feeReceiver: params.dstWalletAddress,
+      feeReceiver: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
+      feeAmount: 1,
+      isInBps: true,
+      chargeFeeBy: "currency_out",
       source: "blazpay",
     };
 
@@ -88,7 +91,7 @@ export default class KyberSwap extends Base {
       routeSummary: data?.routeSummary,
       sender: restProps.srcWalletAddress,
       recipient: restProps.dstWalletAddress,
-      slippageTolerance: restProps.slippageTolerance,
+      slippageTolerance: 50,
       source: "blazpay",
     };
 
