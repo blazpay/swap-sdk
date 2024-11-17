@@ -15,6 +15,9 @@ import {
 import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import Quote from "./utils/quote.js";
+import { ethers } from "ethers";
+import { IRelayerTxData } from "./@types/relayer.type.js";
+import RelayerFactory from "./relayer.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -77,5 +80,10 @@ export class TradeManager {
     };
 
     this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
+  }
+
+  async triggerTransaction(provider: ethers.providers.Web3Provider, relayerTxData: IRelayerTxData) {
+    const relayerFactory = new RelayerFactory(provider);
+    return await relayerFactory.triggerContract(relayerTxData);
   }
 }

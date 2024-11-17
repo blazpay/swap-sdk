@@ -93,3 +93,27 @@ export function getContractAddressByChainId(
 }
 export const addressZero = "0x0000000000000000000000000000000000000000";
 export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+
+export const relayerAddresses: { [key: number]: string } = {
+  56: "0x0000000000000000000000000000000000000000",
+  137: "0x9B3471de09Df61983AffbC044A99F56dEc51dE3E",
+  1: "0x0000000000000000000000000000000000000000",
+  42161: "0x0000000000000000000000000000000000000000"
+}
+
+export const MESSAGE_TYPES = {
+  EIP712Domain: [
+      { name: "name", type: "string" },
+      { name: "version", type: "string" },
+      { name: "chainId", type: "uint256" },
+      { name: "verifyingContract", type: "address" }
+  ],
+  MetaTransaction: [
+      { name: "user", type: "address" },
+      { name: "targetContract", type: "address" },
+      { name: "data", type: "bytes" },
+      { name: "nonce", type: "uint256" },
+  ],
+};
+
+export const baseUrl = "http://localhost:5000/api/defi" 

@@ -24,7 +24,10 @@ export default class KyberSwap extends Base {
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString(),
             gasInclude: true,
-            //   feeReceiver: params.dstWalletAddress,
+            feeReceiver: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
+            feeAmount: 1,
+            isInBps: true,
+            chargeFeeBy: "currency_out",
             source: "blazpay",
         };
         const res = await apiCall({
@@ -44,8 +47,8 @@ export default class KyberSwap extends Base {
             route: "KyberSwap",
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: data?.routeSummary?.amountOutUsd,
-            networkFee: 0,
-            platformFee: 0,
+            networkFee: Number(data?.routeSummary?.gasUsd)?.toFixed(6),
+            platformFee: `${((Number(Number(swapAmount).toFixed(4)) * Number(data?.routeSummary?.extraFee?.feeAmount)) / 100).toFixed(6)} ${params.toToken?.symbol}`,
             priceImpact: 0,
             slippage: params.slippage || 0.5,
             allowanceTo: data?.routerAddress,
@@ -86,6 +89,7 @@ export default class KyberSwap extends Base {
             from: restProps.srcWalletAddress,
             to: txData?.routerAddress,
             value: txData?.amountIn,
+            gasLimit: Number(txData?.gas)
         };
         return {
             tx,

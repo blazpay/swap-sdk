@@ -20,7 +20,7 @@ export default class Quote {
   async getTransactionData() {
     const aggregator = aggregatorFactory.getAggregator(this.meta.aggregator);
 
-    return await aggregator.getTransactionData(this.data, this.restProps);
+    return await aggregator.getTransactionData(this.data, this.restProps, this.meta);
   }
 
   toJSON() {

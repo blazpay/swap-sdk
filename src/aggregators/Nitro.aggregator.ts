@@ -19,6 +19,7 @@ export default class NitroAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ params:", params)
     const body = {
       fromTokenAddress:
         params.fromToken.address === ethers.constants.AddressZero
@@ -36,6 +37,7 @@ export default class NitroAggregator extends Base {
       toTokenChainId: params.toChain.id === 102 ? 900 : params.toChain.id,
       partnerId: this.nitroPartnerId,
     };
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ body:", body)
 
     const data = await apiCall({
       method: "GET",
@@ -43,8 +45,18 @@ export default class NitroAggregator extends Base {
       params: body,
       headers: {
         Accept: "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-IN,en-GB;q=0.9,en;q=0.8,en-US;q=0.7",
+        "Sec-Ch-Ua": `"Chromium";v="118", "Microsoft Edge";v="118", "Not=A?Brand";v="99"`,
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": "macOS",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69"
       },
     });
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ data:", data)
 
     const platformFee = data.bridgeFee.amount
       ? Number(
@@ -86,41 +98,6 @@ export default class NitroAggregator extends Base {
       dstWalletAddress: params.dstWalletAddress,
       quotePayload: body,
     });
-
-    const swap = async ({
-      provider,
-      receiver,
-      slippageTolerance = 0.5,
-    }: SwapParams) => {
-      const response = await apiCall({
-        url: this.BASE_URL + "/v2/transaction",
-        method: "POST",
-        data: {
-          ...data,
-          slippageTolerance,
-          senderAddress: this.senderTronNitro || this.senderAddress,
-          receiverAddress: receiver || this.senderAddress,
-        },
-
-        timeout: 20000,
-      });
-      // await this.setAllowance(
-      //   params.fromToken.address,
-      //   data.allowanceTo,
-      //   provider,
-      //   params.fromChain.id,
-      //   BigNumber.from(data.source.tokenAmount),
-      //   "nitro"
-      // );
-
-      // const { walletAddress, tx } = await this.triggerContract(
-      //   params.fromChain.id,
-      //   provider,
-      //   response.data.txn
-      // );
-
-      return "";
-    };
 
     return quote;
   }

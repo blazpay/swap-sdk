@@ -5,6 +5,7 @@ import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
 import Quote from "../utils/quote.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
+import { baseUrl } from "../utils/constants.js";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -15,7 +16,7 @@ export default class OneInchAggregator extends Base {
 
   constructor() {
     super();
-    this.BASE_URL = "https://api-v2.blazpay.com/api/defi/1inch";
+    this.BASE_URL = baseUrl + "/1inch";
     this.tradeFee = 0;
   }
 

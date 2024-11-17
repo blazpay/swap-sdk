@@ -1,11 +1,12 @@
 import { ethers } from "ethers";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
+import { baseUrl } from "../utils/constants.js";
 export default class ChangeNowAggregator extends Base {
     BASE_URL;
     constructor() {
         super();
-        this.BASE_URL = "https://api-v2.blazpay.com/api/defi/change-now";
+        this.BASE_URL = baseUrl + "/change-now";
     }
     async getQuotes(params) {
         let fromCurrency = params.fromToken.symbol.toLowerCase() === "pol"
@@ -34,6 +35,7 @@ export default class ChangeNowAggregator extends Base {
             method: "POST",
             data: query,
         });
+        console.log("🚀 ~ ChangeNowAggregator ~ getQuotes ~ res:", res);
         const value = {
             fromCurrency,
             toCurrency,

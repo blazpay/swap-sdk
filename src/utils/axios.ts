@@ -15,7 +15,7 @@ export const apiCall = async ({
   data = {},
   params = {},
   headers,
-  timeout = 5000,
+  timeout = 10000,
 }: ApiCallParams): Promise<any> => {
   try {
     const response = await axios({
@@ -24,11 +24,11 @@ export const apiCall = async ({
       data,
       params,
       headers,
-      timeout,
+      // timeout,
     });
     return response.data;
-  } catch (error) {
-    // console.error("API call error:", error);
+  } catch (error: any) {
+    console.error("API call error:", error?.response?.data || error?.message);
     throw error;
   }
 };

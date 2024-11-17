@@ -26,8 +26,8 @@ export interface IQuote {
   route: string;
   amount: number;
   usdAmount: number;
-  networkFee: number;
-  platformFee: number;
+  networkFee: number | string;
+  platformFee: number | string;
   priceImpact: number;
   slippage: number;
   allowanceTo: string;
