@@ -66,7 +66,7 @@ export default class UnizenAggregator extends Base {
           : data?.srcTrade?.tokenTo?.priceInUsd,
       networkFee: `${Number(
         ethers.utils.formatEther(
-          (Number(data?.estimateGas) * Number(data?.gasPrice))?.toString()
+          (Number(data?.estimateGas || 0) * Number(data?.gasPrice))?.toString()
         )
       )?.toFixed(6)} NATIVE`,
       platformFee: 0,

@@ -81,7 +81,11 @@ export class TradeManager {
       params.onLastQuote(isLastQuote);
     };
 
-    this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
+    await this.aggregatorFactory.getQuotes(
+      quoteParams,
+      handleQuote,
+      handleLastQuote
+    );
   }
 
   async triggerTransaction(

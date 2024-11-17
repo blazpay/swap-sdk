@@ -48,7 +48,6 @@ export default class ChangeNowAggregator extends Base {
       method: "POST",
       data: query,
     });
-    console.log("🚀 ~ ChangeNowAggregator ~ getQuotes ~ res:", res);
 
     const value = {
       fromCurrency,
