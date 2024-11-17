@@ -36,7 +36,7 @@ export default class OpenOceanAggregator extends Base {
         slippage: 0.5,
         gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
         account: params.srcWalletAddress,
-        referrer: "0x2Ed05570214f6C0F7612B580aB37C163076e0162",
+        referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
       };
     } else {
       query = {
@@ -47,7 +47,7 @@ export default class OpenOceanAggregator extends Base {
         amount: ethers.utils
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
-        referrer: "0x2Ed05570214f6C0F7612B580aB37C163076e0162",
+        referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
       };
     }
 
