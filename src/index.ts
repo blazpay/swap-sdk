@@ -69,6 +69,8 @@ export class TradeManager {
       type: params.type,
       srcWalletAddress: params.srcWalletAddress,
       dstWalletAddress: params?.dstWalletAddress,
+      excludeSwap: params.excludeSwap,
+      excludeBridge: params?.excludeBridge,
     };
 
     function handleQuote(quote: Quote) {
@@ -82,7 +84,10 @@ export class TradeManager {
     this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
   }
 
-  async triggerTransaction(provider: ethers.providers.Web3Provider, relayerTxData: IRelayerTxData) {
+  async triggerTransaction(
+    provider: ethers.providers.Web3Provider,
+    relayerTxData: IRelayerTxData
+  ) {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.triggerContract(relayerTxData);
   }

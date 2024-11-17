@@ -11,11 +11,13 @@ const addressZero = "0x0000000000000000000000000000000000000000";
 const addressZero1Inch = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 export default class OneInchAggregator extends Base {
+  name: string;
   BASE_URL: string;
   tradeFee: number;
 
   constructor() {
     super();
+    this.name = AGGREGATORS.ONE_INCH;
     this.BASE_URL = baseUrl + "/1inch";
     this.tradeFee = 0;
   }

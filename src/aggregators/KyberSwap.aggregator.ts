@@ -7,10 +7,12 @@ import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import { v4 as uuidv4 } from "uuid";
 
 export default class KyberSwap extends Base {
+  name: string;
   BASE_URL: string;
 
   constructor() {
     super();
+    this.name = AGGREGATORS.KYBER_SWAP;
     this.BASE_URL = "https://aggregator-api.kyberswap.com";
   }
 
@@ -38,7 +40,6 @@ export default class KyberSwap extends Base {
       source: "blazpay",
     };
 
-
     const res = await apiCall({
       method: "GET",
       url:
@@ -61,7 +62,11 @@ export default class KyberSwap extends Base {
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: data?.routeSummary?.amountOutUsd,
       networkFee: Number(data?.routeSummary?.gasUsd)?.toFixed(6),
-      platformFee: `${((Number(Number(swapAmount).toFixed(4)) * Number(data?.routeSummary?.extraFee?.feeAmount))/100).toFixed(6)} ${params.toToken?.symbol}`,
+      platformFee: `${(
+        (Number(Number(swapAmount).toFixed(4)) *
+          Number(data?.routeSummary?.extraFee?.feeAmount)) /
+        100
+      ).toFixed(6)} ${params.toToken?.symbol}`,
       priceImpact: 0,
       slippage: params.slippage || 0.5,
       allowanceTo: data?.routerAddress,
@@ -110,9 +115,9 @@ export default class KyberSwap extends Base {
       from: restProps.srcWalletAddress,
       to: txData?.routerAddress,
       value: txData?.amountIn,
-      gasLimit: Number(txData?.gas)
+      gasLimit: Number(txData?.gas),
     };
-    
+
     return {
       tx,
       spender: data?.routerAddress,

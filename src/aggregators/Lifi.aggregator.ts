@@ -8,8 +8,10 @@ import { v4 as uuidv4 } from "uuid";
 
 export default class LifiAggregator extends Base {
   BASE_URL: string;
+  name: string;
   constructor() {
     super();
+    this.name = AGGREGATORS.LIFI;
     this.BASE_URL = "https://li.quest/v1/quote";
   }
 

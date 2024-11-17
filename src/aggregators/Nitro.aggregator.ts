@@ -9,17 +9,19 @@ import Quote from "../utils/quote.js";
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 export default class NitroAggregator extends Base {
+  name: string;
   BASE_URL: string;
   nitroPartnerId: number;
 
   constructor() {
     super();
+    this.name = AGGREGATORS.NITRO;
     this.BASE_URL = "https://api-beta.pathfinder.routerprotocol.com/api";
     this.nitroPartnerId = 60;
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ params:", params)
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ params:", params);
     const body = {
       fromTokenAddress:
         params.fromToken.address === ethers.constants.AddressZero
@@ -37,7 +39,7 @@ export default class NitroAggregator extends Base {
       toTokenChainId: params.toChain.id === 102 ? 900 : params.toChain.id,
       partnerId: this.nitroPartnerId,
     };
-    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ body:", body)
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ body:", body);
 
     const data = await apiCall({
       method: "GET",
@@ -53,10 +55,11 @@ export default class NitroAggregator extends Base {
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "cross-site",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69"
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69",
       },
     });
-    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ data:", data)
+    console.log("🚀 ~ NitroAggregator ~ getQuotes ~ data:", data);
 
     const platformFee = data.bridgeFee.amount
       ? Number(

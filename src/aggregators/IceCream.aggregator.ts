@@ -7,9 +7,11 @@ import { v4 as uuidv4 } from "uuid";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 export default class IceCreamAggregator extends Base {
+  name: string;
   BASE_URL: string;
   constructor() {
     super();
+    this.name = AGGREGATORS.ICECREAM_SWAP;
     this.BASE_URL = "https://aggregator.icecreamswap.com";
   }
 

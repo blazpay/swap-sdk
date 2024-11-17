@@ -1,4 +1,5 @@
 import { IQuoteParams } from "./@types/aggregator.type.js";
+import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import Quote from "./utils/quote.js";
 
 export class AggregatorFactory {
@@ -21,8 +22,13 @@ export class AggregatorFactory {
     cb: (quote: Quote) => void,
     onLastQuote: (isLastQuote: boolean) => void
   ) {
-    const promises = Array.from(this.aggregators.values()).map(
-      async (aggregator) => {
+    const promises = Array.from(this.aggregators.values())
+      .filter((agg) =>
+        params.type === "SWAP"
+          ? !params.excludeSwap?.includes(agg.name)
+          : !params.excludeBridge?.includes(agg.name)
+      )
+      .map(async (aggregator) => {
         try {
           const quote = await aggregator.getQuotes(params);
           cb(quote);
@@ -41,8 +47,7 @@ export class AggregatorFactory {
             console.error(`Error from ${aggregator.constructor.name}:`, error);
           }
         }
-      }
-    );
+      });
 
     await Promise.all(promises);
     onLastQuote(true);

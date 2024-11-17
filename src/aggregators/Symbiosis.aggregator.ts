@@ -12,11 +12,12 @@ import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 
 export default class SymbiosisAggregator extends Base {
+  name: string;
   BASE_URL: string;
   slippage: number;
   constructor() {
     super();
-
+    this.name = AGGREGATORS.SYMBIOSIS;
     this.BASE_URL = "https://api.symbiosis.finance/crosschain/v1/swap";
     this.slippage = 1;
   }

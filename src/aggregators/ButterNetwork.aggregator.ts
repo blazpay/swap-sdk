@@ -8,8 +8,10 @@ import { v4 as uuidv4 } from "uuid";
 //TODO:
 export default class ButterNetworkAggregator extends Base {
   BASE_URL: string;
+  name: string;
   constructor() {
     super();
+    this.name = AGGREGATORS.BUTTER_NETWORK;
     this.BASE_URL = "https://bs-router-v3.chainservice.io/routeAndSwap";
   }
 

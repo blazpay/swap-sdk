@@ -9,10 +9,12 @@ import { v4 as uuidv4 } from "uuid";
 import { IRestQuoteProps } from "../@types/quote.type.js";
 
 export default class UnizenAggregator extends Base {
+  name: string;
   BASE_URL: string;
   slippage: number;
   constructor() {
     super();
+    this.name = AGGREGATORS.UNIZEN;
     this.slippage = 0.05;
     this.BASE_URL = baseUrl + "/unizen";
   }
@@ -62,7 +64,11 @@ export default class UnizenAggregator extends Base {
         params.type === "SWAP"
           ? data?.tokenTo?.priceInUsd
           : data?.srcTrade?.tokenTo?.priceInUsd,
-      networkFee: `${Number(ethers.utils.formatEther((Number(data?.estimateGas) * Number(data?.gasPrice))?.toString()))?.toFixed(6)} NATIVE`,
+      networkFee: `${Number(
+        ethers.utils.formatEther(
+          (Number(data?.estimateGas) * Number(data?.gasPrice))?.toString()
+        )
+      )?.toFixed(6)} NATIVE`,
       platformFee: 0,
       priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,

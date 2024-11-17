@@ -8,8 +8,10 @@ import { v4 as uuidv4 } from "uuid";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 export default class SquidRouterAggregator extends Base {
+  name: string;
   constructor() {
     super();
+    this.name = AGGREGATORS.SQUID_ROUTER;
   }
 
   async getQuotes(params: IQuoteParams) {

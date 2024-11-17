@@ -8,21 +8,22 @@ import Quote from "../utils/quote.js";
 import { IRestQuoteProps } from "../@types/quote.type.js";
 
 export default class OpenOceanAggregator extends Base {
+  name: string;
   BASE_URL: string;
   slippage: number;
   bridgeUrl: string;
   constructor() {
     super();
+    this.name = AGGREGATORS.OPEN_OCEAN;
     this.BASE_URL = "";
     this.slippage = 0.5;
-    this.bridgeUrl = "https://open-api.openocean.finance/cross_chain/v1/cross"
+    this.bridgeUrl = "https://open-api.openocean.finance/cross_chain/v1/cross";
   }
 
   getBaseUrl(type: string, chain: number) {
     if (type === "SWAP")
       return `https://open-api-pro.openocean.finance/v3/${chain}/swap_quote`;
-    else
-      return this.bridgeUrl + `/quoteByOO`;
+    else return this.bridgeUrl + `/quoteByOO`;
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote | Quote[]> {
@@ -39,7 +40,7 @@ export default class OpenOceanAggregator extends Base {
         gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
         account: params.srcWalletAddress,
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
-        referrerFee: 0.01
+        referrerFee: 0.01,
       };
     } else {
       query = {
@@ -51,7 +52,7 @@ export default class OpenOceanAggregator extends Base {
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
-        referrerFee: 0.01
+        referrerFee: 0.01,
       };
     }
 
@@ -78,7 +79,11 @@ export default class OpenOceanAggregator extends Base {
         route: "OpenOcean",
         amount: Number(Number(swapAmount).toFixed(4)),
         usdAmount: data?.outToken?.usd,
-        networkFee: `${Number(ethers.utils.formatEther(((Number(data?.estimatedGas) * Number(data?.gasPrice)).toString())))?.toFixed(6)} NATIVE`,
+        networkFee: `${Number(
+          ethers.utils.formatEther(
+            (Number(data?.estimatedGas) * Number(data?.gasPrice)).toString()
+          )
+        )?.toFixed(6)} NATIVE`,
         platformFee: 0,
         priceImpact: data?.price_impact?.replace("%", ""),
         slippage: this.slippage,
@@ -100,13 +105,15 @@ export default class OpenOceanAggregator extends Base {
         quotePayload: query,
       });
       return quote;
-    }
-    else {
+    } else {
       const quotes: Quote[] = data?.routes
         ?.filter((route: any) => route !== null)
         .map((route: any) => {
           const swapAmount = ethers.utils
-            .formatUnits(route.bridgeRoute?.outputAmount, route.bridgeRoute?.toAsset?.decimals)
+            .formatUnits(
+              route.bridgeRoute?.outputAmount,
+              route.bridgeRoute?.toAsset?.decimals
+            )
             .toString();
 
           const meta = {
@@ -115,12 +122,20 @@ export default class OpenOceanAggregator extends Base {
             route: route?.bridgeRoute?.bridgeInfo?.code,
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: 0,
-            networkFee: Number(route?.fees?.gasLimit[0]?.value)?.toFixed(6) || 0,
-            platformFee: route?.fees?.bridgeFee?.amount ? `${Number(ethers.utils.formatUnits(route?.fees?.bridgeFee?.amount, route?.fees?.bridgeFee?.decimals))?.toFixed(6)} ${route?.fees?.bridgeFee?.symbol}` : 0,
+            networkFee:
+              Number(route?.fees?.gasLimit[0]?.value)?.toFixed(6) || 0,
+            platformFee: route?.fees?.bridgeFee?.amount
+              ? `${Number(
+                  ethers.utils.formatUnits(
+                    route?.fees?.bridgeFee?.amount,
+                    route?.fees?.bridgeFee?.decimals
+                  )
+                )?.toFixed(6)} ${route?.fees?.bridgeFee?.symbol}`
+              : 0,
             priceImpact: data?.price_impact?.replace("%", "") || 0,
             slippage: this.slippage,
             allowanceTo: route?.allowanceTarget,
-            routeObj: route
+            routeObj: route,
           };
 
           return new Quote(data, meta, {
@@ -139,7 +154,7 @@ export default class OpenOceanAggregator extends Base {
           });
         });
 
-      return quotes
+      return quotes;
     }
   }
 
@@ -167,7 +182,7 @@ export default class OpenOceanAggregator extends Base {
         data: {
           route: meta?.routeObj,
           plat: meta?.route,
-          account: restProps?.srcWalletAddress
+          account: restProps?.srcWalletAddress,
         },
         headers: {
           apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
@@ -177,8 +192,8 @@ export default class OpenOceanAggregator extends Base {
 
       return {
         tx: res?.data,
-        spender: meta?.allowanceTo
-      }
+        spender: meta?.allowanceTo,
+      };
     }
   }
 }

@@ -1,6 +1,7 @@
 import { providers } from "ethers";
 import { IChain, IToken } from "./index.js";
 import Quote from "../utils/quote.js";
+import { AGGREGATORS } from "../enums/aggregator.enum.js";
 
 export interface IQuoteParams {
   fromChain: IChain;
@@ -12,6 +13,8 @@ export interface IQuoteParams {
   srcWalletAddress: string;
   dstWalletAddress?: string;
   type: "SWAP" | "BRIDGE";
+  excludeSwap?: AGGREGATORS[];
+  excludeBridge?: AGGREGATORS[];
 }
 
 export interface SwapParams {
