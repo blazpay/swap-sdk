@@ -10,8 +10,7 @@
   "description": "",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc",
-    "postinstall": "npm run build"
+    "build": "tsc"
   },
   "dependencies": {
     "axios": "^1.7.7",
