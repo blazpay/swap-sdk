@@ -40,5 +40,8 @@ export class TradeManager {
         };
         this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
     }
+    async gethello() {
+        return "hellp";
+    }
 }
 //# sourceMappingURL=index.js.map
