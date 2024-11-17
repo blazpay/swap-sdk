@@ -1,0 +1,12 @@
+export { default as Base } from "./base.aggregator.js";
+export { default as OneInchAggregator } from "./OneInch.aggregator.js";
+export { default as NitroAggregator } from "./Nitro.aggregator.js";
+export { default as SymbiosisAggregator } from "./Symbiosis.aggregator.js";
+export { default as OpenOceanAggregator } from "./OpenOcean.aggregator.js";
+export { default as ChangeNowAggregator } from "./ChangeNow.aggregator.js";
+export { default as UnizenAggregator } from "./Unizen.aggregator.js";
+export { default as IceCreamAggregator } from "./IceCream.aggregator.js";
+export { default as KyberSwap } from "./KyberSwap.aggregator.js";
+export { default as LifiAggregator } from "./Lifi.aggregator.js";
+export { default as ButterNetworkAggregator } from "./ButterNetwork.aggregator.js";
+export { default as SquidRouterAggregator } from "./SquidRouter.aggregator.js";
