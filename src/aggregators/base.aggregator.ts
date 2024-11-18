@@ -63,5 +63,19 @@ export default class Base {
     }
   }
 
+  isNativeAddresss(address: string) {
+    if (
+      [
+        "0x0000000000000000000000000000000000000000",
+        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "0x0000000000000000000000000000000000001010",
+        "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      ].includes(address)
+    )
+      return true;
+
+    return false;
+  }
+
   async init() {}
 }

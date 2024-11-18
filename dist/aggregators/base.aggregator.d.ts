@@ -5,5 +5,6 @@ export default class Base {
     constructor();
     setSenderAddress(address: string): Promise<void>;
     getGasPrice(chainId: number): Promise<any>;
+    isNativeAddresss(address: string): boolean;
     init(): Promise<void>;
 }

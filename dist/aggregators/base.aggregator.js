@@ -53,6 +53,16 @@ export default class Base {
             console.log("log: unable to get gas price", error);
         }
     }
+    isNativeAddresss(address) {
+        if ([
+            "0x0000000000000000000000000000000000000000",
+            "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "0x0000000000000000000000000000000000001010",
+            "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        ].includes(address))
+            return true;
+        return false;
+    }
     async init() { }
 }
 //# sourceMappingURL=base.aggregator.js.map

@@ -92,7 +92,9 @@ export default class KyberSwap extends Base {
             data: txData?.data,
             from: restProps.srcWalletAddress,
             to: txData?.routerAddress,
-            value: txData?.amountIn,
+            value: this.isNativeAddresss(restProps.quotePayload.tokenOut)
+                ? 0
+                : txData?.amountIn,
             gasLimit: Number(txData?.gas),
         };
         return {
