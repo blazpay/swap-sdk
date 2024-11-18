@@ -116,4 +116,4 @@ export const MESSAGE_TYPES = {
   ],
 };
 
-export const baseUrl = "https://api-v2.blazpay.com/api/defi";
+export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;

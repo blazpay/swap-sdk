@@ -1,10 +1,11 @@
 import { IQuoteParams, IRestQuoteProps, SwapParams } from "../@types/index.js";
 import { v4 as uuidv4 } from "uuid";
 import { BigNumber, ethers } from "ethers";
-import { apiCall } from "../utils/axios.js";
+// import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
+import axios from "axios";
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
@@ -43,19 +44,7 @@ export default class NitroAggregator extends Base {
       method: "GET",
       url: this.BASE_URL + "/v2/quote",
       params: body,
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "en-IN,en-GB;q=0.9,en;q=0.8,en-US;q=0.7",
-        "Sec-Ch-Ua": `"Chromium";v="118", "Microsoft Edge";v="118", "Not=A?Brand";v="99"`,
-        "Sec-Ch-Ua-Mobile": "?0",
-        "Sec-Ch-Ua-Platform": "macOS",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "cross-site",
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69",
-      },
+      
     });
 
     const platformFee = data.bridgeFee.amount
@@ -106,6 +95,7 @@ export default class NitroAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
+    
     const res = await apiCall({
       url: this.BASE_URL + "/v2/transaction",
       method: "POST",
@@ -115,13 +105,23 @@ export default class NitroAggregator extends Base {
         senderAddress: restProps.srcWalletAddress,
         receiverAddress: restProps.dstWalletAddress,
       },
-
       timeout: 20000,
     });
 
     return {
-      tx: res?.data?.txn,
+      tx: res?.txn,
       spender: data?.allowanceTo,
     };
+  }
+}
+
+async function apiCall(params: any) {
+  try {
+    const response = await axios(params);
+    console.log(response.data);
+    return response.data;
+  } catch (error: any) {
+    console.log("🚀 ~ apiCall ~ error:", error)
+    throw new Error(error);
   }
 }

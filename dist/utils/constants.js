@@ -112,5 +112,5 @@ export const MESSAGE_TYPES = {
         { name: "nonce", type: "uint256" },
     ],
 };
-export const baseUrl = "http://localhost:5000/api/defi";
+export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
 //# sourceMappingURL=constants.js.map
