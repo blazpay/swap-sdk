@@ -28,7 +28,7 @@ export const apiCall = async ({
     });
     return response.data;
   } catch (error: any) {
-    console.error("API call error:", error?.response?.data || error?.message);
+    // console.error("API call error:", error?.response?.data || error?.message);
     throw error;
   }
 };
