@@ -30,7 +30,6 @@ export default class LifiAggregator extends Base {
         });
         console.log("🚀 ~ LifiAggregator ~ getQuotes ~ data:", JSON.stringify(data, null, 2));
         const swapAmount = ethers.utils.formatUnits(data?.estimate?.toAmount, params.toToken.decimals);
-        console.log(data?.estimate?.feeCosts[0].length > 0, data?.estimate?.feeCosts[0]?.amount, data?.estimate?.feeCosts[0]?.token?.decimals, "log 43");
         const meta = {
             id: uuidv4(),
             aggregator: AGGREGATORS.LIFI,
@@ -38,7 +37,7 @@ export default class LifiAggregator extends Base {
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: 0,
             networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
-            platformFee: data?.estimate?.feeCosts.length > 0 ? `${Number(ethers.utils.formatUnits(data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString())?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
+            platformFee: data?.estimate?.feeCosts?.length > 0 ? `${Number(ethers.utils.formatUnits(data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString())?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
             priceImpact: 0,
             slippage: data?.action?.slippage || params.slippage || 0.5,
             allowanceTo: data?.transactionRequest?.to,

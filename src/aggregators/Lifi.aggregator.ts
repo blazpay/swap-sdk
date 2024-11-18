@@ -46,7 +46,7 @@ export default class LifiAggregator extends Base {
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
       networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
-      platformFee: data?.estimate?.feeCosts.length > 0 ?`${Number(
+      platformFee: data?.estimate?.feeCosts?.length > 0 ?`${Number(
         ethers.utils.formatUnits(
           data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString()
       )?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
