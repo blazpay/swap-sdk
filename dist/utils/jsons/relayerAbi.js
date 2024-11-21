@@ -1,4 +1,4 @@
-[
+export const relayerAbi = [
     {
         "inputs": [
             {
@@ -196,32 +196,6 @@
     },
     {
         "inputs": [],
-        "name": "DOMAIN_SEPARATOR",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "META_TRANSACTION_TYPEHASH",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "UPGRADE_INTERFACE_VERSION",
         "outputs": [
             {
@@ -254,13 +228,23 @@
                     },
                     {
                         "internalType": "uint256",
-                        "name": "nonce",
+                        "name": "amount",
                         "type": "uint256"
                     },
                     {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isNative",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
                     }
                 ],
                 "internalType": "struct BlazpayRelayer.MetaTransaction",
@@ -268,7 +252,7 @@
                 "type": "tuple"
             }
         ],
-        "name": "executeMetaTransaction",
+        "name": "executeMetaTransactionSwap",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function"
@@ -313,13 +297,23 @@
                     },
                     {
                         "internalType": "uint256",
-                        "name": "nonce",
+                        "name": "amount",
                         "type": "uint256"
                     },
                     {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isNative",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
                     }
                 ],
                 "internalType": "struct BlazpayRelayer.MetaTransaction",
@@ -335,7 +329,7 @@
                 "type": "bytes32"
             }
         ],
-        "stateMutability": "view",
+        "stateMutability": "pure",
         "type": "function"
     },
     {
@@ -349,25 +343,6 @@
         "name": "initialize",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "nonces",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -417,63 +392,10 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "_hash",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "bytes",
-                "name": "_signature",
-                "type": "bytes"
-            }
-        ],
-        "name": "recoverSigner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "pure",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes",
-                "name": "sig",
-                "type": "bytes"
-            }
-        ],
-        "name": "splitSignature",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "r",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "s",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "uint8",
-                "name": "v",
-                "type": "uint8"
-            }
-        ],
-        "stateMutability": "pure",
         "type": "function"
     },
     {
@@ -538,4 +460,5 @@
         "stateMutability": "payable",
         "type": "receive"
     }
-]
+];
+//# sourceMappingURL=relayerAbi.js.map

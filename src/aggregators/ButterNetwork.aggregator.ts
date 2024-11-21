@@ -77,17 +77,17 @@ export default class ButterNetworkAggregator extends Base {
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
     const txData = data?.txParam?.data[0];
-
+    
     const tx = {
       data: txData?.data,
       to: txData?.to,
       value: txData?.value,
       chainId: txData?.chainId,
     };
-
+    
     return {
       tx,
-      spender: data?.transactionRequest?.to,
+      spender: txData?.to
     };
   }
 }

@@ -2,6 +2,7 @@ import { IceCreamAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggreg
 import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import RelayerFactory from "./relayer.js";
+import { relayerAddresses } from './utils/constants.js';
 export class TradeManager {
     aggregatorFactory;
     constructor() {
@@ -48,4 +49,5 @@ export class TradeManager {
         return await relayerFactory.triggerContract(relayerTxData);
     }
 }
+export { relayerAddresses };
 //# sourceMappingURL=index.js.map

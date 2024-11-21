@@ -6,5 +6,8 @@ export interface IRelayerTxData {
         from?: string,
     },
     spender: string
+    amount: number,
+    token: string,
+    isNative: boolean,
 }
   

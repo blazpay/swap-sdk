@@ -69,7 +69,7 @@ export default class UnizenAggregator extends Base {
           (Number(data?.estimateGas || 0) * Number(data?.gasPrice))?.toString()
         )
       )?.toFixed(6)} NATIVE`,
-      platformFee: 0,
+      platformFee: `${Number(ethers.utils.formatEther(data?.transactionData?.params?.nativeFee)).toFixed(6)} POL`,
       priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,
       allowanceTo,

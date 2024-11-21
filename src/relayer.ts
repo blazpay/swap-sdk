@@ -1,13 +1,10 @@
-import { ethers } from "ethers";
-import { MESSAGE_TYPES, relayerAddresses } from "./utils/constants.js";
-import relayerAbi from "./utils/jsons/relayer.json" with { type: 'json' };
+import { BigNumber, ethers } from "ethers";
+import { addressE, addressZero, MESSAGE_TYPES, relayerAddresses } from "./utils/constants.js";
+import {relayerAbi} from "./utils/jsons/relayerAbi.js"
 import { IRelayerTxData } from "./@types/relayer.type.js"; 
 
 export class RelayerFactory {
   private provider: ethers.providers.Web3Provider
-
-
-
   
   constructor(_provider: ethers.providers.Web3Provider) {
     this.provider = _provider;
@@ -24,44 +21,27 @@ export class RelayerFactory {
       relayerAbi,
       signer
     );
+
     const metaTransaction = {
       user: address,
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
-      nonce: 1728461413034, // This nonce should be unique for the user
     };
 
-    const domain = {
-      name: "BlazpayRelayer",
-      version: "1",
-      chainId: chainId,
-      verifyingContract: relayerAddress,
-    }
-
-    console.log(domain, "domain")
-
-    const signature = await signer._signTypedData(
-      domain,
-      {
-        MetaTransaction: MESSAGE_TYPES.MetaTransaction
-      },
-      metaTransaction
-    );
-    console.log(signature, "signature")
-
-    console.log(metaTransaction, "metaTransaction")
-
-    const tx = await relayerContract.executeMetaTransaction(
+    const tx = await relayerContract.executeMetaTransactionSwap(
       {
         ...metaTransaction,
-        signature: signature,
+        // signature: signature,
+        spender: relayerTxData?.spender || addressZero,
+        amount: relayerTxData?.amount,
+        token: relayerTxData?.token,
+        isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE)
       },
-      { value: ethers.utils.parseEther("2"), gasLimit: 1000000 }
+      { value: relayerTxData?.tx?.value, gasLimit: 1000000 }
     );
 
     // // Wait for the transaction to be mined
     const receipt = await tx.wait();
-    console.log("Meta-transaction executed:", receipt);
     return receipt;
   }
 }

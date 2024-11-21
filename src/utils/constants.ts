@@ -96,7 +96,7 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 export const relayerAddresses: { [key: number]: string } = {
   56: "0x0000000000000000000000000000000000000000",
-  137: "0x9B3471de09Df61983AffbC044A99F56dEc51dE3E",
+  137: "0xB0c62d52b39c06c917BdACc56841a00d8eAaB8F1",
   1: "0x0000000000000000000000000000000000000000",
   42161: "0x0000000000000000000000000000000000000000",
 };

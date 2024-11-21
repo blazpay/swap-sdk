@@ -71,7 +71,7 @@ export default class ButterNetworkAggregator extends Base {
         };
         return {
             tx,
-            spender: data?.transactionRequest?.to,
+            spender: txData?.to
         };
     }
 }

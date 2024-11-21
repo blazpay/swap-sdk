@@ -28,7 +28,6 @@ export default class LifiAggregator extends Base {
             url: this.BASE_URL,
             params: query,
         });
-        console.log("🚀 ~ LifiAggregator ~ getQuotes ~ data:", JSON.stringify(data, null, 2));
         const swapAmount = ethers.utils.formatUnits(data?.estimate?.toAmount, params.toToken.decimals);
         const meta = {
             id: uuidv4(),

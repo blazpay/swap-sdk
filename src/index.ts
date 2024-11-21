@@ -18,6 +18,7 @@ import Quote from "./utils/quote.js";
 import { ethers } from "ethers";
 import { IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
+import {relayerAddresses} from './utils/constants.js'
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -96,3 +97,5 @@ export class TradeManager {
     return await relayerFactory.triggerContract(relayerTxData);
   }
 }
+
+export {relayerAddresses};

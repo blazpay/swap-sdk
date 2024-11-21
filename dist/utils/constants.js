@@ -94,16 +94,16 @@ export const addressZero = "0x0000000000000000000000000000000000000000";
 export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const relayerAddresses = {
     56: "0x0000000000000000000000000000000000000000",
-    137: "0x9B3471de09Df61983AffbC044A99F56dEc51dE3E",
+    137: "0xB0c62d52b39c06c917BdACc56841a00d8eAaB8F1",
     1: "0x0000000000000000000000000000000000000000",
-    42161: "0x0000000000000000000000000000000000000000"
+    42161: "0x0000000000000000000000000000000000000000",
 };
 export const MESSAGE_TYPES = {
     EIP712Domain: [
         { name: "name", type: "string" },
         { name: "version", type: "string" },
         { name: "chainId", type: "uint256" },
-        { name: "verifyingContract", type: "address" }
+        { name: "verifyingContract", type: "address" },
     ],
     MetaTransaction: [
         { name: "user", type: "address" },
