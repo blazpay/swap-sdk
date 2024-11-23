@@ -38,9 +38,10 @@ export default class OpenOceanAggregator extends Base {
         amount: Number(params.amount),
         slippage: 0.5,
         gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
-        account: params.srcWalletAddress,
+        account: params?.dstWalletAddress || params.srcWalletAddress,
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
         referrerFee: 0.01,
+        sender: params.srcWalletAddress
       };
     } else {
       query = {

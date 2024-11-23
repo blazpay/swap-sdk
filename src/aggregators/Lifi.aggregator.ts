@@ -16,6 +16,7 @@ export default class LifiAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
+    console.log()
     const query = {
       fromChain: params.fromChain.id,
       toChain: params.toChain.id,
@@ -25,6 +26,7 @@ export default class LifiAggregator extends Base {
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       fromAddress: params.srcWalletAddress,
+      toAddress: params?.dstWalletAddress || params.srcWalletAddress
     };
 
     const data = await apiCall({

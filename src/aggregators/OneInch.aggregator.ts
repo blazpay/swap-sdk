@@ -23,6 +23,7 @@ export default class OneInchAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
+    console.log("🚀 ~ OneInchAggregator ~ getQuotes ~ getQuotes:")
     const query = {
       src:
         params.fromToken.address === addressZero

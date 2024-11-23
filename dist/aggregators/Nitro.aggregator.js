@@ -36,8 +36,9 @@ export default class NitroAggregator extends Base {
             url: this.BASE_URL + "/v2/quote",
             params: body,
         });
-        const platformFee = data.bridgeFee.amount
-            ? Number(Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4))
+        const platformFee = data?.bridgeFee?.amount
+            ?
+                `${Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)} ${data?.bridgeFee?.symbol}`
             : 0;
         const meta = {
             id: uuidv4(),
@@ -88,7 +89,6 @@ export default class NitroAggregator extends Base {
 async function apiCall(params) {
     try {
         const response = await axios(params);
-        console.log(response.data);
         return response.data;
     }
     catch (error) {

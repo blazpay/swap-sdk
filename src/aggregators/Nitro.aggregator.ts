@@ -44,13 +44,12 @@ export default class NitroAggregator extends Base {
       method: "GET",
       url: this.BASE_URL + "/v2/quote",
       params: body,
-      
+
     });
 
-    const platformFee = data.bridgeFee.amount
-      ? Number(
-          Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)
-        )
+    const platformFee = data?.bridgeFee?.amount
+      ?
+      `${Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)} ${data?.bridgeFee?.symbol}`
       : 0;
 
     const meta = {
@@ -95,7 +94,7 @@ export default class NitroAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
-    
+
     const res = await apiCall({
       url: this.BASE_URL + "/v2/transaction",
       method: "POST",
@@ -118,7 +117,6 @@ export default class NitroAggregator extends Base {
 async function apiCall(params: any) {
   try {
     const response = await axios(params);
-    console.log(response.data);
     return response.data;
   } catch (error: any) {
     console.log("🚀 ~ apiCall ~ error:", error)

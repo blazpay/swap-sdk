@@ -13,6 +13,7 @@ export default class LifiAggregator extends Base {
         this.BASE_URL = "https://li.quest/v1/quote";
     }
     async getQuotes(params) {
+        console.log();
         const query = {
             fromChain: params.fromChain.id,
             toChain: params.toChain.id,
@@ -22,6 +23,7 @@ export default class LifiAggregator extends Base {
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString(),
             fromAddress: params.srcWalletAddress,
+            toAddress: params?.dstWalletAddress || params.srcWalletAddress
         };
         const data = await apiCall({
             method: "GET",

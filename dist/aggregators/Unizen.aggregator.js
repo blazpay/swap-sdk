@@ -28,6 +28,7 @@ export default class UnizenAggregator extends Base {
             fromChainId: params.fromChain.id,
             type: params.type,
             destinationChainId: params.toChain.id,
+            receiver: params?.dstWalletAddress || params?.srcWalletAddress
         };
         const res = await apiCall({
             method: "POST",
@@ -52,7 +53,7 @@ export default class UnizenAggregator extends Base {
                 ? data?.tokenTo?.priceInUsd
                 : data?.srcTrade?.tokenTo?.priceInUsd,
             networkFee: `${Number(ethers.utils.formatEther((Number(data?.estimateGas || 0) * Number(data?.gasPrice))?.toString()))?.toFixed(6)} NATIVE`,
-            platformFee: `${Number(ethers.utils.formatEther(data?.transactionData?.params?.nativeFee)).toFixed(6)} POL`,
+            platformFee: data?.transactionData?.params?.nativeFee ? `${Number(ethers.utils.formatEther(data?.transactionData?.params?.nativeFee || 0)).toFixed(6)} POL` : 0,
             priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
             slippage: this.slippage,
             allowanceTo,
@@ -85,6 +86,7 @@ export default class UnizenAggregator extends Base {
         };
         if (restProps.type === "SWAP") {
             payload.tradeType = data?.tradeType;
+            payload.receiver = restProps?.dstWalletAddress || restProps?.srcWalletAddress;
         }
         const res = await apiCall({
             method: "POST",

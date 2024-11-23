@@ -208,64 +208,8 @@ export const relayerAbi = [
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "targetContract",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "data",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "isNative",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "spender",
-                        "type": "address"
-                    }
-                ],
-                "internalType": "struct BlazpayRelayer.MetaTransaction",
-                "name": "_metaTx",
-                "type": "tuple"
-            }
-        ],
-        "name": "executeMetaTransactionSwap",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "name": "executedTransactions",
+        "inputs": [],
+        "name": "enableFees",
         "outputs": [
             {
                 "internalType": "bool",
@@ -314,6 +258,98 @@ export const relayerAbi = [
                         "internalType": "address",
                         "name": "spender",
                         "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nativeValue",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct BlazpayRelayer.MetaTransaction",
+                "name": "_metaTx",
+                "type": "tuple"
+            }
+        ],
+        "name": "executeMetaTransactionSwap",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "executedTransactions",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "feeAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "targetContract",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isNative",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nativeValue",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct BlazpayRelayer.MetaTransaction",
@@ -330,6 +366,19 @@ export const relayerAbi = [
             }
         ],
         "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "inPercentFee",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -394,6 +443,37 @@ export const relayerAbi = [
     {
         "inputs": [],
         "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "_enableFees",
+                "type": "bool"
+            }
+        ],
+        "name": "setFeeEnable",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_feeAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_inPercentFee",
+                "type": "uint256"
+            }
+        ],
+        "name": "setFees",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

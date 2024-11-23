@@ -97,7 +97,7 @@ export default class KyberSwap extends Base {
     const payload = {
       routeSummary: data?.routeSummary,
       sender: restProps.srcWalletAddress,
-      recipient: restProps.dstWalletAddress,
+      recipient: restProps?.dstWalletAddress || restProps.srcWalletAddress,
       slippageTolerance: 50,
       source: "blazpay",
     };

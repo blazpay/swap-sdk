@@ -40,9 +40,7 @@ export default class SymbiosisAggregator extends Base {
         decimals: params?.toToken.decimals,
       },
       from: params?.srcWalletAddress,
-      to: params?.dstWalletAddress
-        ? params.dstWalletAddress
-        : params.srcWalletAddress,
+      to: params?.dstWalletAddress || params.srcWalletAddress,
       slippage: 300,
     };
 
@@ -63,8 +61,8 @@ export default class SymbiosisAggregator extends Base {
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
       networkFee: 0,
-      platformFee: 0,
-      priceImpact: 0,
+      platformFee: data?.fee?.amount ? `${Number(data?.fee?.amount) / Math.pow(10, data?.fee?.decimals)} ${data?.fee?.symbol}` : 0,
+      priceImpact: Number(data?.priceImpact || 0),
       slippage: this.slippage,
       allowanceTo: data?.approveTo,
     };
