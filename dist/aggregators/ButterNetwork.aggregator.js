@@ -13,7 +13,6 @@ export default class ButterNetworkAggregator extends Base {
         this.BASE_URL = "https://bs-router-v3.chainservice.io/routeAndSwap";
     }
     async getQuotes(params) {
-        console.log("🚀 ~ ButterNetworkAggregator ~ getQuotes ~ params:", params);
         const query = {
             fromChainId: params.fromChain.id,
             toChainId: params.toChain.id,

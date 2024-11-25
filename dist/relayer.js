@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import { addressE, addressZero, relayerAddresses } from "./utils/constants.js";
+import { addressE, addressZero, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
 import { relayerAbi } from "./utils/jsons/relayerAbi.js";
 export class RelayerFactory {
     provider;
@@ -41,6 +41,35 @@ export class RelayerFactory {
         }, { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate });
         const receipt = await tx.wait();
         return receipt;
+    }
+    getMetaTransactionByteData(relayerTxData) {
+        const relayerAddress = relayerAddresses(relayerTxData?.chainId);
+        let approvalData;
+        if (!relayerTxData?.isNative) {
+            const tokenInterface = new ethers.utils.Interface(ERC20_ABI);
+            approvalData = tokenInterface.encodeFunctionData("approve", [
+                relayerAddress,
+                relayerTxData?.amount,
+            ]);
+        }
+        const relayerInterface = new ethers.utils.Interface(relayerAbi);
+        const metaTransaction = {
+            user: relayerTxData?.userAddress,
+            targetContract: relayerTxData?.tx?.to,
+            data: relayerTxData?.tx?.data,
+            spender: relayerTxData?.spender || addressZero,
+            amount: relayerTxData?.amount,
+            token: relayerTxData?.token,
+            isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
+        };
+        const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+        const executeData = relayerInterface.encodeFunctionData("executeMetaTransactionSwap", [metaTransaction]);
+        return {
+            approvalData,
+            executeData,
+            value,
+            to: relayerAddress
+        };
     }
 }
 export default RelayerFactory;

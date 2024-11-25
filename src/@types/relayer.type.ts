@@ -8,6 +8,13 @@ export interface IRelayerTxData {
     spender: string
     amount: number,
     token: string,
-    isNative: boolean,
+    isNative: boolean
 }
-  
+
+export interface ITokenAndWalletInfo {
+    userAddress: string,
+    decimals: number,
+    chainId: number
+}
+
+export interface IRelayerRawTxData extends IRelayerTxData, ITokenAndWalletInfo {}

@@ -48,6 +48,10 @@ export class TradeManager {
         const relayerFactory = new RelayerFactory(provider);
         return await relayerFactory.triggerContract(relayerTxData);
     }
+    sendSignTxDataRaw(relayerTxData) {
+        const relayerFactory = new RelayerFactory();
+        return relayerFactory.getMetaTransactionByteData(relayerTxData);
+    }
 }
 export { relayerAddresses };
 //# sourceMappingURL=index.js.map

@@ -99,4 +99,7 @@ export const relayerAddresses = (chain) => {
         return '0x10c112A6032dC97ec8854457FA3961D29dB2045A';
 };
 export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
+export const ERC20_ABI = [
+    "function approve(address spender, uint256 amount) public"
+];
 //# sourceMappingURL=constants.js.map

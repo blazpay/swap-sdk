@@ -16,7 +16,6 @@ export default class ButterNetworkAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote[]> {
-    console.log("🚀 ~ ButterNetworkAggregator ~ getQuotes ~ params:", params)
     const query = {
       fromChainId: params.fromChain.id,
       toChainId: params.toChain.id,

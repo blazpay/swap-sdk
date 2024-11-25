@@ -59,3 +59,4 @@ export declare const addressZero = "0x0000000000000000000000000000000000000000";
 export declare const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export declare const relayerAddresses: (chain: number) => string;
 export declare const baseUrl: string;
+export declare const ERC20_ABI: string[];
