@@ -16,7 +16,7 @@ import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import Quote from "./utils/quote.js";
 import { ethers } from "ethers";
-import { IRelayerTxData } from "./@types/relayer.type.js";
+import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
 import {relayerAddresses} from './utils/constants.js'
 
@@ -95,6 +95,13 @@ export class TradeManager {
   ) {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.triggerContract(relayerTxData);
+  }
+
+  sendSignTxDataRaw(
+    relayerTxData: IRelayerRawTxData
+  ) {
+    const relayerFactory = new RelayerFactory();
+    return relayerFactory.getMetaTransactionByteData(relayerTxData);
   }
 }
 

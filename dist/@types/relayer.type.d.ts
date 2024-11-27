@@ -10,3 +10,10 @@ export interface IRelayerTxData {
     token: string;
     isNative: boolean;
 }
+export interface ITokenAndWalletInfo {
+    userAddress: string;
+    decimals: number;
+    chainId: number;
+}
+export interface IRelayerRawTxData extends IRelayerTxData, ITokenAndWalletInfo {
+}
