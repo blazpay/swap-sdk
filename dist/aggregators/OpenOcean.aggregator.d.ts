@@ -14,4 +14,5 @@ export default class OpenOceanAggregator extends Base {
         tx: any;
         spender: string;
     }>;
+    getTxStatus(chainId: number, hash: string): Promise<any>;
 }

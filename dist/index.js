@@ -44,6 +44,9 @@ export class TradeManager {
         };
         await this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
     }
+    async getTxStatus(queries) {
+        await this.aggregatorFactory.getStatus(queries);
+    }
     async triggerTransaction(provider, relayerTxData) {
         const relayerFactory = new RelayerFactory(provider);
         return await relayerFactory.triggerContract(relayerTxData);

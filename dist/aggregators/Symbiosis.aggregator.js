@@ -4,6 +4,7 @@ import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
+import { routers } from "../utils/constants.js";
 export default class SymbiosisAggregator extends Base {
     name;
     BASE_URL;
@@ -75,6 +76,16 @@ export default class SymbiosisAggregator extends Base {
         return {
             tx: data?.tx,
             spender: data?.approveTo,
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['symbiosis']}${chainId}/${hash}`,
+        });
+        return {
+            status: res?.data?.status === 1 ? 'pending' : res?.data?.status === 0 ? 'success' : res?.data?.status === 2 ? 'stucked' : res?.data?.status === 3 ? "failed" : "not found",
+            hash
         };
     }
 }

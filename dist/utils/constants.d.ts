@@ -60,3 +60,11 @@ export declare const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export declare const relayerAddresses: (chain: number) => string;
 export declare const baseUrl: string;
 export declare const ERC20_ABI: string[];
+export declare const routers: {
+    nitro: string;
+    open_ocean: string;
+    butter_network: string;
+    symbiosis: string;
+    unizen: string;
+    lifi: string;
+};

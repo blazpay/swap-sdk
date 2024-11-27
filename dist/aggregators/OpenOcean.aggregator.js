@@ -4,6 +4,7 @@ import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
+import { routers } from "../utils/constants.js";
 export default class OpenOceanAggregator extends Base {
     name;
     BASE_URL;
@@ -166,6 +167,16 @@ export default class OpenOceanAggregator extends Base {
                 spender: meta?.allowanceTo,
             };
         }
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['open_ocean']}?hash=${hash}&chainId=${chainId}`,
+        });
+        return {
+            status: res?.data?.data?.status === 3 ? 'pending' : res?.data?.data?.status === 5 ? 'success' : 'failed',
+            hash
+        };
     }
 }
 //# sourceMappingURL=OpenOcean.aggregator.js.map

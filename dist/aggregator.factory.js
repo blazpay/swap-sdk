@@ -34,6 +34,12 @@ export class AggregatorFactory {
         await Promise.all(promises);
         onLastQuote(true);
     }
+    async getStatus(queryStatusParam) {
+        await Promise.all(queryStatusParam?.map((value) => {
+            const aggregator = this.getAggregator(value?.provider);
+            return aggregator.getTxStatus(value.chainId, value.hash);
+        }));
+    }
 }
 const aggregatorFactory = new AggregatorFactory();
 export default aggregatorFactory;

@@ -6,6 +6,7 @@ import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import axios from "axios";
+import { routers } from "../utils/constants.js";
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
@@ -111,6 +112,17 @@ export default class NitroAggregator extends Base {
       tx: res?.txn,
       spender: data?.allowanceTo,
     };
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    const res = await apiCall({
+      method: "GET",
+      url: `${routers['nitro']}?srcTxHash=${hash}`,
+    });
+    return {
+      status: res?.data?.status === 'completed' ? 'success' : res?.data?.status === 'pending' ? 'pending' : 'failed',
+      hash
+    }
   }
 }
 

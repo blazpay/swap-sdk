@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
-import { baseUrl, getContractAddressByChainId } from "../utils/constants.js";
+import { baseUrl, getContractAddressByChainId, routers } from "../utils/constants.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
@@ -122,6 +122,20 @@ export default class UnizenAggregator extends Base {
             console.log(error, "error");
             throw error;
         }
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['unizen']}${chainId}/${hash}`,
+            headers: {
+                "Authorization": "96e0970d-75d5-4fec-848e-ead4b4fb1e47"
+            },
+        });
+        const data = await res.json();
+        return {
+            status: data?.status === 1 ? 'success' : data?.status === 0 ? 'failed' : 'pending',
+            hash
+        };
     }
 }
 //# sourceMappingURL=Unizen.aggregator.js.map

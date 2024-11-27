@@ -1,5 +1,6 @@
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import { apiCall } from "../utils/axios.js";
+import { routers } from "../utils/constants.js";
 import Quote from "../utils/quote.js";
 import { Base } from "./index.js";
 import { v4 as uuidv4 } from "uuid";
@@ -72,6 +73,16 @@ export default class ButterNetworkAggregator extends Base {
         return {
             tx,
             spender: txData?.to
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['butter_network']}?hash=${hash}`,
+        });
+        return {
+            status: res.data?.data?.status === 0 ? "pending" : res.data?.data?.status === 1 ? "success" : "failed",
+            hash
         };
     }
 }

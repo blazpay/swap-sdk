@@ -10,4 +10,5 @@ export default class ButterNetworkAggregator extends Base {
         tx: any;
         spender: string;
     }>;
+    getTxStatus(chainId: number, hash: string): Promise<any>;
 }

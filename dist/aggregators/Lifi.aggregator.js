@@ -4,6 +4,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
+import { routers } from "../utils/constants.js";
 export default class LifiAggregator extends Base {
     BASE_URL;
     name;
@@ -71,6 +72,16 @@ export default class LifiAggregator extends Base {
         return {
             tx,
             spender: data?.transactionRequest?.to,
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['symbiosis']}?txHash=${hash}`,
+        });
+        return {
+            status: res?.data?.status === 'PENDING' ? 'pending' : res?.data?.status === 'DONE' ? 'success' : res?.data?.status === 'FAILED' ? "failed" : "not found",
+            hash
         };
     }
 }

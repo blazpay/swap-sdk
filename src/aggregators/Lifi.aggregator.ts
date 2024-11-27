@@ -5,6 +5,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
+import { routers } from "../utils/constants.js";
 
 export default class LifiAggregator extends Base {
   BASE_URL: string;
@@ -47,7 +48,7 @@ export default class LifiAggregator extends Base {
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
       networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
-      platformFee: data?.estimate?.feeCosts?.length > 0 ?`${Number(
+      platformFee: data?.estimate?.feeCosts?.length > 0 ? `${Number(
         ethers.utils.formatUnits(
           data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString()
       )?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
@@ -91,5 +92,16 @@ export default class LifiAggregator extends Base {
       tx,
       spender: data?.transactionRequest?.to,
     };
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    const res = await apiCall({
+      method: "GET",
+      url: `${routers['symbiosis']}?txHash=${hash}`,
+    });
+    return {
+      status: res?.data?.status === 'PENDING' ? 'pending' : res?.data?.status === 'DONE' ? 'success' : res?.data?.status === 'FAILED' ? "failed" : "not found",
+      hash
+    }
   }
 }

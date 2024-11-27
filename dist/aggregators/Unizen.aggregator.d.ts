@@ -10,4 +10,5 @@ export default class UnizenAggregator extends Base {
     getQuotes(params: IQuoteParams): Promise<Quote>;
     getTransactionData(data: any, restProps: IRestQuoteProps): Promise<ITxnRes>;
     getSpender(chainId: number): Promise<any>;
+    getTxStatus(chainId: number, hash: string): Promise<any>;
 }

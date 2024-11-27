@@ -19,6 +19,7 @@ import { ethers } from "ethers";
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
 import {relayerAddresses} from './utils/constants.js'
+import { IQueryStatus } from "./utils/types.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -87,6 +88,10 @@ export class TradeManager {
       handleQuote,
       handleLastQuote
     );
+  }
+
+  async getTxStatus(queries: IQueryStatus[]) : Promise<any> {
+    await this.aggregatorFactory.getStatus(queries);
   }
 
   async triggerTransaction(

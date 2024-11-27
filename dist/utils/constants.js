@@ -102,4 +102,12 @@ export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
 export const ERC20_ABI = [
     "function approve(address spender, uint256 amount) public"
 ];
+export const routers = {
+    nitro: 'https://api-beta.pathfinder.routerprotocol.com/api/v2/status',
+    open_ocean: 'https://open-api.openocean.finance/cross_chain/v1/cross/getCrossStatus',
+    butter_network: 'https://bs-app-api.chainservice.io/api/queryBridgeInfoBySourceHash',
+    symbiosis: 'https://api.symbiosis.finance/crosschain/tx/',
+    unizen: 'https://api.zcx.com/trade/v1/info/trade/',
+    lifi: 'https://li.quest/v1/status'
+};
 //# sourceMappingURL=constants.js.map
