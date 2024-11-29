@@ -8,7 +8,7 @@ export declare class TradeManager {
     aggregatorFactory: AggregatorFactory;
     constructor();
     getQuotes(params: IBaseQuoteParams): Promise<void>;
-    getTxStatus(queries: IQueryStatus[]): Promise<any>;
+    getTransactionStatus(queries: IQueryStatus[]): Promise<any>;
     triggerTransaction(provider: ethers.providers.Web3Provider, relayerTxData: IRelayerTxData): Promise<any>;
     sendSignTxDataRaw(relayerTxData: IRelayerRawTxData): {
         approvalData: string | undefined;

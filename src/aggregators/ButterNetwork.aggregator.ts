@@ -98,7 +98,7 @@ export default class ButterNetworkAggregator extends Base {
       url: `${routers['butter_network']}?hash=${hash}`,
     });
     return {
-      status: res.data?.data?.status === 0 ? "pending" : res.data?.data?.status === 1 ? "success" : "failed",
+      status: res?.data?.status === 0 ? "pending" : res?.data?.status === 1 ? "success" : "failed",
       hash
     }
   }

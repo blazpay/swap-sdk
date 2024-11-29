@@ -90,8 +90,8 @@ export class TradeManager {
     );
   }
 
-  async getTxStatus(queries: IQueryStatus[]) : Promise<any> {
-    await this.aggregatorFactory.getStatus(queries);
+  async getTransactionStatus(queries: IQueryStatus[]) : Promise<any> {
+    return await this.aggregatorFactory.getStatus(queries);
   }
 
   async triggerTransaction(

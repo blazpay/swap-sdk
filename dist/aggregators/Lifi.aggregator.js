@@ -77,10 +77,11 @@ export default class LifiAggregator extends Base {
     async getTxStatus(chainId, hash) {
         const res = await apiCall({
             method: "GET",
-            url: `${routers['symbiosis']}?txHash=${hash}`,
+            url: `${routers['lifi']}?txHash=${hash}`,
         });
+        console.log(res?.status, "lifi tx status");
         return {
-            status: res?.data?.status === 'PENDING' ? 'pending' : res?.data?.status === 'DONE' ? 'success' : res?.data?.status === 'FAILED' ? "failed" : "not found",
+            status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not found",
             hash
         };
     }

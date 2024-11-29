@@ -92,7 +92,7 @@ export default class NitroAggregator extends Base {
             url: `${routers['nitro']}?srcTxHash=${hash}`,
         });
         return {
-            status: res?.data?.status === 'completed' ? 'success' : res?.data?.status === 'pending' ? 'pending' : 'failed',
+            status: res?.status === 'completed' ? 'success' : res?.status === 'pending' ? 'pending' : 'failed',
             hash
         };
     }

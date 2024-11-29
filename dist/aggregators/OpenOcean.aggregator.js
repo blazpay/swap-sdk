@@ -174,7 +174,7 @@ export default class OpenOceanAggregator extends Base {
             url: `${routers['open_ocean']}?hash=${hash}&chainId=${chainId}`,
         });
         return {
-            status: res?.data?.data?.status === 3 ? 'pending' : res?.data?.data?.status === 5 ? 'success' : 'failed',
+            status: res?.data?.status === 3 ? 'pending' : res?.data?.status === 5 ? 'success' : 'failed',
             hash
         };
     }
