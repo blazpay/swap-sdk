@@ -5,6 +5,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
+import { routers } from "../utils/constants.js";
 
 export default class LifiAggregator extends Base {
   BASE_URL: string;
@@ -16,6 +17,7 @@ export default class LifiAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
+    console.log()
     const query = {
       fromChain: params.fromChain.id,
       toChain: params.toChain.id,
@@ -25,6 +27,7 @@ export default class LifiAggregator extends Base {
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       fromAddress: params.srcWalletAddress,
+      toAddress: params?.dstWalletAddress || params.srcWalletAddress
     };
 
     const data = await apiCall({
@@ -32,7 +35,6 @@ export default class LifiAggregator extends Base {
       url: this.BASE_URL,
       params: query,
     });
-    console.log("🚀 ~ LifiAggregator ~ getQuotes ~ data:", JSON.stringify(data, null, 2))
 
     const swapAmount = ethers.utils.formatUnits(
       data?.estimate?.toAmount,
@@ -46,7 +48,7 @@ export default class LifiAggregator extends Base {
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: 0,
       networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
-      platformFee: data?.estimate?.feeCosts?.length > 0 ?`${Number(
+      platformFee: data?.estimate?.feeCosts?.length > 0 ? `${Number(
         ethers.utils.formatUnits(
           data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString()
       )?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
@@ -90,5 +92,17 @@ export default class LifiAggregator extends Base {
       tx,
       spender: data?.transactionRequest?.to,
     };
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    const res = await apiCall({
+      method: "GET",
+      url: `${routers['lifi']}?txHash=${hash}`,
+    });
+    console.log(res?.status, "lifi tx status");
+    return {
+      status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not found",
+      hash
+    }
   }
 }

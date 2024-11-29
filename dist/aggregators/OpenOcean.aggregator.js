@@ -4,6 +4,7 @@ import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
+import { routers } from "../utils/constants.js";
 export default class OpenOceanAggregator extends Base {
     name;
     BASE_URL;
@@ -33,9 +34,10 @@ export default class OpenOceanAggregator extends Base {
                 amount: Number(params.amount),
                 slippage: 0.5,
                 gasPrice: (await this.getGasPrice(params.fromChain.id))?.standard || 60,
-                account: params.srcWalletAddress,
+                account: params?.dstWalletAddress || params.srcWalletAddress,
                 referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
                 referrerFee: 0.01,
+                sender: params.srcWalletAddress
             };
         }
         else {
@@ -165,6 +167,16 @@ export default class OpenOceanAggregator extends Base {
                 spender: meta?.allowanceTo,
             };
         }
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['open_ocean']}?hash=${hash}&chainId=${chainId}`,
+        });
+        return {
+            status: res?.data?.status === 3 ? 'pending' : res?.data?.status === 5 ? 'success' : 'failed',
+            hash
+        };
     }
 }
 //# sourceMappingURL=OpenOcean.aggregator.js.map

@@ -4,6 +4,7 @@ import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
+import { routers } from "../utils/constants.js";
 export default class SymbiosisAggregator extends Base {
     name;
     BASE_URL;
@@ -32,9 +33,7 @@ export default class SymbiosisAggregator extends Base {
                 decimals: params?.toToken.decimals,
             },
             from: params?.srcWalletAddress,
-            to: params?.dstWalletAddress
-                ? params.dstWalletAddress
-                : params.srcWalletAddress,
+            to: params?.dstWalletAddress || params.srcWalletAddress,
             slippage: 300,
         };
         const data = await apiCall({
@@ -52,8 +51,8 @@ export default class SymbiosisAggregator extends Base {
             amount: Number(Number(swapAmount).toFixed(4)),
             usdAmount: 0,
             networkFee: 0,
-            platformFee: 0,
-            priceImpact: 0,
+            platformFee: data?.fee?.amount ? `${Number(data?.fee?.amount) / Math.pow(10, data?.fee?.decimals)} ${data?.fee?.symbol}` : 0,
+            priceImpact: Number(data?.priceImpact || 0),
             slippage: this.slippage,
             allowanceTo: data?.approveTo,
         };
@@ -77,6 +76,16 @@ export default class SymbiosisAggregator extends Base {
         return {
             tx: data?.tx,
             spender: data?.approveTo,
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['symbiosis']}${chainId}/${hash}`,
+        });
+        return {
+            status: res?.data?.status === 1 ? 'pending' : res?.data?.status === 0 ? 'success' : res?.data?.status === 2 ? 'stucked' : res?.data?.status === 3 ? "failed" : "not found",
+            hash
         };
     }
 }

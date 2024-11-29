@@ -1,4 +1,4 @@
-[
+export const relayerAbi = [
     {
         "inputs": [
             {
@@ -196,32 +196,6 @@
     },
     {
         "inputs": [],
-        "name": "DOMAIN_SEPARATOR",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "META_TRANSACTION_TYPEHASH",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "UPGRADE_INTERFACE_VERSION",
         "outputs": [
             {
@@ -234,54 +208,8 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "targetContract",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "data",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "nonce",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
-                ],
-                "internalType": "struct BlazpayRelayer.MetaTransaction",
-                "name": "_metaTx",
-                "type": "tuple"
-            }
-        ],
-        "name": "executeMetaTransaction",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "",
-                "type": "bytes32"
-            }
-        ],
-        "name": "executedTransactions",
+        "inputs": [],
+        "name": "enableFees",
         "outputs": [
             {
                 "internalType": "bool",
@@ -313,13 +241,115 @@
                     },
                     {
                         "internalType": "uint256",
-                        "name": "nonce",
+                        "name": "amount",
                         "type": "uint256"
                     },
                     {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isNative",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nativeValue",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct BlazpayRelayer.MetaTransaction",
+                "name": "_metaTx",
+                "type": "tuple"
+            }
+        ],
+        "name": "executeMetaTransactionSwap",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "executedTransactions",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "feeAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "targetContract",
+                        "type": "address"
+                    },
+                    {
                         "internalType": "bytes",
-                        "name": "signature",
+                        "name": "data",
                         "type": "bytes"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isNative",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "nativeValue",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct BlazpayRelayer.MetaTransaction",
@@ -333,6 +363,19 @@
                 "internalType": "bytes32",
                 "name": "",
                 "type": "bytes32"
+            }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "inPercentFee",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -349,25 +392,6 @@
         "name": "initialize",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "nonces",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -417,30 +441,6 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "_hash",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "bytes",
-                "name": "_signature",
-                "type": "bytes"
-            }
-        ],
-        "name": "recoverSigner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "pure",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "renounceOwnership",
         "outputs": [],
@@ -450,30 +450,32 @@
     {
         "inputs": [
             {
-                "internalType": "bytes",
-                "name": "sig",
-                "type": "bytes"
+                "internalType": "bool",
+                "name": "_enableFees",
+                "type": "bool"
             }
         ],
-        "name": "splitSignature",
-        "outputs": [
+        "name": "setFeeEnable",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
             {
-                "internalType": "bytes32",
-                "name": "r",
-                "type": "bytes32"
+                "internalType": "uint256",
+                "name": "_feeAmount",
+                "type": "uint256"
             },
             {
-                "internalType": "bytes32",
-                "name": "s",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "uint8",
-                "name": "v",
-                "type": "uint8"
+                "internalType": "uint256",
+                "name": "_inPercentFee",
+                "type": "uint256"
             }
         ],
-        "stateMutability": "pure",
+        "name": "setFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -538,4 +540,5 @@
         "stateMutability": "payable",
         "type": "receive"
     }
-]
+];
+//# sourceMappingURL=relayerAbi.js.map

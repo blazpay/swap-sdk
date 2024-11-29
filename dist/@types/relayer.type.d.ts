@@ -6,4 +6,14 @@ export interface IRelayerTxData {
         from?: string;
     };
     spender: string;
+    amount: number;
+    token: string;
+    isNative: boolean;
+}
+export interface ITokenAndWalletInfo {
+    userAddress: string;
+    decimals: number;
+    chainId: number;
+}
+export interface IRelayerRawTxData extends IRelayerTxData, ITokenAndWalletInfo {
 }

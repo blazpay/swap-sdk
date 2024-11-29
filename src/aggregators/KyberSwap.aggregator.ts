@@ -5,6 +5,7 @@ import Quote from "../utils/quote.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import { v4 as uuidv4 } from "uuid";
+import { routers } from "../utils/constants.js";
 
 export default class KyberSwap extends Base {
   name: string;
@@ -97,7 +98,7 @@ export default class KyberSwap extends Base {
     const payload = {
       routeSummary: data?.routeSummary,
       sender: restProps.srcWalletAddress,
-      recipient: restProps.dstWalletAddress,
+      recipient: restProps?.dstWalletAddress || restProps.srcWalletAddress,
       slippageTolerance: 50,
       source: "blazpay",
     };
@@ -125,4 +126,5 @@ export default class KyberSwap extends Base {
       spender: data?.routerAddress,
     };
   }
+
 }

@@ -16,8 +16,10 @@ import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import Quote from "./utils/quote.js";
 import { ethers } from "ethers";
-import { IRelayerTxData } from "./@types/relayer.type.js";
+import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
+import {relayerAddresses} from './utils/constants.js'
+import { IQueryStatus } from "./utils/types.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -88,6 +90,10 @@ export class TradeManager {
     );
   }
 
+  async getTransactionStatus(queries: IQueryStatus[]) : Promise<any> {
+    return await this.aggregatorFactory.getStatus(queries);
+  }
+
   async triggerTransaction(
     provider: ethers.providers.Web3Provider,
     relayerTxData: IRelayerTxData
@@ -95,4 +101,13 @@ export class TradeManager {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.triggerContract(relayerTxData);
   }
+
+  sendSignTxDataRaw(
+    relayerTxData: IRelayerRawTxData
+  ) {
+    const relayerFactory = new RelayerFactory();
+    return relayerFactory.getMetaTransactionByteData(relayerTxData);
+  }
 }
+
+export {relayerAddresses};

@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { IQuoteParams, ITxnRes, SwapParams } from "../@types/index.js";
 import { Base } from "./index.js";
 import { apiCall } from "../utils/axios.js";
-import { baseUrl, getContractAddressByChainId } from "../utils/constants.js";
+import { baseUrl, getContractAddressByChainId, routers } from "../utils/constants.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
@@ -32,6 +32,7 @@ export default class UnizenAggregator extends Base {
       fromChainId: params.fromChain.id,
       type: params.type,
       destinationChainId: params.toChain.id,
+      receiver: params?.dstWalletAddress || params?.srcWalletAddress
     };
 
     const res = await apiCall({
@@ -69,7 +70,7 @@ export default class UnizenAggregator extends Base {
           (Number(data?.estimateGas || 0) * Number(data?.gasPrice))?.toString()
         )
       )?.toFixed(6)} NATIVE`,
-      platformFee: 0,
+      platformFee: data?.transactionData?.params?.nativeFee? `${Number(ethers.utils.formatEther(data?.transactionData?.params?.nativeFee || 0)).toFixed(6)} POL` : 0,
       priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,
       allowanceTo,
@@ -109,6 +110,7 @@ export default class UnizenAggregator extends Base {
 
     if (restProps.type === "SWAP") {
       payload.tradeType = data?.tradeType;
+      payload.receiver = restProps?.dstWalletAddress || restProps?.srcWalletAddress
     }
 
     const res = await apiCall({
@@ -147,6 +149,21 @@ export default class UnizenAggregator extends Base {
     } catch (error) {
       console.log(error, "error");
       throw error;
+    }
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    const res = await apiCall({
+      method: "GET",
+      url: `${routers['unizen']}${chainId}/${hash}`,
+      headers: {
+        "Authorization": "96e0970d-75d5-4fec-848e-ead4b4fb1e47"
+      },
+    });
+    const data = await res.json();
+    return {
+      status: data?.status === 1? 'success' : data?.status === 0 ? 'failed': 'pending',
+      hash
     }
   }
 }

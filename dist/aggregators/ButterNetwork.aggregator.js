@@ -1,5 +1,6 @@
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import { apiCall } from "../utils/axios.js";
+import { routers } from "../utils/constants.js";
 import Quote from "../utils/quote.js";
 import { Base } from "./index.js";
 import { v4 as uuidv4 } from "uuid";
@@ -23,7 +24,7 @@ export default class ButterNetworkAggregator extends Base {
             entrance: "Blazpay",
             slippage: 2000,
             from: params.srcWalletAddress,
-            receiver: params.srcWalletAddress,
+            receiver: params?.dstWalletAddress || params.srcWalletAddress,
         };
         const res = await apiCall({
             method: "GET",
@@ -71,7 +72,17 @@ export default class ButterNetworkAggregator extends Base {
         };
         return {
             tx,
-            spender: data?.transactionRequest?.to,
+            spender: txData?.to
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['butter_network']}?hash=${hash}`,
+        });
+        return {
+            status: res?.data?.status === 0 ? "pending" : res?.data?.status === 1 ? "success" : "failed",
+            hash
         };
     }
 }

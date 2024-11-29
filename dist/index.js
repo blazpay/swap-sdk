@@ -2,6 +2,7 @@ import { IceCreamAggregator, NitroAggregator, OneInchAggregator, OpenOceanAggreg
 import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import RelayerFactory from "./relayer.js";
+import { relayerAddresses } from './utils/constants.js';
 export class TradeManager {
     aggregatorFactory;
     constructor() {
@@ -43,9 +44,17 @@ export class TradeManager {
         };
         await this.aggregatorFactory.getQuotes(quoteParams, handleQuote, handleLastQuote);
     }
+    async getTransactionStatus(queries) {
+        return await this.aggregatorFactory.getStatus(queries);
+    }
     async triggerTransaction(provider, relayerTxData) {
         const relayerFactory = new RelayerFactory(provider);
         return await relayerFactory.triggerContract(relayerTxData);
     }
+    sendSignTxDataRaw(relayerTxData) {
+        const relayerFactory = new RelayerFactory();
+        return relayerFactory.getMetaTransactionByteData(relayerTxData);
+    }
 }
+export { relayerAddresses };
 //# sourceMappingURL=index.js.map

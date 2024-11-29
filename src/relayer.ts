@@ -1,16 +1,13 @@
-import { ethers } from "ethers";
-import { MESSAGE_TYPES, relayerAddresses } from "./utils/constants.js";
-import relayerAbi from "./utils/jsons/relayer.json" with { type: 'json' };
-import { IRelayerTxData } from "./@types/relayer.type.js"; 
+import { BigNumber, ethers } from "ethers";
+import { addressE, addressZero, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
+import { relayerAbi } from "./utils/jsons/relayerAbi.js"
+import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 
 export class RelayerFactory {
   private provider: ethers.providers.Web3Provider
 
-
-
-  
-  constructor(_provider: ethers.providers.Web3Provider) {
-    this.provider = _provider;
+  constructor(_provider?: ethers.providers.Web3Provider) {
+    this.provider = _provider!;
   }
 
   async triggerContract(relayerTxData: IRelayerTxData) {
@@ -18,51 +15,97 @@ export class RelayerFactory {
     const chainId = await signer.getChainId();
     const address = await signer.getAddress();
 
-    const relayerAddress = relayerAddresses[chainId]
+    const relayerAddress = relayerAddresses(chainId)
     const relayerContract = new ethers.Contract(
       relayerAddress,
       relayerAbi,
       signer
     );
+
     const metaTransaction = {
       user: address,
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
-      nonce: 1728461413034, // This nonce should be unique for the user
+      spender: relayerTxData?.spender || addressZero,
+      amount: relayerTxData?.amount,
+      token: relayerTxData?.token,
+      isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
     };
 
-    const domain = {
-      name: "BlazpayRelayer",
-      version: "1",
-      chainId: chainId,
-      verifyingContract: relayerAddress,
-    }
+    const feeAmount = await relayerContract.feeAmount();
+    const inPercentFee = await relayerContract.inPercentFee();
+    const enableFees = await relayerContract.enableFees();
 
-    console.log(domain, "domain")
+    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
 
-    const signature = await signer._signTypedData(
-      domain,
-      {
-        MetaTransaction: MESSAGE_TYPES.MetaTransaction
-      },
-      metaTransaction
-    );
-    console.log(signature, "signature")
+    let fee = 0;
+    if (metaTransaction.isNative === true)
+      fee = feeAmount.add(
+        inPercentFee.mul(value).div(BigNumber.from(10000))
+      );
+    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ fee:", fee, feeAmount, inPercentFee)
 
-    console.log(metaTransaction, "metaTransaction")
+    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ value:", value, value.add(fee))
 
-    const tx = await relayerContract.executeMetaTransaction(
+    const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
       {
         ...metaTransaction,
-        signature: signature,
+        nativeValue: value
       },
-      { value: ethers.utils.parseEther("2"), gasLimit: 1000000 }
+      { value: !enableFees ? value : value.add(fee) }
+    );
+    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ gasEstimate:", gasEstimate)
+
+    const tx = await relayerContract.executeMetaTransactionSwap(
+      {
+        ...metaTransaction,
+        nativeValue: value
+      },
+      { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate}
     );
 
-    // // Wait for the transaction to be mined
     const receipt = await tx.wait();
-    console.log("Meta-transaction executed:", receipt);
     return receipt;
+  }
+
+  getMetaTransactionByteData(relayerTxData: IRelayerRawTxData) {
+    const relayerAddress = relayerAddresses(relayerTxData?.chainId)
+    let approvalData;
+
+    if(!relayerTxData?.isNative){
+      const tokenInterface = new ethers.utils.Interface(ERC20_ABI);
+
+      approvalData = tokenInterface.encodeFunctionData("approve", [
+        relayerAddress,
+        relayerTxData?.amount,
+      ]);
+    }
+
+    const relayerInterface = new ethers.utils.Interface(relayerAbi);
+    
+    const metaTransaction = {
+      user: relayerTxData?.userAddress,
+      targetContract: relayerTxData?.tx?.to,
+      data: relayerTxData?.tx?.data,
+      spender: relayerTxData?.spender || addressZero,
+      amount: relayerTxData?.amount,
+      token: relayerTxData?.token,
+      isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
+    };
+
+    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+
+    const executeData = relayerInterface.encodeFunctionData(
+      "executeMetaTransactionSwap",
+      [metaTransaction]
+    );
+
+    return {
+      approvalData,
+      executeData,
+      value,
+      to: relayerAddress
+    };
   }
 }
 

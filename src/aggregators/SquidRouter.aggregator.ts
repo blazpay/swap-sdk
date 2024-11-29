@@ -49,8 +49,6 @@ export default class SquidRouterAggregator extends Base {
 
     const data = res.data;
 
-    console.log(JSON.stringify(data, null, 2), "SquidRouter");
-
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.SQUID_ROUTER,

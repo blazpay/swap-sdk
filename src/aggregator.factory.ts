@@ -1,6 +1,7 @@
 import { IQuoteParams } from "./@types/aggregator.type.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import Quote from "./utils/quote.js";
+import { IQueryStatus } from "./utils/types.js";
 
 export class AggregatorFactory {
   private aggregators: Map<string, any>;
@@ -51,6 +52,15 @@ export class AggregatorFactory {
 
     await Promise.all(promises);
     onLastQuote(true);
+  }
+
+  async getStatus(queryStatusParam: IQueryStatus[]): Promise<any> {
+    const res = await Promise.all(queryStatusParam?.map((value: IQueryStatus) => {
+      const aggregator = this.getAggregator(value?.provider)
+      return aggregator.getTxStatus(value.chainId, value.hash);
+    }))
+    console.log("🚀 ~ AggregatorFactory ~ res ~ res:", res)
+    return res;
   }
 }
 

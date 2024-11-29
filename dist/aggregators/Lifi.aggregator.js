@@ -4,6 +4,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
+import { routers } from "../utils/constants.js";
 export default class LifiAggregator extends Base {
     BASE_URL;
     name;
@@ -13,6 +14,7 @@ export default class LifiAggregator extends Base {
         this.BASE_URL = "https://li.quest/v1/quote";
     }
     async getQuotes(params) {
+        console.log();
         const query = {
             fromChain: params.fromChain.id,
             toChain: params.toChain.id,
@@ -22,13 +24,13 @@ export default class LifiAggregator extends Base {
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString(),
             fromAddress: params.srcWalletAddress,
+            toAddress: params?.dstWalletAddress || params.srcWalletAddress
         };
         const data = await apiCall({
             method: "GET",
             url: this.BASE_URL,
             params: query,
         });
-        console.log("🚀 ~ LifiAggregator ~ getQuotes ~ data:", JSON.stringify(data, null, 2));
         const swapAmount = ethers.utils.formatUnits(data?.estimate?.toAmount, params.toToken.decimals);
         const meta = {
             id: uuidv4(),
@@ -70,6 +72,17 @@ export default class LifiAggregator extends Base {
         return {
             tx,
             spender: data?.transactionRequest?.to,
+        };
+    }
+    async getTxStatus(chainId, hash) {
+        const res = await apiCall({
+            method: "GET",
+            url: `${routers['lifi']}?txHash=${hash}`,
+        });
+        console.log(res?.status, "lifi tx status");
+        return {
+            status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not found",
+            hash
         };
     }
 }

@@ -18,6 +18,7 @@ export default class OneInchAggregator extends Base {
         this.tradeFee = 0;
     }
     async getQuotes(params) {
+        console.log("🚀 ~ OneInchAggregator ~ getQuotes ~ getQuotes:");
         const query = {
             src: params.fromToken.address === addressZero
                 ? addressZero1Inch

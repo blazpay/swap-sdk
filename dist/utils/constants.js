@@ -92,25 +92,22 @@ export function getContractAddressByChainId(chainIdUnizen) {
 }
 export const addressZero = "0x0000000000000000000000000000000000000000";
 export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-export const relayerAddresses = {
-    56: "0x0000000000000000000000000000000000000000",
-    137: "0x9B3471de09Df61983AffbC044A99F56dEc51dE3E",
-    1: "0x0000000000000000000000000000000000000000",
-    42161: "0x0000000000000000000000000000000000000000"
-};
-export const MESSAGE_TYPES = {
-    EIP712Domain: [
-        { name: "name", type: "string" },
-        { name: "version", type: "string" },
-        { name: "chainId", type: "uint256" },
-        { name: "verifyingContract", type: "address" }
-    ],
-    MetaTransaction: [
-        { name: "user", type: "address" },
-        { name: "targetContract", type: "address" },
-        { name: "data", type: "bytes" },
-        { name: "nonce", type: "uint256" },
-    ],
+export const relayerAddresses = (chain) => {
+    if (chain == 137)
+        return '0xdDdd393a0cC91368b5E61b4714E72259F4E061eA';
+    else
+        return '0x10c112A6032dC97ec8854457FA3961D29dB2045A';
 };
 export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
+export const ERC20_ABI = [
+    "function approve(address spender, uint256 amount) public"
+];
+export const routers = {
+    nitro: 'https://api-beta.pathfinder.routerprotocol.com/api/v2/status',
+    open_ocean: 'https://open-api.openocean.finance/cross_chain/v1/cross/getCrossStatus',
+    butter_network: 'https://bs-app-api.chainservice.io/api/queryBridgeInfoBySourceHash',
+    symbiosis: 'https://api.symbiosis.finance/crosschain/tx/',
+    unizen: 'https://api.zcx.com/trade/v1/info/trade/',
+    lifi: 'https://li.quest/v1/status'
+};
 //# sourceMappingURL=constants.js.map
