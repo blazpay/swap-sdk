@@ -11,4 +11,5 @@ export enum AGGREGATORS {
   LIFI = "lifi",
   BUTTER_NETWORK = "butter_network",
   SQUID_ROUTER = "squid_router",
+  KIMA = "kima",
 }

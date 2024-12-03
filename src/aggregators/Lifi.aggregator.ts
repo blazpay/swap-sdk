@@ -19,7 +19,7 @@ export default class LifiAggregator extends Base {
   async getQuotes(params: IQuoteParams): Promise<Quote> {
     console.log()
     const query = {
-      fromChain: params.fromChain.id,
+      fromChain: params.fromChain.id !== 102 ? params.fromChain.id: 1151111081099710,
       toChain: params.toChain.id,
       fromToken: params.fromToken.address,
       toToken: params.toToken.address,

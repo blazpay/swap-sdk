@@ -114,3 +114,15 @@ export const routers = {
   unizen: 'https://api.zcx.com/trade/v1/info/trade/',
   lifi: 'https://li.quest/v1/status'
 }
+
+export enum ChainNameKima {  
+  Arbitrum = 'ARB',  
+  Avalache = 'AVX',  
+  BSC = 'BSC',  
+  btc = 'BTC',
+  Ethereum = 'ETH',  
+  Pptimism = 'OPT',  
+  Polygon = 'POL',    
+  SOL = 'SOL',  
+  TRX = 'TRX',
+}

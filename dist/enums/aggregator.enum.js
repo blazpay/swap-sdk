@@ -11,5 +11,6 @@ export var AGGREGATORS;
     AGGREGATORS["LIFI"] = "lifi";
     AGGREGATORS["BUTTER_NETWORK"] = "butter_network";
     AGGREGATORS["SQUID_ROUTER"] = "squid_router";
+    AGGREGATORS["KIMA"] = "kima";
 })(AGGREGATORS || (AGGREGATORS = {}));
 //# sourceMappingURL=aggregator.enum.js.map
