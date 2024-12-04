@@ -8,7 +8,7 @@ export default class OpenOceanAggregator extends Base {
     slippage: number;
     bridgeUrl: string;
     constructor();
-    getBaseUrl(type: string, chain: number): string;
+    getBaseUrl(type: string, chain: number | string): string;
     getQuotes(params: IQuoteParams): Promise<Quote | Quote[]>;
     getTransactionData(data: any, restProps: IRestQuoteProps, meta: any): Promise<{
         tx: any;

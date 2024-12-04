@@ -28,8 +28,8 @@ export default class NitroAggregator extends Base {
             amount: ethers.utils
                 .parseUnits(String(params.amount), params.fromToken.decimals)
                 .toString(),
-            fromTokenChainId: params.fromChain.id,
-            toTokenChainId: params.toChain.id === 102 ? 900 : params.toChain.id,
+            fromTokenChainId: params.fromChain.id !== 102 ? params.fromChain.id : 'solana',
+            toTokenChainId: params.toChain.id !== 102 ? params.toChain.id : 'solana',
             partnerId: this.nitroPartnerId,
         };
         const data = await apiCall({

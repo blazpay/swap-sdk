@@ -21,7 +21,7 @@ export default class OpenOceanAggregator extends Base {
     this.bridgeUrl = "https://open-api.openocean.finance/cross_chain/v1/cross";
   }
 
-  getBaseUrl(type: string, chain: number) {
+  getBaseUrl(type: string, chain: number | string) {
     if (type === "SWAP")
       return `https://open-api-pro.openocean.finance/v3/${chain}/swap_quote`;
     else return this.bridgeUrl + `/quoteByOO`;
@@ -46,8 +46,8 @@ export default class OpenOceanAggregator extends Base {
       };
     } else {
       query = {
-        fromChainId: params.fromChain.id,
-        toChainId: params.toChain.id,
+        fromChainId: params.fromChain.id !== 102? params.fromChain.id : 'solana',
+        toChainId: params.toChain.id !== 102? params.toChain.id : 'solana',
         fromSymbol: params?.fromToken.symbol,
         toSymbol: params?.toToken.symbol,
         amount: ethers.utils
@@ -58,9 +58,11 @@ export default class OpenOceanAggregator extends Base {
       };
     }
 
+    console.log(query, 'query')
+
     const res = await apiCall({
       method: "GET",
-      url: this.getBaseUrl(params.type, params.fromChain.id),
+      url: this.getBaseUrl(params.type, params.fromChain.id !== 102? params.fromChain.id : 'solana'),
       params: query,
       headers: {
         apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",

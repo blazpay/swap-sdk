@@ -84,7 +84,7 @@ export default class SymbiosisAggregator extends Base {
             url: `${routers['symbiosis']}${chainId}/${hash}`,
         });
         return {
-            status: res?.data?.status === 1 ? 'pending' : res?.data?.status === 0 ? 'success' : res?.data?.status === 2 ? 'stucked' : res?.data?.status === 3 ? "failed" : "not found",
+            status: res?.status === 1 ? 'pending' : res?.status === 0 ? 'success' : res?.status === 2 ? 'stucked' : res?.status === 3 ? "failed" : "not found",
             hash
         };
     }

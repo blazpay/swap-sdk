@@ -42,8 +42,8 @@ export default class OpenOceanAggregator extends Base {
         }
         else {
             query = {
-                fromChainId: params.fromChain.id,
-                toChainId: params.toChain.id,
+                fromChainId: params.fromChain.id !== 102 ? params.fromChain.id : 'solana',
+                toChainId: params.toChain.id !== 102 ? params.toChain.id : 'solana',
                 fromSymbol: params?.fromToken.symbol,
                 toSymbol: params?.toToken.symbol,
                 amount: ethers.utils
@@ -53,9 +53,10 @@ export default class OpenOceanAggregator extends Base {
                 referrerFee: 0.01,
             };
         }
+        console.log(query, 'query');
         const res = await apiCall({
             method: "GET",
-            url: this.getBaseUrl(params.type, params.fromChain.id),
+            url: this.getBaseUrl(params.type, params.fromChain.id !== 102 ? params.fromChain.id : 'solana'),
             params: query,
             headers: {
                 apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
