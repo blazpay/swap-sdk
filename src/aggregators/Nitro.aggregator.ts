@@ -121,7 +121,7 @@ export default class NitroAggregator extends Base {
           contractAddress: res?.txn?.raw_data?.contract[0]?.parameter?.value?.contract_address,
           data: "0x" + res?.txn?.raw_data?.contract[0]?.parameter?.value?.data.substring(1),
           feeLimit: res?.txn?.raw_data?.fee_limit,
-          from : res?.txn?.raw_data?.contract[0]?.parameter?.value?.owner_address
+          from : res?.txn?.raw_data?.contract[0]?.parameter?.value?.owner_address,
         },
         spender: data?.allowanceTo,
         metaData: res
@@ -131,6 +131,7 @@ export default class NitroAggregator extends Base {
     return {
       tx: res?.txn,
       spender: data?.allowanceTo,
+      metaData: res
     };
   }
 

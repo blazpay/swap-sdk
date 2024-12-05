@@ -78,7 +78,7 @@ export default class LifiAggregator extends Base {
   async getTransactionData(
     data: any,
     restProps: IRestQuoteProps
-  ): Promise<{ tx: any; spender: string }> {
+  ): Promise<{ tx: any; spender: string, metaData: any }> {
     const tx = {
       from: data?.transactionRequest?.from,
       to: data?.transactionRequest?.to,
@@ -91,6 +91,7 @@ export default class LifiAggregator extends Base {
     return {
       tx,
       spender: data?.transactionRequest?.to,
+      metaData: data
     };
   }
 

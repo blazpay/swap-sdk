@@ -72,6 +72,7 @@ export default class LifiAggregator extends Base {
         return {
             tx,
             spender: data?.transactionRequest?.to,
+            metaData: data
         };
     }
     async getTxStatus(chainId, hash) {
