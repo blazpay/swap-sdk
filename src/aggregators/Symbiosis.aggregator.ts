@@ -89,16 +89,18 @@ export default class SymbiosisAggregator extends Base {
   async getTransactionData(
     data: any,
     restProps: IRestQuoteProps
-  ): Promise<{ tx: any; spender: string }> {
+  ): Promise<{ tx: any; spender: string, metaData?: any }> {
     if(restProps.fromChain.id === 728126428) {
       return {
         tx: {
           contractAddress: data?.tx?.to,
           data: data?.tx?.data,
           feeLimit: data?.tx?.feeLimit,
-          from: data?.tx?.from
+          from: data?.tx?.from,
+          functionSelector: data?.tx?.functionSelector
         },
-        spender: data?.approveTo
+        spender: data?.approveTo,
+        metaData: data
       }
     }
     return {

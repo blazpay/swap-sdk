@@ -95,7 +95,7 @@ export default class NitroAggregator extends Base {
   async getTransactionData(
     data: any,
     restProps: IRestQuoteProps
-  ): Promise<{ tx: any; spender: string }> {
+  ): Promise<{ tx: any; spender: string, metaData?: any }> {
 
     if(restProps.fromChain.id === 728126428) 
       restProps.srcWalletAddress = "0x" + TronWeb.address.toHex(restProps.srcWalletAddress).substring(2)
@@ -115,6 +115,7 @@ export default class NitroAggregator extends Base {
     });
 
     if(restProps.fromChain.id === 728126428) {
+      console.log(res?.txn)
       return {
         tx: {
           contractAddress: res?.txn?.raw_data?.contract[0]?.parameter?.value?.contract_address,
@@ -122,7 +123,8 @@ export default class NitroAggregator extends Base {
           feeLimit: res?.txn?.raw_data?.fee_limit,
           from : res?.txn?.raw_data?.contract[0]?.parameter?.value?.owner_address
         },
-        spender: data?.allowanceTo
+        spender: data?.allowanceTo,
+        metaData: res
       }
     }
 

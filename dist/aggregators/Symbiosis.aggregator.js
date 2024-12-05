@@ -79,9 +79,11 @@ export default class SymbiosisAggregator extends Base {
                     contractAddress: data?.tx?.to,
                     data: data?.tx?.data,
                     feeLimit: data?.tx?.feeLimit,
-                    from: data?.tx?.from
+                    from: data?.tx?.from,
+                    functionSelector: data?.tx?.functionSelector
                 },
-                spender: data?.approveTo
+                spender: data?.approveTo,
+                metaData: data
             };
         }
         return {

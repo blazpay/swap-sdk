@@ -87,6 +87,7 @@ export default class NitroAggregator extends Base {
             timeout: 20000,
         });
         if (restProps.fromChain.id === 728126428) {
+            console.log(res?.txn);
             return {
                 tx: {
                     contractAddress: res?.txn?.raw_data?.contract[0]?.parameter?.value?.contract_address,
@@ -94,7 +95,8 @@ export default class NitroAggregator extends Base {
                     feeLimit: res?.txn?.raw_data?.fee_limit,
                     from: res?.txn?.raw_data?.contract[0]?.parameter?.value?.owner_address
                 },
-                spender: data?.allowanceTo
+                spender: data?.allowanceTo,
+                metaData: res
             };
         }
         return {
