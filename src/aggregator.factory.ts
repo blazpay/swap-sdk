@@ -53,6 +53,7 @@ export class AggregatorFactory {
     await Promise.all(promises);
     onLastQuote(true);
   }
+  
 
   async getStatus(queryStatusParam: IQueryStatus[]): Promise<any> {
     const res = await Promise.all(queryStatusParam?.map((value: IQueryStatus) => {

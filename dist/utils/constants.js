@@ -110,4 +110,16 @@ export const routers = {
     unizen: 'https://api.zcx.com/trade/v1/info/trade/',
     lifi: 'https://li.quest/v1/status'
 };
+export var ChainNameKima;
+(function (ChainNameKima) {
+    ChainNameKima["Arbitrum"] = "ARB";
+    ChainNameKima["Avalache"] = "AVX";
+    ChainNameKima["BSC"] = "BSC";
+    ChainNameKima["btc"] = "BTC";
+    ChainNameKima["Ethereum"] = "ETH";
+    ChainNameKima["Pptimism"] = "OPT";
+    ChainNameKima["Polygon"] = "POL";
+    ChainNameKima["SOL"] = "SOL";
+    ChainNameKima["TRX"] = "TRX";
+})(ChainNameKima || (ChainNameKima = {}));
 //# sourceMappingURL=constants.js.map

@@ -46,7 +46,6 @@ export default class NitroAggregator extends Base {
       method: "GET",
       url: this.BASE_URL + "/v2/quote",
       params: body,
-
     });
 
     const platformFee = data?.bridgeFee?.amount

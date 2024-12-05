@@ -68,3 +68,14 @@ export declare const routers: {
     unizen: string;
     lifi: string;
 };
+export declare enum ChainNameKima {
+    Arbitrum = "ARB",
+    Avalache = "AVX",
+    BSC = "BSC",
+    btc = "BTC",
+    Ethereum = "ETH",
+    Pptimism = "OPT",
+    Polygon = "POL",
+    SOL = "SOL",
+    TRX = "TRX"
+}

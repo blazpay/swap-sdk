@@ -9,5 +9,6 @@ export declare enum AGGREGATORS {
     KYBER_SWAP = "kyber_swap",
     LIFI = "lifi",
     BUTTER_NETWORK = "butter_network",
-    SQUID_ROUTER = "squid_router"
+    SQUID_ROUTER = "squid_router",
+    KIMA = "kima"
 }
