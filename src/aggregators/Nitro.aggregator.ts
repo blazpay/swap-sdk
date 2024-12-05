@@ -7,6 +7,7 @@ import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import axios from "axios";
 import { routers } from "../utils/constants.js";
+import { TronWeb } from 'tronweb'
 
 const addressZero = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
@@ -96,6 +97,11 @@ export default class NitroAggregator extends Base {
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
 
+    if(restProps.fromChain.id === 728126428) 
+      restProps.srcWalletAddress = "0x" + TronWeb.address.toHex(restProps.srcWalletAddress).substring(2)
+    if(restProps.toChain.id === 728126428 && restProps.dstWalletAddress)
+      restProps.dstWalletAddress = "0x" + TronWeb.address.toHex(restProps.dstWalletAddress).substring(2)
+
     const res = await apiCall({
       url: this.BASE_URL + "/v2/transaction",
       method: "POST",
@@ -107,6 +113,18 @@ export default class NitroAggregator extends Base {
       },
       timeout: 20000,
     });
+
+    if(restProps.fromChain.id === 728126428) {
+      return {
+        tx: {
+          contractAddress: res?.txn?.raw_data?.contract[0]?.parameter?.value?.contract_address,
+          data: "0x" + res?.txn?.raw_data?.contract[0]?.parameter?.value?.data.substring(1),
+          feeLimit: res?.txn?.raw_data?.fee_limit,
+          from : res?.txn?.raw_data?.contract[0]?.parameter?.value?.owner_address
+        },
+        spender: data?.allowanceTo
+      }
+    }
 
     return {
       tx: res?.txn,

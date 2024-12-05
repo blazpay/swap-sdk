@@ -73,6 +73,17 @@ export default class SymbiosisAggregator extends Base {
         return quote;
     }
     async getTransactionData(data, restProps) {
+        if (restProps.fromChain.id === 728126428) {
+            return {
+                tx: {
+                    contractAddress: data?.tx?.to,
+                    data: data?.tx?.data,
+                    feeLimit: data?.tx?.feeLimit,
+                    from: data?.tx?.from
+                },
+                spender: data?.approveTo
+            };
+        }
         return {
             tx: data?.tx,
             spender: data?.approveTo,

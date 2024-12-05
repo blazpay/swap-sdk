@@ -90,6 +90,17 @@ export default class SymbiosisAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
+    if(restProps.fromChain.id === 728126428) {
+      return {
+        tx: {
+          contractAddress: data?.tx?.to,
+          data: data?.tx?.data,
+          feeLimit: data?.tx?.feeLimit,
+          from: data?.tx?.from
+        },
+        spender: data?.approveTo
+      }
+    }
     return {
       tx: data?.tx,
       spender: data?.approveTo,
