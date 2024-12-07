@@ -7,7 +7,10 @@ interface ApiCallParams {
   params?: Record<string, any>;
   headers?: any;
   timeout?: number;
+  withCredentials?: boolean
 }
+
+axios.defaults.withCredentials = true;
 
 export const apiCall = async ({
   method,
@@ -16,6 +19,7 @@ export const apiCall = async ({
   params = {},
   headers,
   timeout = 10000,
+  // withCredentials = false
 }: ApiCallParams): Promise<any> => {
   try {
     const response = await axios({
@@ -24,6 +28,7 @@ export const apiCall = async ({
       data,
       params,
       headers,
+      // withCredentials
       // timeout,
     });
     return response.data;
@@ -32,3 +37,16 @@ export const apiCall = async ({
     throw error;
   }
 };
+
+export const post = async(url: string, body: any) =>{
+  const requestOptions: any = {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: body
+  }
+
+  return await fetch(url, requestOptions)
+}

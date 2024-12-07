@@ -10,6 +10,7 @@ export class AggregatorFactory {
         return this.aggregators.get(name);
     }
     async getQuotes(params, cb, onLastQuote) {
+        console.log(this.aggregators.values(), "values");
         const promises = Array.from(this.aggregators.values())
             .filter((agg) => params.type === "SWAP"
             ? !params.excludeSwap?.includes(agg.name)
@@ -21,7 +22,7 @@ export class AggregatorFactory {
             }
             catch (error) {
                 if (error?.request?.data) {
-                    console.error(`Error from ${aggregator.constructor.name}:`, error?.request?.data);
+                    console.error(`Error from ${aggregator.constructor.name}:`);
                 }
                 else if (error?.response?.data) {
                     console.error(`Error from ${aggregator.constructor.name}:`, error?.response?.data);

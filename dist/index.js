@@ -3,6 +3,7 @@ import aggregatorFactory from "./aggregator.factory.js";
 import { AGGREGATORS } from "./enums/aggregator.enum.js";
 import RelayerFactory from "./relayer.js";
 import { relayerAddresses } from './utils/constants.js';
+import KimaSwapAggregator from "./aggregators/Kima.aggregator.js";
 export class TradeManager {
     aggregatorFactory;
     constructor() {
@@ -21,6 +22,7 @@ export class TradeManager {
         this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
         this.aggregatorFactory.register(AGGREGATORS.BUTTER_NETWORK, new ButterNetworkAggregator());
         this.aggregatorFactory.register(AGGREGATORS.SQUID_ROUTER, new SquidRouterAggregator());
+        this.aggregatorFactory.register(AGGREGATORS.KIMA, new KimaSwapAggregator);
     }
     async getQuotes(params) {
         const quoteParams = {
