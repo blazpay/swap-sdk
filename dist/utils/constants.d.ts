@@ -67,6 +67,7 @@ export declare const routers: {
     symbiosis: string;
     unizen: string;
     lifi: string;
+    kima: string;
 };
 export declare enum ChainNameKima {
     Arbitrum = "ARB",

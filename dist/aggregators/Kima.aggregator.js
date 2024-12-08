@@ -4,7 +4,7 @@ import Quote from "../utils/quote.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import { v4 as uuidv4 } from "uuid";
-import { ChainNameKima } from "../utils/constants.js";
+import { ChainNameKima, routers } from "../utils/constants.js";
 export default class KimaSwapAggregator extends Base {
     name;
     BASE_URL;
@@ -17,24 +17,15 @@ export default class KimaSwapAggregator extends Base {
         this.name = AGGREGATORS.KIMA;
         this.BASE_URL = "http://localhost:3001";
         this.FEE_URL = "https://fee.kima.finance/fee/";
-        this.solSpender = "5tvyUUqPMWVGaVsRXHoQWqGw6h9uifM45BHCTQgzwSdr";
-        this.trxSpender = "t3JFtrr3JVedB1oH6v1AUNSqqFZk4E5U";
-        this.evmSpender = "0x9a721c664f9d69e4da24f91386086fbd81da23c1";
+        this.solSpender = "E1ARyS9m5ZWSxhQbmrdVg2oycktRSHqzDRKkZZgrfr9A";
+        this.trxSpender = "tb1q5jygxa6dx6nwn2hxrlwnz388hc6t9xtma0cmvy";
+        this.evmSpender = "0x948627f5c0352f320b284a2a9dbb92933866995d";
     }
     async getQuotes(params) {
-        if (!params?.fromToken.symbol?.includes(params?.toToken.symbol) ||
-            !params?.toToken.symbol?.includes(params?.fromToken.symbol))
-            throw new Error("Kima only converts same tokens from one chain to another");
-        const platformFee = 0;
-        // = await this.calcServiceFee(
-        //   ChainNameKima[params.fromChain.name as keyof typeof ChainNameKima],
-        //   ChainNameKima[params.toChain.name as keyof typeof ChainNameKima]
-        // );
+        const platformFee = await this.getServiceFee(ChainNameKima[params.toChain.name]);
         let networkFee = 0;
-        // platformFee !== 0 &&
-        // (await this.getServiceFee(
-        //   ChainNameKima[params.fromChain.name as keyof typeof ChainNameKima]
-        // ));
+        platformFee !== 0 &&
+            (await this.getServiceFee(ChainNameKima[params.fromChain.name]));
         const query = {
             tokenIn: params.fromToken.address,
             tokenOut: params.toToken.address,
@@ -46,10 +37,10 @@ export default class KimaSwapAggregator extends Base {
             id: uuidv4(),
             aggregator: AGGREGATORS.KIMA,
             route: "Kima",
-            amount: Number((params?.amount - (platformFee - Number(networkFee))).toFixed(6)),
+            amount: Number((params?.amount - (platformFee)).toFixed(6)),
             usdAmount: 0,
             networkFee: `${Number(networkFee)?.toFixed(6)} ${params?.fromToken?.symbol}`,
-            platformFee: `${Number(platformFee - Number(networkFee))?.toFixed(6)} ${params?.toToken?.symbol}`,
+            platformFee: `${Number(platformFee)?.toFixed(6)} ${params?.toToken?.symbol}`,
             priceImpact: 0,
             slippage: params.slippage || 0.5,
             allowanceTo: params?.fromToken?.symbol === "SOL"
@@ -157,6 +148,26 @@ export default class KimaSwapAggregator extends Base {
         const { fee } = result;
         const [amount] = fee.split("-");
         return +amount;
+    }
+    async getTxStatus(chainId, hash) {
+        var data = {
+            "query": "query TransactionDetailsKima($kimaTxHash: String) { transaction_data(where: { kimahash: { _eq: $kimaTxHash } }, limit: 1) { failreason pullfailcount pullhash releasefailcount releasehash txstatus amount creator originaddress originchain originsymbol targetsymbol targetaddress targetchain tx_id kimahash } }",
+            "variables": {
+                "kimaTxHash": `${hash}`
+            }
+        };
+        const { transaction_data: txData } = await apiCall({
+            method: "POST",
+            url: routers['kima'],
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data)
+        });
+        return {
+            status: txData?.txstatus === 'Completed' ? 'success' : txData?.txstatus === 'FailedToPull' ? "failed" : "pending",
+            hash
+        };
     }
 }
 //# sourceMappingURL=Kima.aggregator.js.map

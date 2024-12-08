@@ -18,4 +18,5 @@ export default class KimaSwapAggregator extends Base {
     }>;
     calcServiceFee(sourceChain: ChainNameKima, targetChain: ChainNameKima): Promise<number>;
     getServiceFee(chain: ChainNameKima): Promise<number>;
+    getTxStatus(chainId: number, hash: string): Promise<any>;
 }

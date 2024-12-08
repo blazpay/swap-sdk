@@ -108,7 +108,8 @@ export const routers = {
     butter_network: 'https://bs-app-api.chainservice.io/api/queryBridgeInfoBySourceHash',
     symbiosis: 'https://api.symbiosis.finance/crosschain/tx/',
     unizen: 'https://api.zcx.com/trade/v1/info/trade/',
-    lifi: 'https://li.quest/v1/status'
+    lifi: 'https://li.quest/v1/status',
+    kima: 'https://graphql.kima.network/v1/graphql'
 };
 export var ChainNameKima;
 (function (ChainNameKima) {
