@@ -1,10 +1,10 @@
-import { ethers } from "ethers";
-import { apiCall } from "../utils/axios.js";
-import Quote from "../utils/quote.js";
-import Base from "./base.aggregator.js";
-import { AGGREGATORS } from "../enums/aggregator.enum.js";
-import { v4 as uuidv4 } from "uuid";
-import { ChainNameKima, routers } from "../utils/constants.js";
+import { ethers } from 'ethers';
+import { apiCall } from '../utils/axios.js';
+import Quote from '../utils/quote.js';
+import Base from './base.aggregator.js';
+import { AGGREGATORS } from '../enums/aggregator.enum.js';
+import { v4 as uuidv4 } from 'uuid';
+import { ChainNameKima, routers } from '../utils/constants.js';
 export default class KimaSwapAggregator extends Base {
     name;
     BASE_URL;
@@ -15,17 +15,22 @@ export default class KimaSwapAggregator extends Base {
     constructor() {
         super();
         this.name = AGGREGATORS.KIMA;
-        this.BASE_URL = "http://localhost:3001";
-        this.FEE_URL = "https://fee.kima.finance/fee/";
-        this.solSpender = "E1ARyS9m5ZWSxhQbmrdVg2oycktRSHqzDRKkZZgrfr9A";
-        this.trxSpender = "tb1q5jygxa6dx6nwn2hxrlwnz388hc6t9xtma0cmvy";
-        this.evmSpender = "0x948627f5c0352f320b284a2a9dbb92933866995d";
+        this.BASE_URL = 'https://kima.blazpay.com';
+        this.FEE_URL = 'https://fee.kima.finance/fee/';
+        this.solSpender = 'E1ARyS9m5ZWSxhQbmrdVg2oycktRSHqzDRKkZZgrfr9A';
+        this.trxSpender = 'tb1q5jygxa6dx6nwn2hxrlwnz388hc6t9xtma0cmvy';
+        this.evmSpender = '0x948627f5c0352f320b284a2a9dbb92933866995d';
     }
     async getQuotes(params) {
-        const platformFee = await this.getServiceFee(ChainNameKima[params.toChain.name]);
+        const platformFee = 0;
+        // await this.getServiceFee(
+        //   ChainNameKima[params.toChain.name as keyof typeof ChainNameKima]
+        // )
         let networkFee = 0;
-        platformFee !== 0 &&
-            (await this.getServiceFee(ChainNameKima[params.fromChain.name]));
+        // platformFee !== 0 &&
+        // (await this.getServiceFee(
+        //   ChainNameKima[params.fromChain.name as keyof typeof ChainNameKima]
+        // ));
         const query = {
             tokenIn: params.fromToken.address,
             tokenOut: params.toToken.address,
@@ -36,16 +41,16 @@ export default class KimaSwapAggregator extends Base {
         const meta = {
             id: uuidv4(),
             aggregator: AGGREGATORS.KIMA,
-            route: "Kima",
-            amount: Number((params?.amount - (platformFee)).toFixed(6)),
+            route: 'Kima',
+            amount: Number((params?.amount - platformFee).toFixed(6)),
             usdAmount: 0,
             networkFee: `${Number(networkFee)?.toFixed(6)} ${params?.fromToken?.symbol}`,
             platformFee: `${Number(platformFee)?.toFixed(6)} ${params?.toToken?.symbol}`,
             priceImpact: 0,
             slippage: params.slippage || 0.5,
-            allowanceTo: params?.fromToken?.symbol === "SOL"
+            allowanceTo: params?.fromToken?.symbol === 'SOL'
                 ? this.solSpender
-                : params?.fromToken?.symbol === "TRX"
+                : params?.fromToken?.symbol === 'TRX'
                     ? this.trxSpender
                     : this.evmSpender,
         };
@@ -66,36 +71,36 @@ export default class KimaSwapAggregator extends Base {
         return quote;
     }
     async getTransactionData(data, restProps) {
-        console.log("🚀 ~ KimaSwapAggregator ~ data:", data);
-        console.log("🚀 ~ KimaSwapAggregator ~ restProps:", restProps);
+        console.log('🚀 ~ KimaSwapAggregator ~ data:', data);
+        console.log('🚀 ~ KimaSwapAggregator ~ restProps:', restProps);
         const payload = {
             routeSummary: data?.routeSummary,
             sender: restProps.srcWalletAddress,
             recipient: restProps?.dstWalletAddress || restProps.srcWalletAddress,
             slippageTolerance: 50,
-            source: "blazpay",
+            source: 'blazpay',
         };
         const body = {
             originAddress: restProps?.quotePayload?.tokenIn,
-            originChain: "POL",
+            originChain: 'POL',
             targetAddress: restProps?.quotePayload?.tokenOut,
-            targetChain: "ARB",
-            originSymbol: "USDT",
-            targetSymbol: "USDT",
+            targetChain: 'ARB',
+            originSymbol: 'USDT',
+            targetSymbol: 'USDT',
             amount: restProps?.quotePayload?.amountIn,
             fee: 0.01,
-            htlcCreationHash: "",
+            htlcCreationHash: '',
             htlcCreationVout: 0,
-            htlcExpirationTimestamp: "0",
-            htlcVersion: "",
-            senderPubKey: "",
+            htlcExpirationTimestamp: '0',
+            htlcVersion: '',
+            senderPubKey: '',
         };
-        console.log("🚀 ~ KimaSwapAggregator ~ body:", body);
+        console.log('🚀 ~ KimaSwapAggregator ~ body:', body);
         const res = await apiCall({
-            method: "POST",
-            url: this.BASE_URL + "/auth",
+            method: 'POST',
+            url: this.BASE_URL + '/auth',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             data: body,
             withCredentials: true,
@@ -103,17 +108,17 @@ export default class KimaSwapAggregator extends Base {
         let resBridge;
         try {
             resBridge = await apiCall({
-                method: "POST",
-                url: this.BASE_URL + "/submit",
+                method: 'POST',
+                url: this.BASE_URL + '/submit',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 data: body,
                 withCredentials: true,
             });
         }
         catch (error) {
-            console.log("🚀 ~ KimaSwapAggregator ~ error:", error);
+            console.log('🚀 ~ KimaSwapAggregator ~ error:', error);
         }
         const txData = res?.data;
         const tx = {
@@ -143,30 +148,34 @@ export default class KimaSwapAggregator extends Base {
         return fee;
     }
     async getServiceFee(chain) {
-        console.log(`${this.FEE_URL}${chain}`, "url kima fees");
+        console.log(`${this.FEE_URL}${chain}`, 'url kima fees');
         const result = await fetch(`${this.FEE_URL}${chain}`).then((res) => res.json());
         const { fee } = result;
-        const [amount] = fee.split("-");
+        const [amount] = fee.split('-');
         return +amount;
     }
     async getTxStatus(chainId, hash) {
         var data = {
-            "query": "query TransactionDetailsKima($kimaTxHash: String) { transaction_data(where: { kimahash: { _eq: $kimaTxHash } }, limit: 1) { failreason pullfailcount pullhash releasefailcount releasehash txstatus amount creator originaddress originchain originsymbol targetsymbol targetaddress targetchain tx_id kimahash } }",
-            "variables": {
-                "kimaTxHash": `${hash}`
-            }
+            query: 'query TransactionDetailsKima($kimaTxHash: String) { transaction_data(where: { kimahash: { _eq: $kimaTxHash } }, limit: 1) { failreason pullfailcount pullhash releasefailcount releasehash txstatus amount creator originaddress originchain originsymbol targetsymbol targetaddress targetchain tx_id kimahash } }',
+            variables: {
+                kimaTxHash: `${hash}`,
+            },
         };
         const { transaction_data: txData } = await apiCall({
-            method: "POST",
+            method: 'POST',
             url: routers['kima'],
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            data: JSON.stringify(data)
+            data: JSON.stringify(data),
         });
         return {
-            status: txData?.txstatus === 'Completed' ? 'success' : txData?.txstatus === 'FailedToPull' ? "failed" : "pending",
-            hash
+            status: txData?.txstatus === 'Completed'
+                ? 'success'
+                : txData?.txstatus === 'FailedToPull'
+                    ? 'failed'
+                    : 'pending',
+            hash,
         };
     }
 }

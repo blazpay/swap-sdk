@@ -1,7 +1,7 @@
-import { IQuoteParams, IRestQuoteProps } from "../@types/index.js";
-import Quote from "../utils/quote.js";
-import Base from "./base.aggregator.js";
-import { ChainNameKima } from "../utils/constants.js";
+import { IQuoteParams, IRestQuoteProps } from '../@types/index.js';
+import Quote from '../utils/quote.js';
+import Base from './base.aggregator.js';
+import { ChainNameKima } from '../utils/constants.js';
 export default class KimaSwapAggregator extends Base {
     name: string;
     BASE_URL: string;
