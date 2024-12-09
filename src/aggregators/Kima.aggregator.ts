@@ -27,7 +27,7 @@ export default class KimaSwapAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    if((params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") && (params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
+    if(!(params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") && !(params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
       throw new Error("Invalid tokens")
     const platformFee = 0;
     // await this.getServiceFee(
@@ -62,9 +62,9 @@ export default class KimaSwapAggregator extends Base {
       priceImpact: 0,
       slippage: params.slippage || 0.5,
       allowanceTo:
-        params?.fromToken?.symbol === 'SOL'
+      params?.fromChain?.name === 'SOL'
           ? this.solSpender
-          : params?.fromToken?.symbol === 'TRX'
+          : params?.fromChain?.name === 'TRX'
           ? this.trxSpender
           : this.evmSpender,
     };
