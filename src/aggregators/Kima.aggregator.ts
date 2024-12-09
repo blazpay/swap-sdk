@@ -27,6 +27,8 @@ export default class KimaSwapAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
+    if((params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") && (params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
+      throw new Error("Invalid tokens")
     const platformFee = 0;
     // await this.getServiceFee(
     //   ChainNameKima[params.toChain.name as keyof typeof ChainNameKima]
