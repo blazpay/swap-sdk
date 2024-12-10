@@ -20,6 +20,7 @@ import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
 import {relayerAddresses} from './utils/constants.js'
 import { IQueryStatus } from "./utils/types.js";
+import KimaSwapAggregator from "./aggregators/Kima.aggregator.js";
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -59,6 +60,10 @@ export class TradeManager {
       AGGREGATORS.SQUID_ROUTER,
       new SquidRouterAggregator()
     );
+    this.aggregatorFactory.register(
+      AGGREGATORS.KIMA,
+      new KimaSwapAggregator
+    )
   }
 
   async getQuotes(params: IBaseQuoteParams) {
