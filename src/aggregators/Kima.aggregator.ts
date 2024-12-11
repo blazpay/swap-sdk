@@ -27,8 +27,11 @@ export default class KimaSwapAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    if(!(params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") && !(params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
+    console.log("🚀 ~ KimaSwapAggregator ~ getQuotes ~ params:", JSON.stringify(params, null, 2))
+    if(!(params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") || !(params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
       throw new Error("Invalid tokens")
+    if(params?.type !== "BRIDGE")
+      throw new Error("kima not supported.")
     const platformFee = 0;
     // await this.getServiceFee(
     //   ChainNameKima[params.toChain.name as keyof typeof ChainNameKima]
