@@ -58,9 +58,8 @@ export class AggregatorFactory {
   async getStatus(queryStatusParam: IQueryStatus[]): Promise<any> {
     const res = await Promise.all(queryStatusParam?.map((value: IQueryStatus) => {
       const aggregator = this.getAggregator(value?.provider)
-      return aggregator.getTxStatus(value.chainId, value.hash);
+      return aggregator?.getTxStatus(value.chainId, value.hash);
     }))
-    console.log("🚀 ~ AggregatorFactory ~ res ~ res:", res)
     return res;
   }
 }

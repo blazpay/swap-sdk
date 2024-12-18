@@ -55,6 +55,7 @@ export default class LifiAggregator extends Base {
       priceImpact: 0,
       slippage: data?.action?.slippage || params.slippage || 0.5,
       allowanceTo: data?.transactionRequest?.to,
+      data: data
     };
 
     const quote = new Quote(data, meta, {
@@ -79,6 +80,7 @@ export default class LifiAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string, metaData: any }> {
+    console.log(data?.transactionRequest?.data, 'data?.transactionRequest?.data')
     const tx = {
       from: data?.transactionRequest?.from,
       to: data?.transactionRequest?.to,

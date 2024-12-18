@@ -22,12 +22,13 @@ export default class KimaSwapAggregator extends Base {
     this.BASE_URL = 'https://kima.blazpay.com';
     this.FEE_URL = 'https://fee.kima.finance/fee/';
     this.solSpender = 'E1ARyS9m5ZWSxhQbmrdVg2oycktRSHqzDRKkZZgrfr9A';
-    this.trxSpender = 'tb1q5jygxa6dx6nwn2hxrlwnz388hc6t9xtma0cmvy';
+    this.trxSpender = '0x948627f5c0352f320b284a2a9dbb92933866995d';
     this.evmSpender = '0x948627f5c0352f320b284a2a9dbb92933866995d';
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    if(!(params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") && !(params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
+    console.log("🚀 ~ KimaSwapAggregator ~ getQuotes ~ params:", params)
+    if(!(params?.fromToken.symbol === "USDT" || params?.fromToken.symbol === "USDC") || !(params?.toToken?.symbol === "USDT" || params?.toToken?.symbol === "USDC"))
       throw new Error("Invalid tokens")
     const platformFee = 0;
     // await this.getServiceFee(
@@ -206,6 +207,7 @@ export default class KimaSwapAggregator extends Base {
       },
       data: JSON.stringify(data),
     });
+    console.log("🚀 ~ KimaSwapAggregator ~ getTxStatus ~ txData:", txData)
     return {
       status:
         txData?.txstatus === 'Completed'
