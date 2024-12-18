@@ -23,7 +23,7 @@ export default class OpenOceanAggregator extends Base {
 
   getBaseUrl(type: string, chain: number | string) {
     if (type === "SWAP")
-      return `https://open-api-pro.openocean.finance/v3/${chain}/swap_quote`;
+      return `https://open-api.openocean.finance/v3/${chain}/quote`;
     else return this.bridgeUrl + `/quoteByOO`;
   }
 
@@ -58,8 +58,6 @@ export default class OpenOceanAggregator extends Base {
       };
     }
 
-    console.log(query, 'query')
-
     const res = await apiCall({
       method: "GET",
       url: this.getBaseUrl(params.type, params.fromChain.id !== 102? params.fromChain.id : 'solana'),
@@ -73,21 +71,15 @@ export default class OpenOceanAggregator extends Base {
     const data = res?.data;
 
     if (params.type === "SWAP") {
-      const swapAmount = ethers.utils
-        .formatUnits(data?.outAmount, data?.outToken?.decimals)
-        .toString();
-
+      const swapAmount = data?.outAmount/Math.pow(10, data?.outToken?.decimals)
+      
       const meta = {
         id: uuidv4(),
         aggregator: AGGREGATORS.OPEN_OCEAN,
         route: "OpenOcean",
         amount: Number(Number(swapAmount).toFixed(4)),
         usdAmount: data?.outToken?.usd,
-        networkFee: `${Number(
-          ethers.utils.formatEther(
-            (Number(data?.estimatedGas) * Number(data?.gasPrice)).toString()
-          )
-        )?.toFixed(6)} NATIVE`,
+        networkFee: `${Number(ethers.utils.formatEther((Number(data?.estimatedGas) * Number(data?.gasPrice || query?.gasPrice)).toString()))?.toFixed(6)} NATIVE`,
         platformFee: 0,
         priceImpact: data?.price_impact?.replace("%", ""),
         slippage: this.slippage,
