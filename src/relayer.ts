@@ -43,9 +43,6 @@ export class RelayerFactory {
       fee = feeAmount.add(
         inPercentFee.mul(value).div(BigNumber.from(10000))
       );
-    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ fee:", fee, feeAmount, inPercentFee)
-
-    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ value:", value, value.add(fee))
 
     const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
       {
@@ -56,12 +53,13 @@ export class RelayerFactory {
     );
     console.log("🚀 ~ RelayerFactory ~ triggerContract ~ gasEstimate:", gasEstimate)
 
+    const gasPrice = this.provider.getGasPrice()
     const tx = await relayerContract.executeMetaTransactionSwap(
       {
         ...metaTransaction,
         nativeValue: value
       },
-      { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate}
+      { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate, gasPrice}
     );
 
     const receipt = await tx.wait();

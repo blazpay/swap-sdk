@@ -17,7 +17,6 @@ export default class LifiAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    console.log()
     const query = {
       fromChain: params.fromChain.id !== 102? params.fromChain.id : 'SOL',
       toChain: params.toChain.id !== 102? params.toChain.id : 'SOL',
@@ -80,7 +79,6 @@ export default class LifiAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string, metaData: any }> {
-    console.log(data?.transactionRequest?.data, 'data?.transactionRequest?.data')
     const tx = {
       from: data?.transactionRequest?.from,
       to: data?.transactionRequest?.to,
@@ -102,7 +100,6 @@ export default class LifiAggregator extends Base {
       method: "GET",
       url: `${routers['lifi']}?txHash=${hash}`,
     });
-    console.log(res?.status, "lifi tx status");
     return {
       status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not found",
       hash

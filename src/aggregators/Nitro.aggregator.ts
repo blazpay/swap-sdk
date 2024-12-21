@@ -137,7 +137,6 @@ async function apiCall(params: any) {
     const response = await axios(params);
     return response.data;
   } catch (error: any) {
-    console.log("🚀 ~ apiCall ~ error:", error)
     throw new Error(error);
   }
 }

@@ -23,7 +23,6 @@ export default class OneInchAggregator extends Base {
   }
 
   async getQuotes(params: IQuoteParams): Promise<Quote> {
-    console.log("🚀 ~ OneInchAggregator ~ getQuotes ~ getQuotes:")
     const query = {
       src:
         params.fromToken.address === addressZero
@@ -129,7 +128,6 @@ export default class OneInchAggregator extends Base {
       });
       return data.spender;
     } catch (error) {
-      console.log(error, "error");
       throw error;
     }
   }

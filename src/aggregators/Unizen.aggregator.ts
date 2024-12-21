@@ -147,7 +147,6 @@ export default class UnizenAggregator extends Base {
       });
       return data.data;
     } catch (error) {
-      console.log(error, "error");
       throw error;
     }
   }
