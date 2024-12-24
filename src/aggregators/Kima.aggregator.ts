@@ -94,8 +94,6 @@ export default class KimaSwapAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string; metaData: any }> {
-    console.log('🚀 ~ KimaSwapAggregator ~ data:', data);
-    console.log('🚀 ~ KimaSwapAggregator ~ restProps:', restProps);
     const payload = {
       routeSummary: data?.routeSummary,
       sender: restProps.srcWalletAddress,
@@ -119,7 +117,6 @@ export default class KimaSwapAggregator extends Base {
       htlcVersion: '',
       senderPubKey: '',
     };
-    console.log('🚀 ~ KimaSwapAggregator ~ body:', body);
 
     const res = await apiCall({
       method: 'POST',
@@ -182,7 +179,6 @@ export default class KimaSwapAggregator extends Base {
   }
 
   async getServiceFee(chain: ChainNameKima): Promise<number> {
-    console.log(`${this.FEE_URL}${chain}`, 'url kima fees');
     const result = await fetch(`${this.FEE_URL}${chain}`).then((res) =>
       res.json()
     );
@@ -209,7 +205,6 @@ export default class KimaSwapAggregator extends Base {
       },
       data: JSON.stringify(data),
     });
-    console.log("🚀 ~ KimaSwapAggregator ~ getTxStatus ~ txData:", txData)
     return {
       status:
         txData?.txstatus === 'Completed'

@@ -35,17 +35,17 @@ export class AggregatorFactory {
           cb(quote);
         } catch (error: any) {
           if (error?.request?.data) {
-            // console.error(
-            //   `Error from ${aggregator.constructor.name}:`,
-            //   error?.request?.data
-            // );
+            console.error(
+              `Error from ${aggregator.constructor.name}:`,
+              error?.request?.data
+            );
           } else if (error?.response?.data) {
-            // console.error(
-            //   `Error from ${aggregator.constructor.name}:`,
-            //   error?.response?.data
-            // );
+            console.error(
+              `Error from ${aggregator.constructor.name}:`,
+              error?.response?.data
+            );
           } else {
-            // console.error(`Error from ${aggregator.constructor.name}:`, error);
+            console.error(`Error from ${aggregator.constructor.name}:`, error?.message);
           }
         }
       });

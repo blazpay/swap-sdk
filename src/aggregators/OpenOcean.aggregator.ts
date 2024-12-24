@@ -13,17 +13,19 @@ export default class OpenOceanAggregator extends Base {
   BASE_URL: string;
   slippage: number;
   bridgeUrl: string;
+  swapUrl: string;
   constructor() {
     super();
     this.name = AGGREGATORS.OPEN_OCEAN;
     this.BASE_URL = "";
     this.slippage = 0.5;
     this.bridgeUrl = "https://open-api.openocean.finance/cross_chain/v1/cross";
+    this.swapUrl= "https://open-api.openocean.finance/v3/"
   }
 
   getBaseUrl(type: string, chain: number | string) {
     if (type === "SWAP")
-      return `https://open-api.openocean.finance/v3/${chain}/quote`;
+      return `${this.swapUrl}${chain}/swap_quote`;
     else return this.bridgeUrl + `/quoteByOO`;
   }
 
@@ -159,7 +161,7 @@ export default class OpenOceanAggregator extends Base {
     restProps: IRestQuoteProps,
     meta: any
   ): Promise<{ tx: any; spender: string }> {
-    if (data?.fromChainId === data?.toChainId)
+    if (data?.fromChainId === data?.toChainId){
       return {
         tx: {
           data: data?.data,
@@ -171,6 +173,7 @@ export default class OpenOceanAggregator extends Base {
         },
         spender: data?.to,
       };
+    }
     else {
       const res = await apiCall({
         method: "POST",

@@ -52,14 +52,17 @@ export class RelayerFactory {
       { value: !enableFees ? value : value.add(fee) }
     );
     console.log("🚀 ~ RelayerFactory ~ triggerContract ~ gasEstimate:", gasEstimate)
+    const txObj:any = { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate}
+    if(chainId === 56 || chainId === 137 || chainId=== 42161) txObj.gasLimit = gasEstimate.mul(1.5)
 
-    const gasPrice = this.provider.getGasPrice()
+    console.log("################################", txObj)
+
     const tx = await relayerContract.executeMetaTransactionSwap(
       {
         ...metaTransaction,
         nativeValue: value
       },
-      { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate, gasPrice}
+      txObj
     );
 
     const receipt = await tx.wait();
