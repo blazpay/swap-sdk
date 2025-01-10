@@ -74,6 +74,7 @@ export default class UnizenAggregator extends Base {
       priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,
       allowanceTo,
+      minAmount: data?.deltaAmount
     };
 
     const quote = new Quote(data, meta, {

@@ -52,6 +52,7 @@ export default class ButterNetworkAggregator extends Base {
         priceImpact: quote?.route?.srcChain?.route[0]?.priceImpact || 0,
         slippage: 1,
         allowanceTo: quote?.route?.contract,
+        minAmount: quote?.route?.minAmountOut?.amount
       };
 
       return new Quote(quote, meta, {

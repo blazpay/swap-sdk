@@ -54,7 +54,8 @@ export default class LifiAggregator extends Base {
       priceImpact: 0,
       slippage: data?.action?.slippage || params.slippage || 0.5,
       allowanceTo: data?.transactionRequest?.to,
-      data: data
+      data: data,
+      minAmount: data?.estimate?.toAmountMin
     };
 
     const quote = new Quote(data, meta, {

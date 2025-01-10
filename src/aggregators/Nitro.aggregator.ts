@@ -71,6 +71,7 @@ export default class NitroAggregator extends Base {
       priceImpact: data.source.priceImpact,
       slippage: data.slippageTolerance,
       allowanceTo: data?.allowanceTo,
+      minAmount: data?.source?.stableReserveAmount
     };
 
     const quote = new Quote(data, meta, {

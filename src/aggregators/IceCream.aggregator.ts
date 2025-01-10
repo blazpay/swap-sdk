@@ -45,6 +45,7 @@ export default class IceCreamAggregator extends Base {
       priceImpact: 0,
       slippage: params.slippage || 0.5,
       allowanceTo: data?.tx?.to,
+      minAmount: data?.toAmount
     };
 
     const quote = new Quote(data, meta, {
