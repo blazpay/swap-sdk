@@ -2,6 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { addressE, addressZero, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
 import { relayerAbi } from "./utils/jsons/relayerAbi.js"
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
+import { getErrorMessage } from "./utils/helper.js";
 
 export class RelayerFactory {
   private provider: ethers.providers.Web3Provider
@@ -51,19 +52,31 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    console.log("🚀 ~ RelayerFactory ~ triggerContract ~ gasEstimate:", gasEstimate)
-    const txObj:any = { value: !enableFees ? value : value.add(fee), gasLimit: gasEstimate}
-    if(chainId === 56 || chainId === 137 || chainId=== 42161) txObj.gasLimit = gasEstimate.mul(1.5)
+    const txObj:any = { value: !enableFees ? value : value.add(fee), gasLimit: Number(gasEstimate)*1.5}
+    let tx;
 
-    console.log("################################", txObj)
-
-    const tx = await relayerContract.executeMetaTransactionSwap(
-      {
-        ...metaTransaction,
-        nativeValue: value
-      },
-      txObj
-    );
+    try {
+      tx = await relayerContract.executeMetaTransactionSwap(
+        {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        txObj
+      );
+    } catch (error:any) {
+      const isUnkownError = getErrorMessage(error);
+      if(isUnkownError === false) {
+        tx = await relayerContract.executeMetaTransactionSwap(
+          {
+            ...metaTransaction,
+            nativeValue: value
+          },
+          txObj
+        );
+      }else{
+        throw new Error(error)
+      }
+    }
 
     const receipt = await tx.wait();
     return receipt;
