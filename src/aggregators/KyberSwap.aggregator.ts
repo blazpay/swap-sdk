@@ -149,7 +149,8 @@ export default class KyberSwap extends Base {
     restProps: IRestQuoteProps,
     meta: any
   ): Promise<{ tx: any; spender: string }> {
-    if (restProps.type !== "SWAP") {
+    console.log(restProps,"type in this", meta, data)
+    if (restProps.fromChain?.id !== restProps.toChain?.id) {
       const tx = {
         data: meta?.data?.data,
         from: restProps.srcWalletAddress,

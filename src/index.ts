@@ -18,7 +18,7 @@ import Quote from "./utils/quote.js";
 import { ethers } from "ethers";
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import RelayerFactory from "./relayer.js";
-import {relayerAddresses} from './utils/constants.js'
+import { relayerAddresses } from './utils/constants.js'
 import { IQueryStatus } from "./utils/types.js";
 import KimaSwapAggregator from "./aggregators/Kima.aggregator.js";
 
@@ -95,7 +95,15 @@ export class TradeManager {
     );
   }
 
-  async getTransactionStatus(queries: IQueryStatus[]) : Promise<any> {
+  async sortQuotes(
+    provider: ethers.providers.Web3Provider,
+    relayerTxs: IRelayerTxData[]
+  ) {
+    const relayerFactory = new RelayerFactory(provider);
+    return await relayerFactory.sortQuotes(relayerTxs);
+  }
+
+  async getTransactionStatus(queries: IQueryStatus[]): Promise<any> {
     return await this.aggregatorFactory.getStatus(queries);
   }
 
@@ -115,4 +123,4 @@ export class TradeManager {
   }
 }
 
-export {relayerAddresses};
+export { relayerAddresses };

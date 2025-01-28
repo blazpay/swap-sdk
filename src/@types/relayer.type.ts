@@ -8,7 +8,8 @@ export interface IRelayerTxData {
     spender: string
     amount: number,
     token: string,
-    isNative: boolean
+    isNative: boolean,
+    quote?: any
 }
 
 export interface ITokenAndWalletInfo {
