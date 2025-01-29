@@ -111,10 +111,7 @@ export class RelayerFactory {
           ...metaTransaction,
           nativeValue: value
         },
-        {
-          ...txObj,
-          gasLimit: 10000
-        }
+        txObj
       );
       console.log("Simulation successful. Result:", simulationResult);
     } catch (simulationError) {
