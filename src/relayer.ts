@@ -38,15 +38,15 @@ export class RelayerFactory {
         const feeAmount = await relayerContract.feeAmount();
         const inPercentFee = await relayerContract.inPercentFee();
         const enableFees = await relayerContract.enableFees();
-  
+
         const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
-  
+
         let fee = 0;
         if (metaTransaction.isNative === true)
           fee = feeAmount.add(
             inPercentFee.mul(value).div(BigNumber.from(10000))
           );
-  
+
         await relayerContract.estimateGas.executeMetaTransactionSwap(
           {
             ...metaTransaction,
@@ -103,8 +103,26 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Number(gasEstimate) }
     let tx;
+    try {
+      const simulationResult = await relayerContract.callStatic.executeMetaTransactionSwap(
+        {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        {
+          ...txObj,
+          gasLimit: 10000
+        }
+      );
+      console.log("Simulation successful. Result:", simulationResult);
+    } catch (simulationError) {
+      const isUnkownError = getErrorMessage(simulationError);
+      if (isUnkownError === false) {
+        txObj.gasLimit = Math.round(txObj.gasLimit * 1.5)
+      } 
+    }
 
     try {
       tx = await relayerContract.executeMetaTransactionSwap(
