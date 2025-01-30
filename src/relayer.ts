@@ -62,6 +62,57 @@ export class RelayerFactory {
     return newQuotes
   }
 
+  async simulateTransaction(relayerTxData: IRelayerTxData) {
+    const signer = this.provider.getSigner()
+    const chainId = await signer.getChainId();
+    const address = await signer.getAddress();
+
+    const relayerAddress = relayerAddresses(chainId)
+    const relayerContract = new ethers.Contract(
+      relayerAddress,
+      relayerAbi,
+      signer
+    );
+
+    const metaTransaction = {
+      user: address,
+      targetContract: relayerTxData?.tx?.to,
+      data: relayerTxData?.tx?.data,
+      spender: relayerTxData?.spender || addressZero,
+      amount: relayerTxData?.amount,
+      token: relayerTxData?.token,
+      isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
+    };
+
+    const feeAmount = await relayerContract.feeAmount();
+    const inPercentFee = await relayerContract.inPercentFee();
+    const enableFees = await relayerContract.enableFees();
+
+    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+
+    let fee = 0;
+    if (metaTransaction.isNative === true)
+      fee = feeAmount.add(
+        inPercentFee.mul(value).div(BigNumber.from(10000))
+      );
+
+    const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
+      {
+        ...metaTransaction,
+        nativeValue: value
+      },
+      { value: !enableFees ? value : value.add(fee) }
+    );
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Number(gasEstimate) }
+    await relayerContract.callStatic.executeMetaTransactionSwap(
+      {
+        ...metaTransaction,
+        nativeValue: value
+      },
+      txObj
+    );
+  }
+
   async triggerContract(relayerTxData: IRelayerTxData) {
     const signer = this.provider.getSigner()
     const chainId = await signer.getChainId();
@@ -118,7 +169,7 @@ export class RelayerFactory {
       const isUnkownError = getErrorMessage(simulationError);
       if (isUnkownError === false) {
         txObj.gasLimit = Math.round(txObj.gasLimit * 1.5)
-      } 
+      }
     }
 
     try {

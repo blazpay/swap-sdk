@@ -107,6 +107,14 @@ export class TradeManager {
     return await this.aggregatorFactory.getStatus(queries);
   }
 
+  async simulateTx(
+    provider: ethers.providers.Web3Provider,
+    relayerTxData: IRelayerTxData
+  ) {
+    const relayerFactory = new RelayerFactory(provider);
+    return await relayerFactory.simulateTransaction(relayerTxData);
+  }
+
   async triggerTransaction(
     provider: ethers.providers.Web3Provider,
     relayerTxData: IRelayerTxData
