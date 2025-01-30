@@ -103,7 +103,7 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Number(gasEstimate) }
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate)*1.5) }
     await relayerContract.callStatic.executeMetaTransactionSwap(
       {
         ...metaTransaction,
@@ -154,23 +154,8 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Number(gasEstimate) }
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate)*1.5) }
     let tx;
-    try {
-      const simulationResult = await relayerContract.callStatic.executeMetaTransactionSwap(
-        {
-          ...metaTransaction,
-          nativeValue: value
-        },
-        txObj
-      );
-      console.log("Simulation successful. Result:", simulationResult);
-    } catch (simulationError) {
-      const isUnkownError = getErrorMessage(simulationError);
-      if (isUnkownError === false) {
-        txObj.gasLimit = Math.round(txObj.gasLimit * 1.5)
-      }
-    }
 
     try {
       tx = await relayerContract.executeMetaTransactionSwap(
