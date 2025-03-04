@@ -1,3 +1,5 @@
+import { relayerAbi } from "./jsons/relayerAbi.js";
+
 export enum ChainName {
   MAINNET = `ethereum`,
   BSC = `bsc`,
@@ -94,11 +96,18 @@ export function getContractAddressByChainId(
 export const addressZero = "0x0000000000000000000000000000000000000000";
 export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
+// export const relayerAddresses = (chain: number):string => {
+//   if(chain == 137) 
+//     return '0xdDdd393a0cC91368b5E61b4714E72259F4E061eA'
+//   else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
+// }
 export const relayerAddresses = (chain: number):string => {
   if(chain == 137) 
-    return '0xdDdd393a0cC91368b5E61b4714E72259F4E061eA'
+    return '0x753099447d68Ce61044C0f66a2941E87b5Cf4421'
   else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
 }
+
+export const relayerJson = relayerAbi
 
 export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
 

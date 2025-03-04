@@ -111,6 +111,8 @@ export class TradeManager {
     provider: ethers.providers.Web3Provider,
     relayerTxData: IRelayerTxData
   ) {
+    throw new Error("error 114")
+    console.log(provider, "provider")
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.simulateTransaction(relayerTxData);
   }

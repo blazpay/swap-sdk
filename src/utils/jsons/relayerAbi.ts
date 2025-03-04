@@ -11,6 +11,33 @@ export const relayerAbi = [
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "ECDSAInvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureS",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -38,7 +65,7 @@ export const relayerAbi = [
   },
   {
     "inputs": [],
-    "name": "FailedInnerCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {
@@ -226,11 +253,6 @@ export const relayerAbi = [
         "components": [
           {
             "internalType": "address",
-            "name": "user",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
             "name": "targetContract",
             "type": "address"
           },
@@ -255,19 +277,34 @@ export const relayerAbi = [
             "type": "bool"
           },
           {
-            "internalType": "address",
-            "name": "spender",
+            "internalType": "address payable",
+            "name": "recipient",
             "type": "address"
           },
           {
             "internalType": "uint256",
             "name": "nativeValue",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
           }
         ],
         "internalType": "struct BlazpayRelayer.MetaTransaction",
         "name": "_metaTx",
         "type": "tuple"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "executeMetaTransactionSwap",
@@ -308,14 +345,22 @@ export const relayerAbi = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getDomainSeparator",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
-          {
-            "internalType": "address",
-            "name": "user",
-            "type": "address"
-          },
           {
             "internalType": "address",
             "name": "targetContract",
@@ -342,13 +387,23 @@ export const relayerAbi = [
             "type": "bool"
           },
           {
-            "internalType": "address",
-            "name": "spender",
+            "internalType": "address payable",
+            "name": "recipient",
             "type": "address"
           },
           {
             "internalType": "uint256",
             "name": "nativeValue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
             "type": "uint256"
           }
         ],
@@ -357,7 +412,7 @@ export const relayerAbi = [
         "type": "tuple"
       }
     ],
-    "name": "getTypedMessageHash",
+    "name": "getMetaTransactionHash",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -365,7 +420,26 @@ export const relayerAbi = [
         "type": "bytes32"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getNonce",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -392,6 +466,25 @@ export const relayerAbi = [
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

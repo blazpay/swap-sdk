@@ -1,8 +1,9 @@
 import { BigNumber, ethers } from "ethers";
-import { addressE, addressZero, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
+import { addressE, addressZero, baseUrl, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
 import { relayerAbi } from "./utils/jsons/relayerAbi.js"
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import { getErrorMessage } from "./utils/helper.js";
+import { apiCall } from "./utils/axios.js";
 
 export class RelayerFactory {
   private provider: ethers.providers.Web3Provider
@@ -64,9 +65,11 @@ export class RelayerFactory {
 
   async simulateTransaction(relayerTxData: IRelayerTxData) {
     const signer = this.provider.getSigner()
+    console.log(signer, "signer")
     const chainId = await signer.getChainId();
     const address = await signer.getAddress();
 
+    console.log(relayerTxData, chainId, "chainId")
     const relayerAddress = relayerAddresses(chainId)
     const relayerContract = new ethers.Contract(
       relayerAddress,
@@ -84,6 +87,8 @@ export class RelayerFactory {
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
     };
 
+    console.log(metaTransaction, "metaTransaction")
+
     const feeAmount = await relayerContract.feeAmount();
     const inPercentFee = await relayerContract.inPercentFee();
     const enableFees = await relayerContract.enableFees();
@@ -95,6 +100,16 @@ export class RelayerFactory {
       fee = feeAmount.add(
         inPercentFee.mul(value).div(BigNumber.from(10000))
       );
+    const data = await apiCall({
+      method: "POST",
+      url: baseUrl + "/sign",
+      data: {
+        ...metaTransaction,
+        nativeValue: value
+      }
+    })
+
+    console.log(data, "data")
 
     const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
       {
@@ -103,7 +118,7 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate)*1.5) }
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
     await relayerContract.callStatic.executeMetaTransactionSwap(
       {
         ...metaTransaction,
@@ -154,7 +169,7 @@ export class RelayerFactory {
       },
       { value: !enableFees ? value : value.add(fee) }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate)*1.5) }
+    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
     let tx;
 
     try {
