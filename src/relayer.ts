@@ -65,11 +65,9 @@ export class RelayerFactory {
 
   async simulateTransaction(relayerTxData: IRelayerTxData) {
     const signer = this.provider.getSigner()
-    console.log(signer, "signer")
     const chainId = await signer.getChainId();
     const address = await signer.getAddress();
 
-    console.log(relayerTxData, chainId, "chainId")
     const relayerAddress = relayerAddresses(chainId)
     const relayerContract = new ethers.Contract(
       relayerAddress,
@@ -77,17 +75,18 @@ export class RelayerFactory {
       signer
     );
 
+    const nonce = await relayerContract.nonces(address)
+
     const metaTransaction = {
-      user: address,
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
-      spender: relayerTxData?.spender || addressZero,
+      recipient: relayerTxData?.spender || addressZero,
       amount: relayerTxData?.amount,
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
+      nonce: nonce,
+      deadline: Math.round(new Date().getTime() / 1000 + 100)
     };
-
-    console.log(metaTransaction, "metaTransaction")
 
     const feeAmount = await relayerContract.feeAmount();
     const inPercentFee = await relayerContract.inPercentFee();
@@ -100,22 +99,25 @@ export class RelayerFactory {
       fee = feeAmount.add(
         inPercentFee.mul(value).div(BigNumber.from(10000))
       );
+
     const data = await apiCall({
       method: "POST",
       url: baseUrl + "/sign",
       data: {
-        ...metaTransaction,
-        nativeValue: value
+        metaTx: {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        chainId: Number(chainId)
       }
     })
-
-    console.log(data, "data")
 
     const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
       {
         ...metaTransaction,
         nativeValue: value
       },
+      data.data,
       { value: !enableFees ? value : value.add(fee) }
     );
     const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
@@ -124,6 +126,7 @@ export class RelayerFactory {
         ...metaTransaction,
         nativeValue: value
       },
+      data.data,
       txObj
     );
   }
@@ -140,14 +143,17 @@ export class RelayerFactory {
       signer
     );
 
+    const nonce = await relayerContract.nonces(address)
+
     const metaTransaction = {
-      user: address,
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
-      spender: relayerTxData?.spender || addressZero,
+      recipient: relayerTxData?.spender || addressZero,
       amount: relayerTxData?.amount,
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
+      nonce: nonce,
+      deadline: Math.round(new Date().getTime() / 1000 + 100)
     };
 
     const feeAmount = await relayerContract.feeAmount();
@@ -162,11 +168,24 @@ export class RelayerFactory {
         inPercentFee.mul(value).div(BigNumber.from(10000))
       );
 
+    const data = await apiCall({
+      method: "POST",
+      url: baseUrl + "/sign",
+      data: {
+        metaTx: {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        chainId: Number(chainId)
+      }
+    })
+
     const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
       {
         ...metaTransaction,
         nativeValue: value
       },
+      data.data,
       { value: !enableFees ? value : value.add(fee) }
     );
     const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
@@ -178,6 +197,7 @@ export class RelayerFactory {
           ...metaTransaction,
           nativeValue: value
         },
+        data.data,
         txObj
       );
     } catch (error: any) {
@@ -188,6 +208,7 @@ export class RelayerFactory {
             ...metaTransaction,
             nativeValue: value
           },
+          data.data,
           txObj
         );
       } else {
