@@ -105,8 +105,12 @@ export class RelayerFactory {
       url: baseUrl + "/sign",
       data: {
         metaTx: {
-          ...metaTransaction,
-          nativeValue: value
+          from: address,
+          nonce: nonce.toString(),
+          functionSignature: relayerContract.interface.encodeFunctionData("executeMetaTransactionSwap", [{
+            ...metaTransaction,
+            nativeValue: value
+          }])
         },
         chainId: Number(chainId)
       }
@@ -143,7 +147,7 @@ export class RelayerFactory {
       signer
     );
 
-    const nonce = await relayerContract.nonces(address)
+    const nonce = await relayerContract.getNonce(address)
 
     const metaTransaction = {
       targetContract: relayerTxData?.tx?.to,
@@ -173,8 +177,12 @@ export class RelayerFactory {
       url: baseUrl + "/sign",
       data: {
         metaTx: {
-          ...metaTransaction,
-          nativeValue: value
+          from: address,
+          nonce: nonce.toString(),
+          functionSignature: relayerContract.interface.encodeFunctionData("executeMetaTransactionSwap", [{
+            ...metaTransaction,
+            nativeValue: value
+          }])
         },
         chainId: Number(chainId)
       }
