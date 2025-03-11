@@ -102,9 +102,9 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 //   else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
 // }
 export const relayerAddresses = (chain: number):string => {
-  if(chain == 137) 
-    return '0xa851D4125cC029743F371eaD4F9DdE4BA04F5146'
-  else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
+  if (chain === 137) return '0xa851D4125cC029743F371eaD4F9DdE4BA04F5146';
+  if ([42161, 534352, 56, 59144].includes(chain)) return '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6';
+  return '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14';
 }
 
 export const relayerJson = relayerAbi
