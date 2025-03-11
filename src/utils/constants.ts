@@ -109,7 +109,7 @@ export const relayerAddresses = (chain: number):string => {
 
 export const relayerJson = relayerAbi
 
-export const baseUrl = `http://localhost:${process.env.PORT || 80}/api/defi`;
+export const baseUrl = `https://api.blazpay.com/api/defi`;
 
 export const ERC20_ABI = [
   "function approve(address spender, uint256 amount) public"
