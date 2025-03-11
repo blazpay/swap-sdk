@@ -103,7 +103,7 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 // }
 export const relayerAddresses = (chain: number):string => {
   if(chain == 137) 
-    return '0xC2A256847b48fe0228771a189DfE37720Ed0ccc6'
+    return '0xa851D4125cC029743F371eaD4F9DdE4BA04F5146'
   else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
 }
 
