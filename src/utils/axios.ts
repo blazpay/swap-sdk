@@ -19,7 +19,7 @@ export const apiCall = async ({
   params = {},
   headers,
   timeout = 10000,
-  // withCredentials = false
+  withCredentials = false
 }: ApiCallParams): Promise<any> => {
   try {
     const response = await axios({
@@ -28,7 +28,7 @@ export const apiCall = async ({
       data,
       params,
       headers,
-      // withCredentials
+      withCredentials
       // timeout,
     });
     return response.data;
