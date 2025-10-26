@@ -1,5 +1,5 @@
-import { IQuote, IRestQuoteProps } from "../@types/index.js";
-import aggregatorFactory, { AggregatorFactory } from "../aggregator.factory.js";
+import { IQuote, IRestQuoteProps } from '../@types/index.js';
+import aggregatorFactory, { AggregatorFactory } from '../aggregator.factory.js';
 
 //data = quote response
 export default class Quote {
@@ -20,7 +20,11 @@ export default class Quote {
   async getTransactionData() {
     const aggregator = aggregatorFactory.getAggregator(this.meta.aggregator);
 
-    return await aggregator.getTransactionData(this.data, this.restProps, this.meta);
+    return await aggregator.getTransactionData(
+      this.data,
+      this.restProps,
+      this.meta
+    );
   }
 
   toJSON() {
