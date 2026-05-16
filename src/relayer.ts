@@ -63,8 +63,8 @@ export class RelayerFactory {
           token: relayerTxData?.token,
           isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
         };
-        const feeAmount = await relayerContract.feeAmount();
-        const inPercentFee = await relayerContract.inPercentFee();
+        const feeAmount = this.toBigIntWei(await relayerContract.feeAmount());
+        const inPercentFee = this.toBigIntWei(await relayerContract.inPercentFee());
         const enableFees = await relayerContract.enableFees();
 
         const value = this.toBigIntWei(relayerTxData?.tx?.value);
@@ -103,7 +103,7 @@ export class RelayerFactory {
       signer
     );
 
-    const nonce = await relayerContract.nonces(address)
+    const nonce = this.toBigIntWei(await relayerContract.nonces(address));
 
     const metaTransaction = {
       targetContract: relayerTxData?.tx?.to,
@@ -113,11 +113,11 @@ export class RelayerFactory {
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
       nonce: nonce,
-      deadline: Math.round(new Date().getTime() / 1000 + 100)
+      deadline: BigInt(Math.round(new Date().getTime() / 1000 + 100))
     };
 
-    const feeAmount = await relayerContract.feeAmount();
-    const inPercentFee = await relayerContract.inPercentFee();
+    const feeAmount = this.toBigIntWei(await relayerContract.feeAmount());
+    const inPercentFee = this.toBigIntWei(await relayerContract.inPercentFee());
     const enableFees = await relayerContract.enableFees();
 
     const value = this.toBigIntWei(relayerTxData?.tx?.value);
@@ -135,6 +135,7 @@ export class RelayerFactory {
           ...metaTransaction,
           amount: metaTransaction.amount.toString(),
           nonce: metaTransaction.nonce.toString(),
+          deadline: metaTransaction.deadline.toString(),
           nativeValue: value.toString(),
         },
         chainId: Number(chainId)
@@ -142,13 +143,15 @@ export class RelayerFactory {
     })
 
     const txValue = !enableFees ? value : value + fee;
-    const gasEstimate: bigint = await relayerContract.executeMetaTransactionSwap.estimateGas(
-      {
-        ...metaTransaction,
-        nativeValue: value
-      },
-      data.data,
-      { value: txValue }
+    const gasEstimate = this.toBigIntWei(
+      await relayerContract.executeMetaTransactionSwap.estimateGas(
+        {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        data.data,
+        { value: txValue }
+      )
     );
     const txObj: any = { value: txValue, gasLimit: (gasEstimate * 3n) / 2n }
     await relayerContract.executeMetaTransactionSwap.staticCall(
@@ -174,7 +177,7 @@ export class RelayerFactory {
       signer
     );
 
-    const nonce = await relayerContract.nonces(address)
+    const nonce = this.toBigIntWei(await relayerContract.nonces(address));
 
     const metaTransaction = {
       targetContract: relayerTxData?.tx?.to,
@@ -184,11 +187,11 @@ export class RelayerFactory {
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
       nonce: nonce,
-      deadline: Math.round(new Date().getTime() / 1000 + 100)
+      deadline: BigInt(Math.round(new Date().getTime() / 1000 + 100))
     };
 
-    const feeAmount = await relayerContract.feeAmount();
-    const inPercentFee = await relayerContract.inPercentFee();
+    const feeAmount = this.toBigIntWei(await relayerContract.feeAmount());
+    const inPercentFee = this.toBigIntWei(await relayerContract.inPercentFee());
     const enableFees = await relayerContract.enableFees();
 
     const value = this.toBigIntWei(relayerTxData?.tx?.value);
@@ -206,6 +209,7 @@ export class RelayerFactory {
           ...metaTransaction,
           amount: metaTransaction.amount.toString(),
           nonce: metaTransaction.nonce.toString(),
+          deadline: metaTransaction.deadline.toString(),
           nativeValue: value.toString(),
         },
         chainId: Number(chainId)
@@ -213,13 +217,15 @@ export class RelayerFactory {
     })
 
     const txValue = !enableFees ? value : value + fee;
-    const gasEstimate: bigint = await relayerContract.executeMetaTransactionSwap.estimateGas(
-      {
-        ...metaTransaction,
-        nativeValue: value
-      },
-      data.data,
-      { value: txValue }
+    const gasEstimate = this.toBigIntWei(
+      await relayerContract.executeMetaTransactionSwap.estimateGas(
+        {
+          ...metaTransaction,
+          nativeValue: value
+        },
+        data.data,
+        { value: txValue }
+      )
     );
     const txObj: any = { value: txValue, gasLimit: (gasEstimate * 3n) / 2n }
     let tx;
