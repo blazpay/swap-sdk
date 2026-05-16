@@ -120,7 +120,8 @@ export class RelayerFactory {
       data: {
         metaTx: {
           ...metaTransaction,
-          nativeValue: value
+          nonce: metaTransaction.nonce.toString(),
+          nativeValue: value.toString(),
         },
         chainId: Number(chainId)
       }
@@ -189,7 +190,8 @@ export class RelayerFactory {
       data: {
         metaTx: {
           ...metaTransaction,
-          nativeValue: value
+          nonce: metaTransaction.nonce.toString(),
+          nativeValue: value.toString(),
         },
         chainId: Number(chainId)
       }
