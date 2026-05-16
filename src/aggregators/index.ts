@@ -17,3 +17,4 @@ export { default as OdosAggregator } from './Odos.aggregator.js';
 export { default as RelayAggregator } from './Relay.aggregator.js';
 export { default as SushiswapAggregator } from './Sushi.aggregator.js';
 export { default as AcrossAggregator } from './Across.aggregator.js';
+export { default as NearOneClickAggregator } from './NearOneClick.aggregator.js';

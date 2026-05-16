@@ -17,4 +17,5 @@ export enum AGGREGATORS {
   RELAY = "relay",
   SUSHISWAP = "sushiswap",
   ACROSS = "across",
+  NEAR_1CLICK = "near_1click",
 }

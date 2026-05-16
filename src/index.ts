@@ -16,6 +16,7 @@ import {
   RelayAggregator,
   SushiswapAggregator,
   AcrossAggregator,
+  NearOneClickAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -80,6 +81,10 @@ export class TradeManager {
     this.aggregatorFactory.register(
       AGGREGATORS.ACROSS,
       new AcrossAggregator(),
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.NEAR_1CLICK,
+      new NearOneClickAggregator(),
     );
   }
 
