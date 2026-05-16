@@ -183,7 +183,7 @@ export default class NearOneClickAggregator extends Base {
   async getTransactionData(
     _data: any,
     restProps: IRestQuoteProps
-  ): Promise<{ tx: any; spender: string }> {
+  ): Promise<{ tx: any; spender: string; metaData?: any }> {
     // Re-quote with dry=false to materialize a real depositAddress.
     const payload = {
       ...restProps.quotePayload,
@@ -223,6 +223,7 @@ export default class NearOneClickAggregator extends Base {
           from: restProps.srcWalletAddress,
         },
         spender: depositAddress,
+        metaData: { depositAddress },
       };
     }
 
@@ -258,6 +259,10 @@ export default class NearOneClickAggregator extends Base {
       // recipient is still the deposit address — the relayer will approve
       // it for `amount` (harmless EOA allowance) before performing the push.
       spender: depositAddress,
+      // Surface the real deposit address so the FE can persist it as the
+      // tracker key (Near's /v0/status is keyed by depositAddress, not the
+      // source tx hash).
+      metaData: { depositAddress },
     };
   }
 
