@@ -22,7 +22,7 @@ export default class LifiAggregator extends Base {
       toChain: params.toChain.id !== 102? params.toChain.id : 'SOL',
       fromToken: params.fromToken.address,
       toToken: params.toToken.address,
-      fromAmount: ethers.utils
+      fromAmount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       fromAddress: params.srcWalletAddress,
@@ -35,7 +35,7 @@ export default class LifiAggregator extends Base {
       params: query,
     });
 
-    const swapAmount = ethers.utils.formatUnits(
+    const swapAmount = ethers.formatUnits(
       data?.estimate?.toAmount,
       params.toToken.decimals
     );
@@ -48,7 +48,7 @@ export default class LifiAggregator extends Base {
       usdAmount: 0,
       networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
       platformFee: data?.estimate?.feeCosts?.length > 0 ? `${Number(
-        ethers.utils.formatUnits(
+        ethers.formatUnits(
           data?.estimate?.feeCosts[0]?.amount?.toString(), Number(data?.estimate?.feeCosts[0]?.token?.decimals))?.toString()
       )?.toFixed(6)} ${data?.estimate?.feeCosts[0]?.token?.symbol}` : 0,
       priceImpact: 0,

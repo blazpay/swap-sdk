@@ -19,15 +19,15 @@ export default class SquidRouterAggregator extends Base {
       fromAddress: params.srcWalletAddress,
       fromChain: params.fromChain.id,
       fromToken:
-        params.fromToken.address === ethers.constants.AddressZero
+        params.fromToken.address === ethers.ZeroAddress
           ? addressZero
           : addressE,
-      fromAmount: ethers.utils
+      fromAmount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       toChain: params.toChain.id,
       toToken:
-        params.toToken.address === ethers.constants.AddressZero
+        params.toToken.address === ethers.ZeroAddress
           ? addressE
           : params.toToken.address,
       toAddress: params.dstWalletAddress,

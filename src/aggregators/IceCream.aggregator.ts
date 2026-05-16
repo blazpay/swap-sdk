@@ -19,7 +19,7 @@ export default class IceCreamAggregator extends Base {
     const query = {
       src: params.fromToken.address,
       dst: params.toToken.address,
-      amount: ethers.utils
+      amount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       from: params.srcWalletAddress,

@@ -1,7 +1,7 @@
-import { Contract, providers } from "ethers";
 import { ethers } from "ethers";
 
 import { apiCall } from "../utils/axios.js";
+import { getConfig } from "../utils/config.js";
 
 const addressZero = "0x0000000000000000000000000000000000000000";
 
@@ -49,12 +49,11 @@ export default class Base {
 
   async getGasPrice(chainId: number) {
     try {
+      const apiKey = getConfig().openOceanApiKey;
       const data = await apiCall({
         method: "GET",
         url: `https://open-api.openocean.finance/v4/${chainId}/gasPrice`,
-        headers: {
-          apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
-        },
+        headers: apiKey ? { apikey: apiKey } : undefined,
       });
 
       return data?.data;

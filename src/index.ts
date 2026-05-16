@@ -1,4 +1,4 @@
-import { IBaseQuoteParams, IQuote, IQuoteParams } from "./@types/index.js";
+import { IBaseQuoteParams, IQuote, IQuoteParams } from './@types/index.js';
 import {
   ChangeNowAggregator,
   IceCreamAggregator,
@@ -11,16 +11,18 @@ import {
   LifiAggregator,
   ButterNetworkAggregator,
   SquidRouterAggregator,
-} from "./aggregators/index.js";
-import aggregatorFactory, { AggregatorFactory } from "./aggregator.factory.js";
-import { AGGREGATORS } from "./enums/aggregator.enum.js";
-import Quote from "./utils/quote.js";
-import { ethers } from "ethers";
-import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
-import RelayerFactory from "./relayer.js";
-import { relayerAddresses } from './utils/constants.js'
-import { IQueryStatus } from "./utils/types.js";
-import KimaSwapAggregator from "./aggregators/Kima.aggregator.js";
+  NordsternAggregator,
+} from './aggregators/index.js';
+import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
+import { AGGREGATORS } from './enums/aggregator.enum.js';
+import Quote from './utils/quote.js';
+import { ethers } from 'ethers';
+import { IRelayerRawTxData, IRelayerTxData } from './@types/relayer.type.js';
+import RelayerFactory from './relayer.js';
+import { relayerAddresses } from './utils/constants.js';
+import { IQueryStatus } from './utils/types.js';
+import KimaSwapAggregator from './aggregators/Kima.aggregator.js';
+import { configure } from './utils/config.js';
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -29,16 +31,16 @@ export class TradeManager {
     this.aggregatorFactory = aggregatorFactory;
     this.aggregatorFactory.register(
       AGGREGATORS.ONE_INCH,
-      new OneInchAggregator()
+      new OneInchAggregator(),
     );
     this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
     this.aggregatorFactory.register(
       AGGREGATORS.SYMBIOSIS,
-      new SymbiosisAggregator()
+      new SymbiosisAggregator(),
     );
     this.aggregatorFactory.register(
       AGGREGATORS.OPEN_OCEAN,
-      new OpenOceanAggregator()
+      new OpenOceanAggregator(),
     );
     this.aggregatorFactory.register(AGGREGATORS.UNIZEN, new UnizenAggregator());
     // this.aggregatorFactory.register(
@@ -48,22 +50,23 @@ export class TradeManager {
 
     this.aggregatorFactory.register(
       AGGREGATORS.ICECREAM_SWAP,
-      new IceCreamAggregator()
+      new IceCreamAggregator(),
     );
     this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
     this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
     this.aggregatorFactory.register(
       AGGREGATORS.BUTTER_NETWORK,
-      new ButterNetworkAggregator()
+      new ButterNetworkAggregator(),
     );
     this.aggregatorFactory.register(
       AGGREGATORS.SQUID_ROUTER,
-      new SquidRouterAggregator()
+      new SquidRouterAggregator(),
     );
+    this.aggregatorFactory.register(AGGREGATORS.KIMA, new KimaSwapAggregator());
     this.aggregatorFactory.register(
-      AGGREGATORS.KIMA,
-      new KimaSwapAggregator
-    )
+      AGGREGATORS.NORDSTERN,
+      new NordsternAggregator(),
+    );
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -91,13 +94,13 @@ export class TradeManager {
     await this.aggregatorFactory.getQuotes(
       quoteParams,
       handleQuote,
-      handleLastQuote
+      handleLastQuote,
     );
   }
 
   async sortQuotes(
-    provider: ethers.providers.Web3Provider,
-    relayerTxs: IRelayerTxData[]
+    provider: ethers.BrowserProvider,
+    relayerTxs: IRelayerTxData[],
   ) {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.sortQuotes(relayerTxs);
@@ -108,27 +111,26 @@ export class TradeManager {
   }
 
   async simulateTx(
-    provider: ethers.providers.Web3Provider,
-    relayerTxData: IRelayerTxData
+    provider: ethers.BrowserProvider,
+    relayerTxData: IRelayerTxData,
   ) {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.simulateTransaction(relayerTxData);
   }
 
   async triggerTransaction(
-    provider: ethers.providers.Web3Provider,
-    relayerTxData: IRelayerTxData
+    provider: ethers.BrowserProvider,
+    relayerTxData: IRelayerTxData,
   ) {
     const relayerFactory = new RelayerFactory(provider);
     return await relayerFactory.triggerContract(relayerTxData);
   }
 
-  sendSignTxDataRaw(
-    relayerTxData: IRelayerRawTxData
-  ) {
+  sendSignTxDataRaw(relayerTxData: IRelayerRawTxData) {
     const relayerFactory = new RelayerFactory();
     return relayerFactory.getMetaTransactionByteData(relayerTxData);
   }
 }
 
 export { relayerAddresses };
+export { configure };

@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 import { IQuote, IQuoteParams, SwapParams } from "../@types/aggregator.type.js";
 import { Base } from "./index.js";
@@ -7,6 +7,7 @@ import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { IRestQuoteProps } from "../@types/quote.type.js";
 import { routers } from "../utils/constants.js";
+import { getConfig } from "../utils/config.js";
 
 export default class OpenOceanAggregator extends Base {
   name: string;
@@ -31,6 +32,12 @@ export default class OpenOceanAggregator extends Base {
 
   async getQuotes(params: IQuoteParams): Promise<Quote | Quote[]> {
     this.setSenderAddress(params.srcWalletAddress);
+    const apiKey = getConfig().openOceanApiKey;
+    if (!apiKey) {
+      throw new Error(
+        "OpenOcean API key is not configured. Call configure({ openOceanApiKey: '...' }) before using OpenOcean routes."
+      );
+    }
     let query: any = {};
 
     if (params.type === "SWAP") {
@@ -52,7 +59,7 @@ export default class OpenOceanAggregator extends Base {
         toChainId: params.toChain.id !== 102? params.toChain.id : 'solana',
         fromSymbol: params?.fromToken.symbol,
         toSymbol: params?.toToken.symbol,
-        amount: ethers.utils
+        amount: ethers
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         referrer: "0x5222d5467DC61aFc2EfA95Ef76dCDe411e6e1D35",
@@ -65,7 +72,7 @@ export default class OpenOceanAggregator extends Base {
       url: this.getBaseUrl(params.type, params.fromChain.id !== 102? params.fromChain.id : 'solana'),
       params: query,
       headers: {
-        apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
+        apikey: apiKey,
         "Content-Type": "application/json",
       },
     });
@@ -81,7 +88,12 @@ export default class OpenOceanAggregator extends Base {
         route: "OpenOcean",
         amount: Number(Number(swapAmount).toFixed(4)),
         usdAmount: data?.outToken?.usd,
-        networkFee: `${Number(ethers.utils.formatEther((Number(data?.estimatedGas) * Number(data?.gasPrice || query?.gasPrice)).toString()))?.toFixed(6)} NATIVE`,
+        networkFee: `${Number(
+          ethers.formatEther(
+            BigInt(data?.estimatedGas ?? 0) *
+              BigInt(data?.gasPrice ?? query?.gasPrice ?? 0)
+          )
+        )?.toFixed(6)} NATIVE`,
         platformFee: 0,
         priceImpact: data?.price_impact?.replace("%", ""),
         slippage: this.slippage,
@@ -107,12 +119,12 @@ export default class OpenOceanAggregator extends Base {
       const quotes: Quote[] = data?.routes
         ?.filter((route: any) => route !== null)
         .map((route: any) => {
-          const swapAmount = ethers.utils
-            .formatUnits(
-              route.bridgeRoute?.outputAmount,
-              route.bridgeRoute?.toAsset?.decimals
-            )
-            .toString();
+            const swapAmount = ethers
+              .formatUnits(
+                route.bridgeRoute?.outputAmount ?? 0,
+                route.bridgeRoute?.toAsset?.decimals ?? 18
+              )
+              .toString();
 
           const meta = {
             id: uuidv4(),
@@ -124,7 +136,7 @@ export default class OpenOceanAggregator extends Base {
               Number(route?.fees?.gasLimit[0]?.value)?.toFixed(6) || 0,
             platformFee: route?.fees?.bridgeFee?.amount
               ? `${Number(
-                  ethers.utils.formatUnits(
+                  ethers.formatUnits(
                     route?.fees?.bridgeFee?.amount,
                     route?.fees?.bridgeFee?.decimals
                   )
@@ -161,6 +173,12 @@ export default class OpenOceanAggregator extends Base {
     restProps: IRestQuoteProps,
     meta: any
   ): Promise<{ tx: any; spender: string }> {
+    const apiKey = getConfig().openOceanApiKey;
+    if (!apiKey) {
+      throw new Error(
+        "OpenOcean API key is not configured. Call configure({ openOceanApiKey: '...' }) before using OpenOcean routes."
+      );
+    }
     if (data?.fromChainId === data?.toChainId){
       return {
         tx: {
@@ -184,7 +202,7 @@ export default class OpenOceanAggregator extends Base {
           account: restProps?.srcWalletAddress,
         },
         headers: {
-          apikey: "v1KMZyXotXue4HiQEO3O60qj7iP3SP2j",
+          apikey: apiKey,
           "Content-Type": "application/json",
         },
       });

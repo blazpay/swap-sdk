@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { addressE, addressZero, baseUrl, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
 import { relayerAbi } from "./utils/jsons/relayerAbi.js"
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
@@ -6,19 +6,33 @@ import { getErrorMessage } from "./utils/helper.js";
 import { apiCall } from "./utils/axios.js";
 
 export class RelayerFactory {
-  private provider: ethers.providers.Web3Provider
+  private provider?: ethers.BrowserProvider
+  
+  private requireProvider(): ethers.BrowserProvider {
+    if (!this.provider) throw new Error("RelayerFactory requires a BrowserProvider for this operation.");
+    return this.provider;
+  }
 
-  constructor(_provider?: ethers.providers.Web3Provider) {
-    this.provider = _provider!;
+  constructor(_provider?: ethers.BrowserProvider) {
+    this.provider = _provider;
+  }
+
+  private toBigIntWei(value: any): bigint {
+    if (value === null || value === undefined) return 0n;
+    if (typeof value === "bigint") return value;
+    if (typeof value === "number") return BigInt(Math.trunc(value));
+    if (typeof value === "string") return BigInt(value);
+    return BigInt(value.toString());
   }
 
   async sortQuotes(relayerTxs: IRelayerTxData[]) {
-    const signer = this.provider.getSigner()
-    const chainId = await signer.getChainId();
+    const provider = this.requireProvider();
+    const signer = await provider.getSigner()
+    const chainId = Number((await provider.getNetwork()).chainId);
     const address = await signer.getAddress();
 
     const relayerAddress = relayerAddresses(chainId)
-    const relayerContract = new ethers.Contract(
+    const relayerContract: any = new ethers.Contract(
       relayerAddress,
       relayerAbi,
       signer
@@ -40,20 +54,20 @@ export class RelayerFactory {
         const inPercentFee = await relayerContract.inPercentFee();
         const enableFees = await relayerContract.enableFees();
 
-        const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+        const value = this.toBigIntWei(relayerTxData?.tx?.value);
 
-        let fee = 0;
-        if (metaTransaction.isNative === true)
-          fee = feeAmount.add(
-            inPercentFee.mul(value).div(BigNumber.from(10000))
-          );
+        let fee = 0n;
+        if (metaTransaction.isNative === true) {
+          fee = feeAmount + (inPercentFee * value) / 10000n;
+        }
 
-        await relayerContract.estimateGas.executeMetaTransactionSwap(
+        const txValue = !enableFees ? value : value + fee;
+        await relayerContract.executeMetaTransactionSwap.estimateGas(
           {
             ...metaTransaction,
             nativeValue: value
           },
-          { value: !enableFees ? value : value.add(fee) }
+          { value: txValue }
         );
         newQuotes.push(relayerTxData.quote)
       } catch (error) {
@@ -64,12 +78,13 @@ export class RelayerFactory {
   }
 
   async simulateTransaction(relayerTxData: IRelayerTxData) {
-    const signer = this.provider.getSigner()
-    const chainId = await signer.getChainId();
+    const provider = this.requireProvider();
+    const signer = await provider.getSigner()
+    const chainId = Number((await provider.getNetwork()).chainId);
     const address = await signer.getAddress();
 
     const relayerAddress = relayerAddresses(chainId)
-    const relayerContract = new ethers.Contract(
+    const relayerContract: any = new ethers.Contract(
       relayerAddress,
       relayerAbi,
       signer
@@ -92,13 +107,12 @@ export class RelayerFactory {
     const inPercentFee = await relayerContract.inPercentFee();
     const enableFees = await relayerContract.enableFees();
 
-    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+    const value = this.toBigIntWei(relayerTxData?.tx?.value);
 
-    let fee = 0;
-    if (metaTransaction.isNative === true)
-      fee = feeAmount.add(
-        inPercentFee.mul(value).div(BigNumber.from(10000))
-      );
+    let fee = 0n;
+    if (metaTransaction.isNative === true) {
+      fee = feeAmount + (inPercentFee * value) / 10000n;
+    }
 
     const data = await apiCall({
       method: "POST",
@@ -112,16 +126,17 @@ export class RelayerFactory {
       }
     })
 
-    const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
+    const txValue = !enableFees ? value : value + fee;
+    const gasEstimate: bigint = await relayerContract.executeMetaTransactionSwap.estimateGas(
       {
         ...metaTransaction,
         nativeValue: value
       },
       data.data,
-      { value: !enableFees ? value : value.add(fee) }
+      { value: txValue }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
-    await relayerContract.callStatic.executeMetaTransactionSwap(
+    const txObj: any = { value: txValue, gasLimit: (gasEstimate * 3n) / 2n }
+    await relayerContract.executeMetaTransactionSwap.staticCall(
       {
         ...metaTransaction,
         nativeValue: value
@@ -132,12 +147,13 @@ export class RelayerFactory {
   }
 
   async triggerContract(relayerTxData: IRelayerTxData) {
-    const signer = this.provider.getSigner()
-    const chainId = await signer.getChainId();
+    const provider = this.requireProvider();
+    const signer = await provider.getSigner()
+    const chainId = Number((await provider.getNetwork()).chainId);
     const address = await signer.getAddress();
 
     const relayerAddress = relayerAddresses(chainId)
-    const relayerContract = new ethers.Contract(
+    const relayerContract: any = new ethers.Contract(
       relayerAddress,
       relayerAbi,
       signer
@@ -160,13 +176,12 @@ export class RelayerFactory {
     const inPercentFee = await relayerContract.inPercentFee();
     const enableFees = await relayerContract.enableFees();
 
-    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+    const value = this.toBigIntWei(relayerTxData?.tx?.value);
 
-    let fee = 0;
-    if (metaTransaction.isNative === true)
-      fee = feeAmount.add(
-        inPercentFee.mul(value).div(BigNumber.from(10000))
-      );
+    let fee = 0n;
+    if (metaTransaction.isNative === true) {
+      fee = feeAmount + (inPercentFee * value) / 10000n;
+    }
 
     const data = await apiCall({
       method: "POST",
@@ -180,15 +195,16 @@ export class RelayerFactory {
       }
     })
 
-    const gasEstimate = await relayerContract.estimateGas.executeMetaTransactionSwap(
+    const txValue = !enableFees ? value : value + fee;
+    const gasEstimate: bigint = await relayerContract.executeMetaTransactionSwap.estimateGas(
       {
         ...metaTransaction,
         nativeValue: value
       },
       data.data,
-      { value: !enableFees ? value : value.add(fee) }
+      { value: txValue }
     );
-    const txObj: any = { value: !enableFees ? value : value.add(fee), gasLimit: Math.round(Number(gasEstimate) * 1.5) }
+    const txObj: any = { value: txValue, gasLimit: (gasEstimate * 3n) / 2n }
     let tx;
 
     try {
@@ -225,7 +241,7 @@ export class RelayerFactory {
     let approvalData;
 
     if (!relayerTxData?.isNative) {
-      const tokenInterface = new ethers.utils.Interface(ERC20_ABI);
+      const tokenInterface = new ethers.Interface(ERC20_ABI);
 
       approvalData = tokenInterface.encodeFunctionData("approve", [
         relayerAddress,
@@ -233,7 +249,7 @@ export class RelayerFactory {
       ]);
     }
 
-    const relayerInterface = new ethers.utils.Interface(relayerAbi);
+    const relayerInterface = new ethers.Interface(relayerAbi);
 
     const metaTransaction = {
       user: relayerTxData?.userAddress,
@@ -245,7 +261,7 @@ export class RelayerFactory {
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
     };
 
-    const value = ethers.utils.parseEther((Number(relayerTxData?.tx?.value || 0) / Math.pow(10, 18))?.toString());
+    const value = this.toBigIntWei(relayerTxData?.tx?.value);
 
     const executeData = relayerInterface.encodeFunctionData(
       "executeMetaTransactionSwap",

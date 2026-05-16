@@ -1,4 +1,4 @@
-import { providers } from "ethers";
+import { BrowserProvider } from "ethers";
 import { IChain, IToken } from "./index.js";
 import Quote from "../utils/quote.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
@@ -18,7 +18,7 @@ export interface IQuoteParams {
 }
 
 export interface SwapParams {
-  provider: providers.Web3Provider;
+  provider: BrowserProvider;
   receiver?: string;
   slippageTolerance?: number;
 }

@@ -37,7 +37,7 @@ export default class KyberSwap extends Base {
       query = {
         tokenIn: fromTokenAdd,
         tokenOut: toTokenAdd,
-        amountIn: ethers.utils
+        amountIn: ethers
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         gasInclude: true,
@@ -59,8 +59,8 @@ export default class KyberSwap extends Base {
 
       data = await res?.data;
 
-      const swapAmount = ethers.utils
-        .formatUnits(data?.routeSummary?.amountOut, params.toToken.decimals)
+      const swapAmount = ethers
+        .formatUnits(data?.routeSummary?.amountOut ?? 0, params.toToken.decimals)
         .toString();
 
       meta = {
@@ -85,7 +85,7 @@ export default class KyberSwap extends Base {
       query = {
         fromChain: params.fromChain.id,
         fromToken: fromTokenAdd,
-        fromAmount: ethers.utils
+        fromAmount: ethers
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         toChain: params.toChain.id,
@@ -107,8 +107,8 @@ export default class KyberSwap extends Base {
       });
 
       data = await res?.route;
-      const swapAmount = ethers.utils
-        .formatUnits(data?.estimate?.toAmount, params.toToken.decimals)
+      const swapAmount = ethers
+        .formatUnits(data?.estimate?.toAmount ?? 0, params.toToken.decimals)
         .toString();
 
       meta = {
@@ -207,4 +207,3 @@ export default class KyberSwap extends Base {
   // }
 
 }
-

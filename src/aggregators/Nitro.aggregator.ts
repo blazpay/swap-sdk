@@ -1,6 +1,6 @@
 import { IQuoteParams, IRestQuoteProps, SwapParams } from "../@types/index.js";
 import { v4 as uuidv4 } from "uuid";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 // import { apiCall } from "../utils/axios.js";
 import Base from "./base.aggregator.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
@@ -26,14 +26,14 @@ export default class NitroAggregator extends Base {
   async getQuotes(params: IQuoteParams): Promise<Quote> {
     const body = {
       fromTokenAddress:
-        params.fromToken.address === ethers.constants.AddressZero
+        params.fromToken.address === ethers.ZeroAddress
           ? addressZero
           : params.fromToken.address,
       toTokenAddress:
-        params.toToken.address === ethers.constants.AddressZero
+        params.toToken.address === ethers.ZeroAddress
           ? addressZero
           : params.toToken.address,
-      amount: ethers.utils
+      amount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
 
@@ -50,7 +50,7 @@ export default class NitroAggregator extends Base {
 
     const platformFee = data?.bridgeFee?.amount
       ?
-      `${Number(ethers.utils.formatUnits(data.bridgeFee.amount)).toFixed(4)} ${data?.bridgeFee?.symbol}`
+      `${Number(ethers.formatUnits(data.bridgeFee.amount)).toFixed(4)} ${data?.bridgeFee?.symbol}`
       : 0;
 
     const meta = {
@@ -59,7 +59,7 @@ export default class NitroAggregator extends Base {
       route: "nitro",
       amount: Number(
         Number(
-          ethers.utils.formatUnits(
+          ethers.formatUnits(
             data.destination.tokenAmount,
             data.destination.asset.decimals
           )

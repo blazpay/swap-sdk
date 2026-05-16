@@ -101,7 +101,7 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 //     return '0xdDdd393a0cC91368b5E61b4714E72259F4E061eA'
 //   else return '0x10c112A6032dC97ec8854457FA3961D29dB2045A'
 // }
-export const relayerAddresses = (chain: number):string => {
+export const relayerAddresses = (chain: number): string => {
   if (chain === 137) return '0xa851D4125cC029743F371eaD4F9DdE4BA04F5146';
   if ([42161, 534352, 56, 59144].includes(chain)) return '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6';
   return '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14';
@@ -109,7 +109,8 @@ export const relayerAddresses = (chain: number):string => {
 
 export const relayerJson = relayerAbi
 
-export const baseUrl = `https://api.blazpay.com/api/defi`;
+export const baseUrl = `http://localhost:5000/api/defi`;
+// export const baseUrl = `https://api.blazpay.com/api/defi`;
 
 export const ERC20_ABI = [
   "function approve(address spender, uint256 amount) public"
@@ -125,14 +126,14 @@ export const routers = {
   kima: 'https://graphql.kima.network/v1/graphql'
 }
 
-export enum ChainNameKima {  
-  Arbitrum = 'ARB',  
-  Avalache = 'AVX',  
-  BSC = 'BSC',  
+export enum ChainNameKima {
+  Arbitrum = 'ARB',
+  Avalache = 'AVX',
+  BSC = 'BSC',
   btc = 'BTC',
-  Ethereum = 'ETH',  
-  Pptimism = 'OPT',  
-  Polygon = 'POL',    
-  SOL = 'SOL',  
+  Ethereum = 'ETH',
+  Pptimism = 'OPT',
+  Polygon = 'POL',
+  SOL = 'SOL',
   TRX = 'TRX',
 }

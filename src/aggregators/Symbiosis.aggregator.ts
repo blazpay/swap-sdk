@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 import {
   IQuote,
@@ -28,7 +28,7 @@ export default class SymbiosisAggregator extends Base {
       tokenAmountIn: {
         address: params?.fromToken.address,
         symbol: params?.fromToken.symbol,
-        amount: ethers.utils
+        amount: ethers
           .parseUnits(String(params.amount), params.fromToken.decimals)
           .toString(),
         chainId: Number(params?.fromChain.id),
@@ -51,8 +51,8 @@ export default class SymbiosisAggregator extends Base {
       data: payload,
     });
 
-    const swapAmount = ethers.utils
-      .formatUnits(data?.tokenAmountOut?.amount, data?.tokenAmountOut?.decimals)
+    const swapAmount = ethers
+      .formatUnits(data?.tokenAmountOut?.amount ?? 0, data?.tokenAmountOut?.decimals ?? 18)
       .toString();
 
     const meta = {

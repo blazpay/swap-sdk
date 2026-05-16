@@ -32,7 +32,7 @@ export default class OneInchAggregator extends Base {
         params.toToken.address === addressZero
           ? addressZero1Inch
           : params.toToken.address,
-      amount: ethers.utils
+      amount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       fee: this.tradeFee,
@@ -49,7 +49,7 @@ export default class OneInchAggregator extends Base {
       data: { path: `/swap/v6.0/${params.fromChain.id}/quote`, query },
     });
 
-    const swapAmount = ethers.utils.formatUnits(
+    const swapAmount = ethers.formatUnits(
       response?.dstAmount,
       response?.dstToken?.decimals
     );

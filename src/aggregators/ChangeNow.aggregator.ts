@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { IQuoteParams, SwapParams } from "../@types/aggregator.type.js";
 import { apiCall } from "../utils/axios.js";
 import { Base } from "./index.js";
@@ -72,7 +72,7 @@ export default class ChangeNowAggregator extends Base {
 
       const tx = await signer.sendTransaction({
         to: data?.data?.payinAddress,
-        value: ethers.utils.parseEther(params.amount.toString()),
+        value: ethers.parseEther(params.amount.toString()),
         gasLimit: 60,
       });
 

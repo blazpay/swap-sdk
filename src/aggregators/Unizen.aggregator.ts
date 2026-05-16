@@ -7,6 +7,7 @@ import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import { v4 as uuidv4 } from "uuid";
 import { IRestQuoteProps } from "../@types/quote.type.js";
+import { getConfig } from "../utils/config.js";
 
 export default class UnizenAggregator extends Base {
   name: string;
@@ -24,7 +25,7 @@ export default class UnizenAggregator extends Base {
     const payload = {
       fromTokenAddress: params.fromToken.address,
       toTokenAddress: params.toToken.address,
-      amount: ethers.utils
+      amount: ethers
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       senderAddress: params.srcWalletAddress,
@@ -43,7 +44,7 @@ export default class UnizenAggregator extends Base {
 
     const data = res?.data;
 
-    const swapAmount = ethers.utils
+    const swapAmount = ethers
       .formatUnits(
         params.type === "SWAP"
           ? data?.toTokenAmount
@@ -66,11 +67,13 @@ export default class UnizenAggregator extends Base {
           ? data?.tokenTo?.priceInUsd
           : data?.srcTrade?.tokenTo?.priceInUsd,
       networkFee: `${Number(
-        ethers.utils.formatEther(
-          (Number(data?.estimateGas || 0) * Number(data?.gasPrice))?.toString()
+        ethers.formatEther(
+          BigInt(data?.estimateGas ?? 0) * BigInt(data?.gasPrice ?? 0)
         )
       )?.toFixed(6)} NATIVE`,
-      platformFee: data?.transactionData?.params?.nativeFee? `${Number(ethers.utils.formatEther(data?.transactionData?.params?.nativeFee || 0)).toFixed(6)} POL` : 0,
+      platformFee: data?.transactionData?.params?.nativeFee
+        ? `${Number(ethers.formatEther(data?.transactionData?.params?.nativeFee || 0)).toFixed(6)} POL`
+        : 0,
       priceImpact: Number(Number(data?.priceImpact)?.toFixed(2)),
       slippage: this.slippage,
       allowanceTo,
@@ -153,14 +156,13 @@ export default class UnizenAggregator extends Base {
   }
 
   async getTxStatus(chainId: number, hash: string): Promise<any> {
+    const apiKey = getConfig().unizenApiKey;
     const res = await apiCall({
       method: "GET",
       url: `${routers['unizen']}${chainId}/${hash}`,
-      headers: {
-        "Authorization": "96e0970d-75d5-4fec-848e-ead4b4fb1e47"
-      },
+      headers: apiKey ? { Authorization: apiKey } : undefined,
     });
-    const data = await res.json();
+    const data = res?.data ?? res;
     return {
       status: data?.status === 1? 'success' : data?.status === 0 ? 'failed': 'pending',
       hash
