@@ -22,6 +22,19 @@ export class RelayerFactory {
     if (typeof value === "bigint") return value;
     if (typeof value === "number") return BigInt(Math.trunc(value));
     if (typeof value === "string") return BigInt(value);
+    if (typeof value === "object") {
+      // ethers v5 BigNumber instance (has _hex / toHexString)
+      if (typeof value.toHexString === "function") {
+        return BigInt(value.toHexString());
+      }
+      if (typeof value._hex === "string") {
+        return BigInt(value._hex);
+      }
+      // JSON-serialized ethers v5 BigNumber: { type: "BigNumber", hex: "0x..." }
+      if (value.type === "BigNumber" && typeof value.hex === "string") {
+        return BigInt(value.hex);
+      }
+    }
     return BigInt(value.toString());
   }
 
@@ -46,7 +59,7 @@ export class RelayerFactory {
           targetContract: relayerTxData?.tx?.to,
           data: relayerTxData?.tx?.data,
           spender: relayerTxData?.spender || addressZero,
-          amount: relayerTxData?.amount,
+          amount: this.toBigIntWei(relayerTxData?.amount),
           token: relayerTxData?.token,
           isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
         };
@@ -96,7 +109,7 @@ export class RelayerFactory {
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
       recipient: relayerTxData?.spender || addressZero,
-      amount: relayerTxData?.amount,
+      amount: this.toBigIntWei(relayerTxData?.amount),
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
       nonce: nonce,
@@ -120,6 +133,7 @@ export class RelayerFactory {
       data: {
         metaTx: {
           ...metaTransaction,
+          amount: metaTransaction.amount.toString(),
           nonce: metaTransaction.nonce.toString(),
           nativeValue: value.toString(),
         },
@@ -166,7 +180,7 @@ export class RelayerFactory {
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
       recipient: relayerTxData?.spender || addressZero,
-      amount: relayerTxData?.amount,
+      amount: this.toBigIntWei(relayerTxData?.amount),
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
       nonce: nonce,
@@ -190,6 +204,7 @@ export class RelayerFactory {
       data: {
         metaTx: {
           ...metaTransaction,
+          amount: metaTransaction.amount.toString(),
           nonce: metaTransaction.nonce.toString(),
           nativeValue: value.toString(),
         },
@@ -240,6 +255,7 @@ export class RelayerFactory {
 
   getMetaTransactionByteData(relayerTxData: IRelayerRawTxData) {
     const relayerAddress = relayerAddresses(relayerTxData?.chainId)
+    const amountBigInt = this.toBigIntWei(relayerTxData?.amount);
     let approvalData;
 
     if (!relayerTxData?.isNative) {
@@ -247,7 +263,7 @@ export class RelayerFactory {
 
       approvalData = tokenInterface.encodeFunctionData("approve", [
         relayerAddress,
-        relayerTxData?.amount,
+        amountBigInt,
       ]);
     }
 
@@ -258,7 +274,7 @@ export class RelayerFactory {
       targetContract: relayerTxData?.tx?.to,
       data: relayerTxData?.tx?.data,
       spender: relayerTxData?.spender || addressZero,
-      amount: relayerTxData?.amount,
+      amount: amountBigInt,
       token: relayerTxData?.token,
       isNative: (relayerTxData.token === addressZero || relayerTxData.token === addressE),
     };
