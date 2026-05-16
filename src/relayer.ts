@@ -255,8 +255,37 @@ export class RelayerFactory {
       }
     }
 
-    const receipt = await tx.wait();
+    // Avoid tx.wait() — ethers v6's internal txListener calls
+    // receipt.confirmations() as a method, which throws when the runner
+    // is an ethers v5 provider (where confirmations is a property).
+    // Poll for the receipt manually so we're agnostic to v5/v6 shape.
+    const hash: string = tx.hash;
+    const rpcProvider: any =
+      (signer && (signer as any).provider) || this.provider;
+
+    const receipt = await this.waitForReceipt(rpcProvider, hash);
+    if (receipt && (receipt as any).transactionHash == null) {
+      (receipt as any).transactionHash = hash;
+    }
     return receipt;
+  }
+
+  private async waitForReceipt(
+    provider: any,
+    hash: string,
+    { intervalMs = 2000, timeoutMs = 180000 }: { intervalMs?: number; timeoutMs?: number } = {}
+  ): Promise<any> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      try {
+        const r = await provider.getTransactionReceipt(hash);
+        if (r) return r;
+      } catch (_) {
+        // ignore transient lookup errors
+      }
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    throw new Error(`Timed out waiting for transaction receipt: ${hash}`);
   }
 
   getMetaTransactionByteData(relayerTxData: IRelayerRawTxData) {
