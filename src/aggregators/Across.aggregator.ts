@@ -134,7 +134,11 @@ export default class AcrossAggregator extends Base {
           : s
           ? "pending"
           : "not_found";
-      return { status, hash, raw: res };
+      const destinationTxHash =
+        res?.fillTx?.transactionHash ||
+        res?.fillTxHash ||
+        res?.destinationChainTxHash;
+      return { status, hash, destinationTxHash, raw: res };
     } catch (_) {
       return { status: "not_found", hash };
     }

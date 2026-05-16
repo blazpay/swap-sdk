@@ -102,9 +102,13 @@ export default class LifiAggregator extends Base {
       method: "GET",
       url: `${routers['lifi']}?txHash=${hash}`,
     });
+    const destinationTxHash =
+      res?.receiving?.txHash || res?.receiving?.transactionHash;
     return {
-      status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not found",
-      hash
+      status: res?.status === 'PENDING' ? 'pending' : res?.status === 'DONE' ? 'success' : res?.status === 'FAILED' ? "failed" : "not_found",
+      hash,
+      destinationTxHash,
+      raw: res,
     }
   }
 }

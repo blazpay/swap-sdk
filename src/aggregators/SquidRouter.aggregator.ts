@@ -146,7 +146,11 @@ export default class SquidRouterAggregator extends Base {
           : s
           ? "pending"
           : "not_found";
-      return { status, hash, raw: res };
+      const destinationTxHash =
+        res?.toChain?.transactionId ||
+        res?.toChain?.callsStatus?.transactionHash ||
+        res?.destinationTxHash;
+      return { status, hash, destinationTxHash, raw: res };
     } catch (_) {
       return { status: "not_found", hash };
     }

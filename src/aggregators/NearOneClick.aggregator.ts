@@ -280,7 +280,15 @@ export default class NearOneClickAggregator extends Base {
           : s
           ? "pending"
           : "not_found";
-      return { status, hash, raw: res };
+      // Near 1Click exposes the destination-chain fill tx in
+      // swapDetails.intentHashes (Near intent IDs) and, for EVM destinations,
+      // also under destinationChainTxHashes / nearTxHashes depending on flow.
+      const destinationTxHash =
+        res?.swapDetails?.destinationChainTxHashes?.[0]?.hash ||
+        res?.swapDetails?.destinationChainTxHashes?.[0] ||
+        res?.swapDetails?.intentHashes?.[0] ||
+        res?.swapDetails?.nearTxHashes?.[0];
+      return { status, hash, destinationTxHash, raw: res };
     } catch (_) {
       return { status: "not_found", hash };
     }

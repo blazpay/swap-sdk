@@ -151,7 +151,11 @@ export default class RelayAggregator extends Base {
           : s
           ? "pending"
           : "not_found";
-      return { status, hash, raw: res };
+      const destinationTxHash =
+        res?.outTxs?.[0]?.hash ||
+        res?.outTxs?.[0]?.txHash ||
+        res?.destinationTxHash;
+      return { status, hash, destinationTxHash, raw: res };
     } catch (_) {
       return { status: "not_found", hash };
     }
