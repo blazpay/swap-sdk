@@ -14,4 +14,7 @@ export enum AGGREGATORS {
   KIMA = "kima",
   NORDSTERN = "nordstern",
   ODOS = "odos",
+  RELAY = "relay",
+  SUSHISWAP = "sushiswap",
+  ACROSS = "across",
 }

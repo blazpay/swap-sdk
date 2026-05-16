@@ -14,3 +14,6 @@ export { default as ButterNetworkAggregator } from './ButterNetwork.aggregator.j
 export { default as SquidRouterAggregator } from './SquidRouter.aggregator.js';
 export { default as NordsternAggregator } from './Nordstern.aggregator.js';
 export { default as OdosAggregator } from './Odos.aggregator.js';
+export { default as RelayAggregator } from './Relay.aggregator.js';
+export { default as SushiswapAggregator } from './Sushi.aggregator.js';
+export { default as AcrossAggregator } from './Across.aggregator.js';

@@ -13,6 +13,9 @@ import {
   SquidRouterAggregator,
   NordsternAggregator,
   OdosAggregator,
+  RelayAggregator,
+  SushiswapAggregator,
+  AcrossAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -69,6 +72,15 @@ export class TradeManager {
       new NordsternAggregator(),
     );
     this.aggregatorFactory.register(AGGREGATORS.ODOS, new OdosAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.RELAY, new RelayAggregator());
+    this.aggregatorFactory.register(
+      AGGREGATORS.SUSHISWAP,
+      new SushiswapAggregator(),
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.ACROSS,
+      new AcrossAggregator(),
+    );
   }
 
   async getQuotes(params: IBaseQuoteParams) {
