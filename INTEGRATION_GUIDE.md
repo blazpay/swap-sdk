@@ -503,6 +503,43 @@ When changing `relayer.ts`, keep these working:
 
 ---
 
+## Going live on a new chain (relayer deployment)
+
+The SDK refuses to simulate or send any swap on a chain whose `chainId` is
+not in `RELAYER_DEPLOYED_CHAINS` (`swap-sdk/src/utils/constants.ts`). This
+prevents the silent loss-of-funds class of bugs where the SDK would fall
+back to an address with no code.
+
+When you deploy the `BlazpayRelayer` on a new chain:
+
+1. **Deploy** the contract (use `finalContracts/deployed/BlazpayRelayer.deployed.sol`).
+   Initialize with `signer = <the wallet whose private key is in your bz-backend `TX_SIGNER` env var>`.
+2. **Add the deployed address to `RELAYER_ADDRESSES`** in `swap-sdk/src/utils/constants.ts`:
+   ```ts
+   const RELAYER_ADDRESSES = {
+     ...
+     <chainId>: '0x<deployed address>',
+   };
+   ```
+3. **Add the chainId to `RELAYER_DEPLOYED_CHAINS`** in the same file.
+4. **Bump version, commit, tag, push** the swap-sdk.
+5. **Update consumer pins** in `bz-backend` and `defi-dex` to the new SDK
+   version; `rm -rf node_modules/swap-sdk` and `node_modules/.vite` then
+   `npm install`.
+6. **Restart bz-backend.**
+7. **Flip the chain visible** in the DB:
+   ```
+   cd bz-backend && node --env-file=.env scripts/enableChain.js <chainId>
+   ```
+
+The script prints the same checklist as a reminder when you run it.
+
+Token catalog and Network records for the 13 awaiting-deploy chains are
+already seeded by `bz-backend/scripts/seedChainsTokens.js` — they just
+have `show: false` until step 7.
+
+---
+
 ## Adding a provider — minimal-friction recipe
 
 1. Skim the provider's docs. Decide: SWAP-only or also BRIDGE? Quote-and-tx in one call or two? Native sentinel?

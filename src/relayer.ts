@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { addressE, addressZero, baseUrl, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
+import { addressE, addressZero, assertRelayerDeployed, baseUrl, ERC20_ABI, relayerAddresses } from "./utils/constants.js";
 import { relayerAbi } from "./utils/jsons/relayerAbi.js"
 import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import { getErrorMessage } from "./utils/helper.js";
@@ -96,6 +96,10 @@ export class RelayerFactory {
     const chainId = Number((await provider.getNetwork()).chainId);
     const address = await signer.getAddress();
 
+    // Hard-fail if the chain isn't on the verified-deployed whitelist.
+    // Prevents silently sending funds to a non-existent contract.
+    assertRelayerDeployed(chainId);
+
     const relayerAddress = relayerAddresses(chainId)
     const relayerContract: any = new ethers.Contract(
       relayerAddress,
@@ -169,6 +173,8 @@ export class RelayerFactory {
     const signer = await provider.getSigner()
     const chainId = Number((await provider.getNetwork()).chainId);
     const address = await signer.getAddress();
+
+    assertRelayerDeployed(chainId);
 
     const relayerAddress = relayerAddresses(chainId)
     const relayerContract: any = new ethers.Contract(
