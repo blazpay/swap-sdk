@@ -185,13 +185,9 @@ export default class NearOneClickAggregator extends Base {
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
     // Re-quote with dry=false to materialize a real depositAddress.
-    // The Near intents network monitors that address for incoming funds and
-    // executes the swap upon receipt — so the "tx" we hand to the BlazpayRelayer
-    // is just a plain transfer to depositAddress with empty calldata.
     const payload = {
       ...restProps.quotePayload,
       dry: false,
-      // refresh the deadline window
       deadline: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     };
 
@@ -213,16 +209,54 @@ export default class NearOneClickAggregator extends Base {
     const tokens = await loadTokens(this.BASE_URL);
     const originRecord = tokens.find((t) => t.assetId === payload.originAsset);
     const isNativeIn = originRecord?.contractAddress == null;
+    const originTokenAddress = originRecord?.contractAddress;
+
+    if (isNativeIn) {
+      // Native path: BlazpayRelayer's `recipient.call{value: amount}("")`
+      // delivers the funds to the Near deposit address. data is empty so the
+      // targetContract.call is skipped.
+      return {
+        tx: {
+          to: depositAddress,
+          data: "0x",
+          value: String(amountIn),
+          from: restProps.srcWalletAddress,
+        },
+        spender: depositAddress,
+      };
+    }
+
+    // ERC20 path: the currently-deployed BlazpayRelayer approves `recipient`
+    // and then invokes `targetContract.call(data)`. Aggregator-style routers
+    // pull tokens via that approval; Near's deposit address is an EOA and
+    // cannot pull, so we have to push instead — encode `token.transfer(
+    // depositAddress, amount)` and route the call through the token contract.
+    if (!originTokenAddress) {
+      throw new Error(
+        "Near 1Click: cannot resolve origin ERC20 token address"
+      );
+    }
+
+    const erc20Iface = new ethers.Interface([
+      "function transfer(address to, uint256 amount) public returns (bool)",
+    ]);
+    const transferCalldata = erc20Iface.encodeFunctionData("transfer", [
+      depositAddress,
+      String(amountIn),
+    ]);
 
     return {
       tx: {
-        // BlazpayRelayer transfers funds to `recipient` (= depositAddress)
-        // and then skips the targetContract.call because data.length == 0.
-        to: depositAddress,
-        data: "0x",
-        value: isNativeIn ? String(amountIn) : "0",
+        // targetContract = token; relayer's `.call(token, transferData)`
+        // pushes the pre-deposited funds from the relayer to the deposit
+        // address.
+        to: originTokenAddress,
+        data: transferCalldata,
+        value: "0",
         from: restProps.srcWalletAddress,
       },
+      // recipient is still the deposit address — the relayer will approve
+      // it for `amount` (harmless EOA allowance) before performing the push.
       spender: depositAddress,
     };
   }
