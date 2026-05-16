@@ -12,6 +12,7 @@ import {
   ButterNetworkAggregator,
   SquidRouterAggregator,
   NordsternAggregator,
+  OdosAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -67,6 +68,7 @@ export class TradeManager {
       AGGREGATORS.NORDSTERN,
       new NordsternAggregator(),
     );
+    this.aggregatorFactory.register(AGGREGATORS.ODOS, new OdosAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {

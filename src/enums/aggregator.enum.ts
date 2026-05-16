@@ -13,4 +13,5 @@ export enum AGGREGATORS {
   SQUID_ROUTER = "squid_router",
   KIMA = "kima",
   NORDSTERN = "nordstern",
+  ODOS = "odos",
 }

@@ -13,3 +13,4 @@ export { default as LifiAggregator } from './Lifi.aggregator.js';
 export { default as ButterNetworkAggregator } from './ButterNetwork.aggregator.js';
 export { default as SquidRouterAggregator } from './SquidRouter.aggregator.js';
 export { default as NordsternAggregator } from './Nordstern.aggregator.js';
+export { default as OdosAggregator } from './Odos.aggregator.js';
