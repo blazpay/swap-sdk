@@ -193,15 +193,15 @@ const RELAYER_ADDRESSES: Record<number, string> = {
 // Used by the SDK's relayer flows to fail fast when a swap is attempted on an
 // unsupported chain instead of sending funds to a non-existent contract.
 export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
-  10,     // Optimism
-  56,     // BSC
-  137,    // Polygon
-  8453,   // Base
-  42161,  // Arbitrum
-  59144,  // Linea
-  534352, // Scroll
-  // 43114 (Avalanche) — uncomment after verifying deployment at the default address
-  // 1, 146, 80094, 130, 42220, 1329, 204, 480, 999, 33139, 2020, 2741, 42793 — pending
+  10,     // Optimism      — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  56,     // BSC           — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  137,    // Polygon       — signer 0x2ed05570214f6c0f7612b580ab37c163076e0162 (POL_TX_SIGNER)
+  8453,   // Base          — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  42161,  // Arbitrum      — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  43114,  // Avalanche     — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  59144,  // Linea         — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  534352, // Scroll        — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
+  // 1, 146, 80094, 130, 42220, 1329, 204, 480, 999, 33139, 2020, 2741, 42793 — pending deploy
 ]);
 
 export const relayerAddresses = (chain: number): string => {

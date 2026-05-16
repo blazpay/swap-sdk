@@ -5,6 +5,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import Base from "./base.aggregator.js";
+import { baseUrl } from "../utils/constants.js";
 
 const RELAY_NATIVE = "0x0000000000000000000000000000000000000000";
 
@@ -15,7 +16,10 @@ export default class RelayAggregator extends Base {
   constructor() {
     super();
     this.name = AGGREGATORS.RELAY;
-    this.BASE_URL = "https://api.relay.link";
+    // Routes through bz-backend's /defi/relay proxy so the optional
+    // RELAY_API_KEY stays server-side (Relay imposes higher rate limits
+    // for keyed requests).
+    this.BASE_URL = baseUrl + "/relay";
   }
 
   private resolveTokenAddress(address: string): string {
@@ -56,7 +60,7 @@ export default class RelayAggregator extends Base {
 
     const data = await apiCall({
       method: "POST",
-      url: `${this.BASE_URL}/quote/v2`,
+      url: `${this.BASE_URL}/quote`,
       data: payload,
     });
 
@@ -114,7 +118,7 @@ export default class RelayAggregator extends Base {
     // transaction.
     const fresh = await apiCall({
       method: "POST",
-      url: `${this.BASE_URL}/quote/v2`,
+      url: `${this.BASE_URL}/quote`,
       data: restProps.quotePayload,
     });
 
@@ -139,7 +143,7 @@ export default class RelayAggregator extends Base {
     try {
       const res = await apiCall({
         method: "GET",
-        url: `${this.BASE_URL}/intents/status/v2`,
+        url: `${this.BASE_URL}/status`,
         params: { requestId: hash },
       });
       const s = (res?.status || "").toLowerCase();
