@@ -38,7 +38,10 @@ export class TradeManager {
       AGGREGATORS.ONE_INCH,
       new OneInchAggregator(),
     );
-    this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
+    // Router Protocol Nitro: mainnet pathfinder hostnames retired
+    // (api-beta.pathfinder.routerprotocol.com → NXDOMAIN). Re-enable
+    // when Router publishes a working production URL.
+    // this.aggregatorFactory.register(AGGREGATORS.NITRO, new NitroAggregator());
     this.aggregatorFactory.register(
       AGGREGATORS.SYMBIOSIS,
       new SymbiosisAggregator(),
@@ -53,10 +56,13 @@ export class TradeManager {
     //   new ChangeNowAggregator()
     // );
 
-    this.aggregatorFactory.register(
-      AGGREGATORS.ICECREAM_SWAP,
-      new IceCreamAggregator(),
-    );
+    // IceCreamSwap: aggregator.icecreamswap.com returns 404 — endpoint
+    // appears to have been removed. Re-enable when a current URL is
+    // published.
+    // this.aggregatorFactory.register(
+    //   AGGREGATORS.ICECREAM_SWAP,
+    //   new IceCreamAggregator(),
+    // );
     this.aggregatorFactory.register(AGGREGATORS.KYBER_SWAP, new KyberSwap());
     this.aggregatorFactory.register(AGGREGATORS.LIFI, new LifiAggregator());
     this.aggregatorFactory.register(
@@ -67,7 +73,9 @@ export class TradeManager {
       AGGREGATORS.SQUID_ROUTER,
       new SquidRouterAggregator(),
     );
-    this.aggregatorFactory.register(AGGREGATORS.KIMA, new KimaSwapAggregator());
+    // Kima: kima.blazpay.com origin is currently down (Cloudflare 520).
+    // Re-enable when the Kima backend is restored.
+    // this.aggregatorFactory.register(AGGREGATORS.KIMA, new KimaSwapAggregator());
     this.aggregatorFactory.register(
       AGGREGATORS.NORDSTERN,
       new NordsternAggregator(),

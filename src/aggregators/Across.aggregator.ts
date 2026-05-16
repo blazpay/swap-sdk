@@ -72,6 +72,7 @@ export default class AcrossAggregator extends Base {
       priceImpact: 0,
       slippage: params.slippage ?? 0.5,
       allowanceTo: tx.to,
+      timeEstimate: data?.expectedFillTime ? Number(data.expectedFillTime) : undefined,
     };
 
     return new Quote(data, meta, {
@@ -115,5 +116,27 @@ export default class AcrossAggregator extends Base {
       },
       spender: tx.to,
     };
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    try {
+      const res = await apiCall({
+        method: "GET",
+        url: `${this.BASE_URL}/status`,
+        params: { originChainId: chainId, depositTxHash: hash },
+      });
+      const s = (res?.status || res?.fillStatus || "").toLowerCase();
+      const status =
+        s === "filled" || s === "success"
+          ? "success"
+          : s === "expired" || s === "refunded" || s === "failed"
+          ? "failed"
+          : s
+          ? "pending"
+          : "not_found";
+      return { status, hash, raw: res };
+    } catch (_) {
+      return { status: "not_found", hash };
+    }
   }
 }

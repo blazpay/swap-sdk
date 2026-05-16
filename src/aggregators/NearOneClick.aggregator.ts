@@ -160,6 +160,7 @@ export default class NearOneClickAggregator extends Base {
       priceImpact: 0,
       slippage: params.slippage ?? 0.5,
       allowanceTo: "",
+      timeEstimate: quoteRes?.timeEstimate ? Number(quoteRes.timeEstimate) : undefined,
       // re-quote payload for refresh; we'll replace `dry` with false at build time.
     };
 
@@ -224,5 +225,30 @@ export default class NearOneClickAggregator extends Base {
       },
       spender: depositAddress,
     };
+  }
+
+  // For Near 1Click the FE must pass the depositAddress (returned from
+  // getTransactionData) as `hash` — that's what /v0/status is keyed by, not
+  // the on-chain source-tx hash.
+  async getTxStatus(_chainId: number, hash: string): Promise<any> {
+    try {
+      const res = await apiCall({
+        method: "GET",
+        url: `${this.BASE_URL}/status`,
+        params: { depositAddress: hash },
+      });
+      const s = (res?.status || "").toUpperCase();
+      const status =
+        s === "SUCCESS"
+          ? "success"
+          : s === "FAILED" || s === "REFUNDED" || s === "INCOMPLETE_DEPOSIT"
+          ? "failed"
+          : s
+          ? "pending"
+          : "not_found";
+      return { status, hash, raw: res };
+    } catch (_) {
+      return { status: "not_found", hash };
+    }
   }
 }

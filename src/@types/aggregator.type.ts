@@ -34,6 +34,9 @@ export interface IQuote {
   priceImpact: number;
   slippage: number;
   allowanceTo: string;
+  // Estimated swap/bridge completion time in seconds. Optional —
+  // single-chain swaps and providers that don't expose an estimate omit it.
+  timeEstimate?: number;
 }
 
 export interface IBaseQuoteParams extends IQuoteParams {

@@ -77,6 +77,7 @@ export default class SquidRouterAggregator extends Base {
       priceImpact: Number(estimate?.aggregatePriceImpact ?? 0),
       slippage: payload.slippage,
       allowanceTo: tx.target,
+      timeEstimate: estimate?.estimatedRouteDuration ? Number(estimate.estimatedRouteDuration) : undefined,
     };
 
     return new Quote(res, meta, {
@@ -121,5 +122,33 @@ export default class SquidRouterAggregator extends Base {
       },
       spender: tx.target,
     };
+  }
+
+  async getTxStatus(chainId: number, hash: string): Promise<any> {
+    try {
+      // Squid v2 status (public direct call). Requires transactionId
+      // (= source tx hash) and fromChainId. quoteId / requestId optional but
+      // recommended for Coral V2 — we omit since the caller may not have it.
+      const res = await apiCall({
+        method: "GET",
+        url: "https://v2.api.squidrouter.com/v2/status",
+        params: { transactionId: hash, fromChainId: chainId },
+        headers: {
+          "x-integrator-id": "blazpay-db534a27-fefd-4504-b5bd-a7e6407bd656",
+        },
+      });
+      const s = (res?.status || res?.squidTransactionStatus || "").toLowerCase();
+      const status =
+        s === "success" || s === "destination_executed"
+          ? "success"
+          : s === "needs_gas" || s === "partial_success" || s === "failed"
+          ? "failed"
+          : s
+          ? "pending"
+          : "not_found";
+      return { status, hash, raw: res };
+    } catch (_) {
+      return { status: "not_found", hash };
+    }
   }
 }

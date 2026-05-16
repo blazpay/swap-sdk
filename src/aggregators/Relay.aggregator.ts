@@ -86,6 +86,7 @@ export default class RelayAggregator extends Base {
       priceImpact: Number(data?.details?.totalImpact?.percent ?? 0),
       slippage: params.slippage ?? 0.5,
       allowanceTo: tx.to,
+      timeEstimate: data?.details?.timeEstimate ? Number(data.details.timeEstimate) : undefined,
     };
 
     return new Quote(data, meta, {
@@ -132,5 +133,27 @@ export default class RelayAggregator extends Base {
       },
       spender: txData.to,
     };
+  }
+
+  async getTxStatus(_chainId: number, hash: string): Promise<any> {
+    try {
+      const res = await apiCall({
+        method: "GET",
+        url: `${this.BASE_URL}/intents/status/v2`,
+        params: { requestId: hash },
+      });
+      const s = (res?.status || "").toLowerCase();
+      const status =
+        s === "success" || s === "completed" || s === "done"
+          ? "success"
+          : s === "failed" || s === "refunded" || s === "expired"
+          ? "failed"
+          : s
+          ? "pending"
+          : "not_found";
+      return { status, hash, raw: res };
+    } catch (_) {
+      return { status: "not_found", hash };
+    }
   }
 }
