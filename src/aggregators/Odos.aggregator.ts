@@ -107,12 +107,25 @@ export default class OdosAggregator extends Base {
     data: any,
     restProps: IRestQuoteProps
   ): Promise<{ tx: any; spender: string }> {
+    // Odos pathIds expire after ~60s — the cached one from the original
+    // quote will almost always be stale by the time the user clicks
+    // simulate/swap. Re-quote to get a fresh pathId, then assemble.
+    const fresh = await apiCall({
+      method: "POST",
+      url: this.BASE_URL + "/quote",
+      data: restProps.quotePayload,
+    });
+
+    if (!fresh?.pathId) {
+      throw new Error("Odos: re-quote returned no pathId");
+    }
+
     const res = await apiCall({
       method: "POST",
       url: this.BASE_URL + "/assemble",
       data: {
         userAddr: restProps.srcWalletAddress,
-        pathId: data.pathId,
+        pathId: fresh.pathId,
         simulate: false,
         receiver:
           restProps.dstWalletAddress || restProps.srcWalletAddress,
