@@ -212,13 +212,17 @@ export default class NearOneClickAggregator extends Base {
     const originTokenAddress = originRecord?.contractAddress;
 
     if (isNativeIn) {
-      // Native path: BlazpayRelayer's `recipient.call{value: amount}("")`
-      // delivers the funds to the Near deposit address. data is empty so the
-      // targetContract.call is skipped.
+      // Native path: the deployed BlazpayRelayer only forwards funds when
+      // _metaTx.data.length > 0 (see contract: targetContract.call{value:
+      // nativeValue}(data) is gated on a non-empty data field). For an EOA
+      // deposit address any calldata is ignored — the EVM still transfers
+      // value and the call succeeds. So we pass a single zero byte to make
+      // the guard pass while keeping semantics identical to a plain ETH
+      // transfer.
       return {
         tx: {
           to: depositAddress,
-          data: "0x",
+          data: "0x00",
           value: String(amountIn),
           from: restProps.srcWalletAddress,
         },
