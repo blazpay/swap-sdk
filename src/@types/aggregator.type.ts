@@ -29,8 +29,17 @@ export interface IQuote {
   route: string;
   amount: number;
   usdAmount: number;
+  // Sum of gas costs (source-chain gas + Axelar/IBC gas for bridges)
+  // in USD. Aggregators that don't surface a USD value will report 0.
   networkFee: number | string;
+  // Sum of aggregator/relayer/bridge protocol fees in USD.
   platformFee: number | string;
+  // BlazpayRelayer's percent fee. 0.001 = 0.1%. Populated when a route
+  // executes through the relayer (cross-chain providers); pure-DEX
+  // single-chain swaps surface this from on-chain at execute time.
+  blazpayFeePercent?: number;
+  // BlazpayRelayer fee expressed as a USD value of the input amount.
+  blazpayFeeUsd?: number;
   priceImpact: number;
   slippage: number;
   allowanceTo: string;

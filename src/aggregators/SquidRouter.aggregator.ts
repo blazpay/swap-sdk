@@ -66,14 +66,26 @@ export default class SquidRouterAggregator extends Base {
       params.toToken.decimals
     );
 
+    // Sum every entry — Squid often splits gas (BSC tx + Axelar) and
+    // fees (relayer + protocol) across multiple array items. Showing
+    // only [0] under-reports.
+    const sumUsd = (arr: any) =>
+      Array.isArray(arr)
+        ? arr.reduce((s, x) => s + (Number(x?.amountUSD) || 0), 0)
+        : 0;
+
+    const fromAmountUsd = Number(estimate?.fromAmountUSD ?? 0);
+
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.SQUID_ROUTER,
       route: "Squid",
       amount: Number(Number(swapAmount).toFixed(4)),
       usdAmount: Number(estimate?.toAmountUSD ?? 0),
-      networkFee: Number(estimate?.gasCosts?.[0]?.amountUSD ?? 0).toFixed(6),
-      platformFee: Number(estimate?.feeCosts?.[0]?.amountUSD ?? 0).toFixed(6),
+      networkFee: sumUsd(estimate?.gasCosts).toFixed(6),
+      platformFee: sumUsd(estimate?.feeCosts).toFixed(6),
+      blazpayFeePercent: 0.001,
+      blazpayFeeUsd: fromAmountUsd * 0.001,
       priceImpact: Number(estimate?.aggregatePriceImpact ?? 0),
       slippage: payload.slippage,
       allowanceTo: tx.target,
