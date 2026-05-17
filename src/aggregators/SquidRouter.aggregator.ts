@@ -126,22 +126,22 @@ export default class SquidRouterAggregator extends Base {
 
   async getTxStatus(chainId: number, hash: string): Promise<any> {
     try {
-      // Squid v2 status (public direct call). Requires transactionId
-      // (= source tx hash) and fromChainId. quoteId / requestId optional but
-      // recommended for Coral V2 — we omit since the caller may not have it.
+      // Route through bz-backend proxy. Direct browser calls to Squid's
+      // /v2/status are blocked by CORS because the required
+      // `x-integrator-id` header triggers a preflight Squid rejects for
+      // browser origins.
       const res = await apiCall({
         method: "GET",
-        url: "https://v2.api.squidrouter.com/v2/status",
+        url: `${this.BASE_URL}/status`,
         params: { transactionId: hash, fromChainId: chainId },
-        headers: {
-          "x-integrator-id": "blazpay-db534a27-fefd-4504-b5bd-a7e6407bd656",
-        },
       });
       const s = (res?.status || res?.squidTransactionStatus || "").toLowerCase();
       const status =
-        s === "success" || s === "destination_executed"
+        s === "success" ||
+        s === "destination_executed" ||
+        s === "partial_success" // tokens delivered; only downstream call failed
           ? "success"
-          : s === "needs_gas" || s === "partial_success" || s === "failed"
+          : s === "needs_gas" || s === "partial_needs_gas" || s === "failed"
           ? "failed"
           : s
           ? "pending"
