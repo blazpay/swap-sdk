@@ -20,4 +20,5 @@ export enum AGGREGATORS {
   NEAR_1CLICK = "near_1click",
   GAS_ZIP = "gas_zip",
   RHINO_FI = "rhino_fi",
+  OKX = "okx",
 }

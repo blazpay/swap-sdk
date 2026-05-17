@@ -19,6 +19,7 @@ import {
   NearOneClickAggregator,
   GasZipAggregator,
   RhinoFiAggregator,
+  OKXAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -104,6 +105,7 @@ export class TradeManager {
       AGGREGATORS.RHINO_FI,
       new RhinoFiAggregator(),
     );
+    this.aggregatorFactory.register(AGGREGATORS.OKX, new OKXAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {

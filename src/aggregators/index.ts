@@ -20,3 +20,4 @@ export { default as AcrossAggregator } from './Across.aggregator.js';
 export { default as NearOneClickAggregator } from './NearOneClick.aggregator.js';
 export { default as GasZipAggregator } from './GasZip.aggregator.js';
 export { default as RhinoFiAggregator } from './RhinoFi.aggregator.js';
+export { default as OKXAggregator } from './OKX.aggregator.js';
