@@ -253,8 +253,23 @@ export const assertRelayerDeployed = (chain: number): void => {
 
 export const relayerJson = relayerAbi
 
-export const baseUrl = `http://localhost:5000/api/defi`;
-// export const baseUrl = `https://api.blazpay.com/api/defi`;
+// Resolve the base URL at module load time. In the browser, use prod for
+// any non-local host (matches defi-dex's own axios.ts pattern). In Node
+// (e.g. tests, server-side use) default to prod — localhost would be wrong
+// for any deployed consumer. Consumers can still override via
+// `configure({ baseApiUrl: ... })` if they want.
+const PROD_API_URL = 'https://api.blazpay.com/api/defi';
+const LOCAL_API_URL = 'http://localhost:5000/api/defi';
+
+function resolveBaseUrl(): string {
+  if (typeof window !== 'undefined' && window.location && window.location.host) {
+    const host = window.location.host;
+    if (/^(localhost|127\.|192\.168\.)/.test(host)) return LOCAL_API_URL;
+  }
+  return PROD_API_URL;
+}
+
+export const baseUrl = resolveBaseUrl();
 
 export const ERC20_ABI = [
   "function approve(address spender, uint256 amount) public"
