@@ -164,44 +164,65 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 // the silent loss-of-funds class of bugs where the SDK falls back to an
 // address that has no code.
 const RELAYER_ADDRESSES: Record<number, string> = {
-  1:        '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Ethereum — proxy address exists in map but NOT deployed on chain; guarded by RELAYER_DEPLOYED_CHAINS
+  // ── v2 cohort: deterministic CREATE address from TX_SIGNER (nonce 2→3). ─
+  // The 12 EVM chains below all share the same proxy address. Abstract uses
+  // zkSync-stack CREATE so its address differs, and Unichain landed at a
+  // distinct address (its TX_SIGNER nonce had drifted before deploy).
+  137:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Polygon (redeployed v2)
+  146:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sonic
+  204:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // opBNB
+  480:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // World Chain
+  999:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // HyperEVM
+  1329:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sei
+  1868:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Soneium
+  2020:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Ronin
+  33139:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // ApeChain
+  42220:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Celo
+  43111:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Hemi
+  80094:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Berachain
+  130:      '0xA01da2d3AbEFFbaa347B08C76EEC47169DdE72e9', // Unichain (nonce drift)
+  2741:     '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Abstract (zkSync-stack)
+  // ── Existing 7 — upgraded in place to v2, proxy addresses unchanged ────
   10:       '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Optimism
   56:       '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // BSC
-  137:      '0xa851D4125cC029743F371eaD4F9DdE4BA04F5146', // Polygon
   8453:     '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Base
   42161:    '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Arbitrum
   43114:    '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Avalanche
   59144:    '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Linea
   534352:   '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
-  // Awaiting deploy — add address here AND chainId to RELAYER_DEPLOYED_CHAINS below:
-  // 1     : '0x...',  // Ethereum (placeholder — relayer not deployed yet)
-  // 146   : '0x...',  // Sonic
-  // 80094 : '0x...',  // Berachain
-  // 130   : '0x...',  // Unichain
-  // 42220 : '0x...',  // Celo
-  // 1329  : '0x...',  // Sei EVM
-  // 204   : '0x...',  // opBNB
-  // 480   : '0x...',  // World Chain
-  // 999   : '0x...',  // HyperEVM
-  // 33139 : '0x...',  // ApeChain
-  // 2020  : '0x...',  // Ronin
-  // 2741  : '0x...',  // Abstract
-  // 42793 : '0x...',  // Etherlink
+  // ── Not deployed ───────────────────────────────────────────────────────
+  // 1     : Ethereum — intentionally skipped (no funds bridged, gas too high)
+  // 42793 : Etherlink — intentionally skipped
 };
 
 // Whitelist of chains where the relayer is confirmed deployed and operational.
 // Used by the SDK's relayer flows to fail fast when a swap is attempted on an
 // unsupported chain instead of sending funds to a non-existent contract.
+// All 20 cohort chains are v2, signer = 0x75a8b522FC3195e3a3570F11f111AC89c0D35975
+// (TX_SIGNER), 0.1% fees enabled (inPercentFee=10). Ethereum and Etherlink are
+// intentionally not deployed.
 export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
-  10,     // Optimism      — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  56,     // BSC           — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  137,    // Polygon       — signer 0x2ed05570214f6c0f7612b580ab37c163076e0162 (POL_TX_SIGNER)
-  8453,   // Base          — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  42161,  // Arbitrum      — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  43114,  // Avalanche     — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  59144,  // Linea         — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  534352, // Scroll        — signer 0x75a8b522fc3195e3a3570f11f111ac89c0d35975
-  // 1, 146, 80094, 130, 42220, 1329, 204, 480, 999, 33139, 2020, 2741, 42793 — pending deploy
+  10,     // Optimism
+  56,     // BSC
+  130,    // Unichain
+  137,    // Polygon (v2 redeploy)
+  146,    // Sonic
+  204,    // opBNB
+  480,    // World Chain
+  999,    // HyperEVM
+  1329,   // Sei
+  1868,   // Soneium
+  2020,   // Ronin
+  2741,   // Abstract
+  8453,   // Base
+  33139,  // ApeChain
+  42161,  // Arbitrum
+  42220,  // Celo
+  43111,  // Hemi
+  43114,  // Avalanche
+  59144,  // Linea
+  80094,  // Berachain
+  534352, // Scroll
 ]);
 
 export const relayerAddresses = (chain: number): string => {

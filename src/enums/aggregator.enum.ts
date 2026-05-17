@@ -18,4 +18,6 @@ export enum AGGREGATORS {
   SUSHISWAP = "sushiswap",
   ACROSS = "across",
   NEAR_1CLICK = "near_1click",
+  GAS_ZIP = "gas_zip",
+  RHINO_FI = "rhino_fi",
 }

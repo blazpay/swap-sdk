@@ -18,3 +18,5 @@ export { default as RelayAggregator } from './Relay.aggregator.js';
 export { default as SushiswapAggregator } from './Sushi.aggregator.js';
 export { default as AcrossAggregator } from './Across.aggregator.js';
 export { default as NearOneClickAggregator } from './NearOneClick.aggregator.js';
+export { default as GasZipAggregator } from './GasZip.aggregator.js';
+export { default as RhinoFiAggregator } from './RhinoFi.aggregator.js';

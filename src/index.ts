@@ -17,6 +17,8 @@ import {
   SushiswapAggregator,
   AcrossAggregator,
   NearOneClickAggregator,
+  GasZipAggregator,
+  RhinoFiAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -93,6 +95,14 @@ export class TradeManager {
     this.aggregatorFactory.register(
       AGGREGATORS.NEAR_1CLICK,
       new NearOneClickAggregator(),
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.GAS_ZIP,
+      new GasZipAggregator(),
+    );
+    this.aggregatorFactory.register(
+      AGGREGATORS.RHINO_FI,
+      new RhinoFiAggregator(),
     );
   }
 
