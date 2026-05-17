@@ -63,19 +63,25 @@ export default class KyberSwap extends Base {
       .formatUnits(data.routeSummary.amountOut, params.toToken.decimals)
       .toString();
 
-    const platformFeeAmount =
-      (Number(Number(swapAmount).toFixed(4)) *
-        Number(data?.routeSummary?.extraFee?.feeAmount ?? 0)) /
-      10000;
+    // Convert the partner fee (a fraction of output, in output-token units)
+    // into USD using the output amount-USD ratio that KyberSwap returns
+    // alongside the route. Keep platformFee as a USD-number string so
+    // numeric consumers (Number(...) / sums) work.
+    const outAmount = Number(swapAmount);
+    const outUsd = Number(data?.routeSummary?.amountOutUsd ?? 0);
+    const usdPerOutToken = outAmount > 0 ? outUsd / outAmount : 0;
+    const platformFeeOutToken =
+      (outAmount * Number(data?.routeSummary?.extraFee?.feeAmount ?? 0)) / 10000;
+    const platformFeeUsd = platformFeeOutToken * usdPerOutToken;
 
     const meta = {
       id: uuidv4(),
       aggregator: AGGREGATORS.KYBER_SWAP,
       route: "KyberSwap",
       amount: Number(Number(swapAmount).toFixed(4)),
-      usdAmount: Number(data?.routeSummary?.amountOutUsd ?? 0),
+      usdAmount: outUsd,
       networkFee: Number(data?.routeSummary?.gasUsd ?? 0).toFixed(6),
-      platformFee: `${platformFeeAmount.toFixed(6)} ${params.toToken?.symbol}`,
+      platformFee: platformFeeUsd.toFixed(6),
       priceImpact: 0,
       slippage: params.slippage ?? 0.5,
       allowanceTo: data.routerAddress,
