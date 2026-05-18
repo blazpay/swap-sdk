@@ -32,22 +32,20 @@ export class AggregatorFactory {
       .map(async (aggregator) => {
         try {
           const quote = await aggregator.getQuotes(params);
-          // Every quote that runs through this SDK is executed via
-          // BlazpayRelayer.executeMetaTransactionSwap, which charges a
-          // flat 0.1% (inPercentFee = 10/10000) on the input amount. Stamp
-          // it on the quote so the FE can display it consistently
-          // regardless of which aggregator generated the route.
+          // Every quote runs through BlazpayRelayer.executeMetaTransactionSwap,
+          // which charges a flat 0.1% (inPercentFee = 10/10000) on the input.
+          // Stamp it here so the FE can display it consistently regardless of
+          // which aggregator generated the route. Compute from the input side
+          // (params.amount × fromToken.priceUSD) — aggregator-reported USD
+          // figures are unreliable (OKX/Nordstern return 0).
           if (quote && quote.meta) {
-            if (quote.meta.blazpayFeePercent == null) {
-              quote.meta.blazpayFeePercent = 0.001;
-            }
-            if (quote.meta.blazpayFeeUsd == null) {
-              const inputUsd =
-                Number(quote.meta.fromAmountUsd) ||
-                Number(quote.meta.usdAmount) ||
-                0;
-              quote.meta.blazpayFeeUsd = inputUsd * 0.001;
-            }
+            const inputUsd =
+              Number(params.amount) * Number(params.fromToken?.priceUSD ?? 0) ||
+              Number((quote.meta as any).fromAmountUsd) ||
+              Number(quote.meta.usdAmount) ||
+              0;
+            quote.meta.blazpayFeePercent = 0.001;
+            quote.meta.blazpayFeeUsd = inputUsd * 0.001;
           }
           cb(quote);
         } catch (error: any) {
