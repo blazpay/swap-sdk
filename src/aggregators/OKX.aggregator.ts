@@ -5,7 +5,7 @@ import { apiCall } from "../utils/axios.js";
 import { AGGREGATORS } from "../enums/aggregator.enum.js";
 import Quote from "../utils/quote.js";
 import Base from "./base.aggregator.js";
-import { baseUrl } from "../utils/constants.js";
+import { baseUrl, relayerAddresses } from "../utils/constants.js";
 
 /**
  * OKX OnchainOS DEX aggregator.
@@ -36,6 +36,14 @@ export default class OKXAggregator extends Base {
   }
 
   private buildParams(params: IQuoteParams): Record<string, any> {
+    // OKX binds the returned tx calldata to userWalletAddress — internally it
+    // emits transferFrom(userWalletAddress, okxRouter, amount). We execute
+    // through BlazpayRelayer, which pulls tokens user→relayer, approves the
+    // OKX router, then calls it. The on-chain pull is therefore from the
+    // RELAYER (the new owner of the tokens + the approved caller), not from
+    // the end user. Bind the calldata accordingly. The output still goes to
+    // the user via swapReceiverAddress.
+    const relayer = relayerAddresses(params.fromChain.id);
     return {
       chainIndex: String(params.fromChain.id),
       fromTokenAddress: this.resolveTokenAddress(params.fromToken.address),
@@ -44,7 +52,7 @@ export default class OKXAggregator extends Base {
         .parseUnits(String(params.amount), params.fromToken.decimals)
         .toString(),
       slippagePercent: String(params.slippage ?? 1),
-      userWalletAddress: params.srcWalletAddress,
+      userWalletAddress: relayer,
       swapReceiverAddress:
         params.dstWalletAddress || params.srcWalletAddress,
       swapMode: "exactIn",
