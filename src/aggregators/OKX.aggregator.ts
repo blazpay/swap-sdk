@@ -65,14 +65,34 @@ export default class OKXAggregator extends Base {
     }
 
     const query = this.buildParams(params);
+    const tokenAddr = this.resolveTokenAddress(params.fromToken.address);
+    const isNativeInput = tokenAddr === OKX_NATIVE;
 
     // /swap returns routerResult + tx in one call; we use the same shape
     // for both quote and getTransactionData so we don't have to re-quote.
-    const data = await apiCall({
+    // For ERC20-input swaps we also need OKX's DexProxy address — the
+    // contract that actually pulls tokens via transferFrom — which is
+    // *different* from tx.to (the DexRouter). Approving tx.to leaves the
+    // proxy without allowance and the swap reverts with SafeERC20:
+    // low-level call failed.
+    const swapPromise = apiCall({
       method: "GET",
       url: `${this.BASE_URL}/swap`,
       params: query,
     });
+    const approvePromise = isNativeInput
+      ? Promise.resolve(null)
+      : apiCall({
+          method: "GET",
+          url: `${this.BASE_URL}/approve-transaction`,
+          params: {
+            chainIndex: query.chainIndex,
+            tokenContractAddress: tokenAddr,
+            approveAmount: query.amount,
+          },
+        }).catch(() => null);
+
+    const [data, approveData] = await Promise.all([swapPromise, approvePromise]);
 
     if (data?.code && String(data.code) !== "0") {
       throw new Error(`OKX: ${data?.msg || data?.message || "no route"}`);
@@ -84,6 +104,12 @@ export default class OKXAggregator extends Base {
     const outRaw = router?.toTokenAmount;
     if (!tx?.to || !tx?.data || !outRaw) {
       throw new Error("OKX: no route found");
+    }
+
+    const dexProxy: string | undefined =
+      approveData?.data?.[0]?.dexContractAddress;
+    if (!isNativeInput && !dexProxy) {
+      throw new Error("OKX: no approve target returned");
     }
 
     const swapAmount = ethers.formatUnits(outRaw, params.toToken.decimals);
@@ -101,7 +127,10 @@ export default class OKXAggregator extends Base {
       platformFee: 0,
       priceImpact: Number(router?.priceImpactPercent ?? 0),
       slippage: params.slippage ?? 1,
-      allowanceTo: tx.to,
+      // For ERC20 input, allowance must go to OKX's DexProxy (the contract
+      // that calls transferFrom inside the swap), not to tx.to (DexRouter).
+      // For native input, no allowance is needed — leave as tx.to.
+      allowanceTo: dexProxy || tx.to,
       timeEstimate: undefined,
     };
 
@@ -118,7 +147,11 @@ export default class OKXAggregator extends Base {
       srcWalletAddress: params.srcWalletAddress,
       dstWalletAddress: params.dstWalletAddress,
       quotePayload: query,
-    });
+      // Stash for getTransactionData so we don't have to refetch
+      // /approve-transaction at broadcast time.
+      okxDexProxy: dexProxy,
+      okxIsNativeInput: isNativeInput,
+    } as any);
   }
 
   async getTransactionData(
@@ -135,6 +168,11 @@ export default class OKXAggregator extends Base {
     if (!tx?.to || !tx?.data) {
       throw new Error("OKX: re-quote produced no transaction");
     }
+    const dexProxy = (restProps as any)?.okxDexProxy as string | undefined;
+    const isNativeInput = (restProps as any)?.okxIsNativeInput === true;
+    // spender = the address the relayer forceApproves before calling tx.to.
+    // For ERC20 input this MUST be OKX's DexProxy (the puller); for native
+    // input no approval is needed but we keep tx.to for shape consistency.
     return {
       tx: {
         data: tx.data,
@@ -143,7 +181,7 @@ export default class OKXAggregator extends Base {
         value: tx.value ?? "0",
         gasLimit: tx.gas ? Number(tx.gas) : undefined,
       },
-      spender: tx.to,
+      spender: isNativeInput ? tx.to : (dexProxy || tx.to),
     };
   }
 
