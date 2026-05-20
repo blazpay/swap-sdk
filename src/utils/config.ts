@@ -14,6 +14,11 @@ export type SDKConfig = {
    * Unizen API key (if required by your Unizen status endpoint).
    */
   unizenApiKey?: string;
+
+  /**
+   * Rango Exchange API key. Falls back to the public demo key when absent.
+   */
+  rangoApiKey?: string;
 };
 
 let config: SDKConfig = {};

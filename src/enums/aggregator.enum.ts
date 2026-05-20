@@ -21,4 +21,7 @@ export enum AGGREGATORS {
   GAS_ZIP = "gas_zip",
   RHINO_FI = "rhino_fi",
   OKX = "okx",
+  RANGO = "rango",
+  DEBRIDGE = "debridge",
+  XY_FINANCE = "xy_finance",
 }

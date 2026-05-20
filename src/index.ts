@@ -20,6 +20,9 @@ import {
   GasZipAggregator,
   RhinoFiAggregator,
   OKXAggregator,
+  RangoAggregator,
+  DeBridgeAggregator,
+  XYFinanceAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -106,6 +109,9 @@ export class TradeManager {
       new RhinoFiAggregator(),
     );
     this.aggregatorFactory.register(AGGREGATORS.OKX, new OKXAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.RANGO, new RangoAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.DEBRIDGE, new DeBridgeAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.XY_FINANCE, new XYFinanceAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {
