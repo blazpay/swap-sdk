@@ -19,6 +19,11 @@ export type SDKConfig = {
    * Rango Exchange API key. Falls back to the public demo key when absent.
    */
   rangoApiKey?: string;
+
+  /**
+   * Houdini Swap partner API key (required for private-mode routes).
+   */
+  houdiniApiKey?: string;
 };
 
 let config: SDKConfig = {};

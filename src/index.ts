@@ -23,6 +23,7 @@ import {
   RangoAggregator,
   DeBridgeAggregator,
   XYFinanceAggregator,
+  HoudiniAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -112,6 +113,7 @@ export class TradeManager {
     this.aggregatorFactory.register(AGGREGATORS.RANGO, new RangoAggregator());
     this.aggregatorFactory.register(AGGREGATORS.DEBRIDGE, new DeBridgeAggregator());
     this.aggregatorFactory.register(AGGREGATORS.XY_FINANCE, new XYFinanceAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.HOUDINI, new HoudiniAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {
@@ -174,6 +176,20 @@ export class TradeManager {
   sendSignTxDataRaw(relayerTxData: IRelayerRawTxData) {
     const relayerFactory = new RelayerFactory();
     return relayerFactory.getMetaTransactionByteData(relayerTxData);
+  }
+
+  // Direct transfer — used for deposit-address-based providers like Houdini
+  // that don't route through the BlazpayRelayer. tx.to/data/value are sent as-is.
+  async triggerDirectTransfer(
+    provider: ethers.BrowserProvider,
+    tx: { to: string; data?: string; value?: string },
+  ) {
+    const signer = await provider.getSigner();
+    return await signer.sendTransaction({
+      to:    tx.to,
+      data:  tx.data  || "0x",
+      value: tx.value ? BigInt(tx.value) : 0n,
+    });
   }
 }
 

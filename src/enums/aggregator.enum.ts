@@ -24,4 +24,5 @@ export enum AGGREGATORS {
   RANGO = "rango",
   DEBRIDGE = "debridge",
   XY_FINANCE = "xy_finance",
+  HOUDINI = "houdini",
 }

@@ -24,3 +24,4 @@ export { default as OKXAggregator } from './OKX.aggregator.js';
 export { default as RangoAggregator } from './Rango.aggregator.js';
 export { default as DeBridgeAggregator } from './DeBridge.aggregator.js';
 export { default as XYFinanceAggregator } from './XYFinance.aggregator.js';
+export { default as HoudiniAggregator } from './Houdini.aggregator.js';
