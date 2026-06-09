@@ -168,28 +168,28 @@ const RELAYER_ADDRESSES: Record<number, string> = {
   // The 12 EVM chains below all share the same proxy address. Abstract uses
   // zkSync-stack CREATE so its address differs, and Unichain landed at a
   // distinct address (its TX_SIGNER nonce had drifted before deploy).
-  137:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Polygon (redeployed v2)
-  146:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sonic
-  204:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // opBNB
-  480:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // World Chain
-  999:      '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // HyperEVM
-  1329:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sei
-  1868:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Soneium
-  2020:     '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Ronin
-  33139:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // ApeChain
-  42220:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Celo
-  43111:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Hemi
-  80094:    '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Berachain
-  130:      '0xA01da2d3AbEFFbaa347B08C76EEC47169DdE72e9', // Unichain (nonce drift)
-  2741:     '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Abstract (zkSync-stack)
+  137: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Polygon (redeployed v2)
+  146: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sonic
+  204: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // opBNB
+  480: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // World Chain
+  999: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // HyperEVM
+  1329: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sei
+  1868: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Soneium
+  2020: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Ronin
+  33139: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // ApeChain
+  42220: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Celo
+  43111: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Hemi
+  80094: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Berachain
+  130: '0xA01da2d3AbEFFbaa347B08C76EEC47169DdE72e9', // Unichain (nonce drift)
+  2741: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Abstract (zkSync-stack)
   // ── Existing 7 — upgraded in place to v2, proxy addresses unchanged ────
-  10:       '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Optimism
-  56:       '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // BSC
-  8453:     '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Base
-  42161:    '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Arbitrum
-  43114:    '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Avalanche
-  59144:    '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Linea
-  534352:   '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
+  10: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Optimism
+  56: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // BSC
+  8453: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Base
+  42161: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Arbitrum
+  43114: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Avalanche
+  59144: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Linea
+  534352: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
   // ── Not deployed ───────────────────────────────────────────────────────
   // 1     : Ethereum — intentionally skipped (no funds bridged, gas too high)
   // 42793 : Etherlink — intentionally skipped
@@ -259,7 +259,8 @@ export const relayerJson = relayerAbi
 // for any deployed consumer. Consumers can still override via
 // `configure({ baseApiUrl: ... })` if they want.
 const PROD_API_URL = 'https://api.blazpay.com/api/defi';
-const LOCAL_API_URL = 'http://localhost:5000/api/defi';
+const LOCAL_API_URL = 'https://api.blazpay.com/api/defi';
+// const LOCAL_API_URL = 'http://localhost:5000/api/defi';
 
 function resolveBaseUrl(): string {
   if (typeof window !== 'undefined' && window.location && window.location.host) {
