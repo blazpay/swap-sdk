@@ -259,8 +259,7 @@ export const relayerJson = relayerAbi
 // for any deployed consumer. Consumers can still override via
 // `configure({ baseApiUrl: ... })` if they want.
 const PROD_API_URL = 'https://api.blazpay.com/api/defi';
-const LOCAL_API_URL = 'https://api.blazpay.com/api/defi';
-// const LOCAL_API_URL = 'http://localhost:5000/api/defi';
+const LOCAL_API_URL = 'http://localhost:5000/api/defi';
 
 function resolveBaseUrl(): string {
   if (typeof window !== 'undefined' && window.location && window.location.host) {
