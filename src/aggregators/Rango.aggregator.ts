@@ -110,7 +110,7 @@ export default class RangoAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.RANGO,
       route: data.route.swapper?.title || "Rango",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(data.route.outputAmountUsd ?? 0),
       networkFee: 0,
       platformFee: 0,

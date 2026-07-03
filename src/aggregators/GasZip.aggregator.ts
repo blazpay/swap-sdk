@@ -91,7 +91,7 @@ export default class GasZipAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.GAS_ZIP,
       route: "Gas.zip",
-      amount: Number(Number(swapAmount).toFixed(6)),
+      amount: Number(swapAmount),
       usdAmount: Number(quote?.expectedUsd ?? 0),
       networkFee: 0,
       platformFee: Number(quote?.fee ?? 0),

@@ -52,9 +52,7 @@ export default class ButterNetworkAggregator extends Base {
         id: uuidv4(),
         aggregator: AGGREGATORS.BUTTER_NETWORK,
         route: quote?.srcChain?.route[0]?.dexName || 'Butter',
-        amount: Number(
-          Number(parseFloat(quote?.srcChain?.totalAmountOut)).toFixed(4)
-        ),
+        amount: Number(parseFloat(quote?.srcChain?.totalAmountOut)),
         usdAmount: Number(
           Number(parseFloat(quote?.srcChain?.totalAmountOutUSD)).toFixed(4)
         ),

@@ -78,7 +78,7 @@ export default class KyberSwap extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.KYBER_SWAP,
       route: "KyberSwap",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: outUsd,
       networkFee: Number(data?.routeSummary?.gasUsd ?? 0).toFixed(6),
       platformFee: platformFeeUsd.toFixed(6),

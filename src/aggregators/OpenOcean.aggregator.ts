@@ -86,7 +86,7 @@ export default class OpenOceanAggregator extends Base {
         id: uuidv4(),
         aggregator: AGGREGATORS.OPEN_OCEAN,
         route: "OpenOcean",
-        amount: Number(Number(swapAmount).toFixed(4)),
+        amount: Number(swapAmount),
         usdAmount: data?.outToken?.usd,
         networkFee: `${Number(
           ethers.formatEther(
@@ -130,7 +130,7 @@ export default class OpenOceanAggregator extends Base {
             id: uuidv4(),
             aggregator: AGGREGATORS.OPEN_OCEAN,
             route: route?.bridgeRoute?.bridgeInfo?.code,
-            amount: Number(Number(swapAmount).toFixed(4)),
+            amount: Number(swapAmount),
             usdAmount: 0,
             networkFee:
               Number(route?.fees?.gasLimit[0]?.value)?.toFixed(6) || 0,

@@ -59,7 +59,7 @@ export default class SymbiosisAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.SYMBIOSIS,
       route: "Symbiosis",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: 0,
       networkFee: 0,
       platformFee: data?.fee?.amount ? `${Number(data?.fee?.amount) / Math.pow(10, data?.fee?.decimals)} ${data?.fee?.symbol}` : 0,

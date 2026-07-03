@@ -153,7 +153,7 @@ export default class NearOneClickAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.NEAR_1CLICK,
       route: "Near Intents",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(quoteRes.amountOutUsd ?? 0),
       networkFee: 0,
       platformFee: 0,

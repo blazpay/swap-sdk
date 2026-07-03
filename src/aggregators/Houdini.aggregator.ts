@@ -73,7 +73,7 @@ export default class HoudiniAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.HOUDINI,
       route: best.swapName || "Houdini Private",
-      amount: Number(amountOut.toFixed(6)),
+      amount: Number(amountOut),
       usdAmount: Number(best.amountOutUsd ?? 0),
       networkFee: Number(best.gasUsd ?? 0),
       platformFee: Number(best.feeUsd ?? 0),

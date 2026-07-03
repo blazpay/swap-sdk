@@ -113,7 +113,7 @@ export default class RhinoFiAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.RHINO_FI,
       route: "RhinoFi",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(data?.receiveUsd ?? data?.quote?.receiveUsd ?? 0),
       networkFee: networkFeeUsd.toFixed(6),
       platformFee: platformFeeUsd.toFixed(6),

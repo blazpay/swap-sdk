@@ -51,7 +51,7 @@ export default class XYFinanceAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.XY_FINANCE,
       route: route.bridgeDescription?.provider || "XY Finance",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: 0,
       networkFee: 0,
       platformFee: 0,

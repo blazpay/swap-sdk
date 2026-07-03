@@ -61,7 +61,7 @@ export default class OneInchAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.ONE_INCH,
       route: "One Inch",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: 0,
       networkFee: 0,
       platformFee: 0,

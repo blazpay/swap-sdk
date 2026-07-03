@@ -44,7 +44,7 @@ export default class LifiAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.LIFI,
       route: data?.tool || "Lifi",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: 0,
       networkFee: data?.estimate?.gasCosts[0]?.amountUSD || 0,
       platformFee: data?.estimate?.feeCosts?.length > 0 ? `${Number(

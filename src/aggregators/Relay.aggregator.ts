@@ -81,7 +81,7 @@ export default class RelayAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.RELAY,
       route: "Relay",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(currencyOut?.amountUsd ?? 0),
       networkFee: Number(data?.fees?.gas?.amountUsd ?? 0).toFixed(6),
       platformFee: Number(data?.fees?.relayerService?.amountUsd ?? 0).toFixed(

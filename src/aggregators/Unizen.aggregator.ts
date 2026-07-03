@@ -61,7 +61,7 @@ export default class UnizenAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.UNIZEN,
       route: "Unizen",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount:
         params.type === "SWAP"
           ? data?.tokenTo?.priceInUsd

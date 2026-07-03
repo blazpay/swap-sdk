@@ -59,7 +59,7 @@ export default class NordsternAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.NORDSTERN,
       route: "Nordstern",
-      amount: Number(Number(toAmount).toFixed(4)),
+      amount: Number(toAmount),
       usdAmount: 0,
       networkFee: 0,
       platformFee: 0,

@@ -62,7 +62,7 @@ export default class SushiswapAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.SUSHISWAP,
       route: "Sushiswap",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: 0,
       networkFee: 0,
       platformFee: 0,

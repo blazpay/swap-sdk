@@ -30,9 +30,7 @@ export default class IceCreamAggregator extends Base {
       params: query,
     });
 
-    const swapAmount = (data?.toAmount / 10 ** params.toToken.decimals).toFixed(
-      4
-    );
+    const swapAmount = data?.toAmount / 10 ** params.toToken.decimals;
 
     let meta = {
       id: uuidv4(),

@@ -80,7 +80,7 @@ export default class SquidRouterAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.SQUID_ROUTER,
       route: "Squid",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(estimate?.toAmountUSD ?? 0),
       networkFee: sumUsd(estimate?.gasCosts).toFixed(6),
       platformFee: sumUsd(estimate?.feeCosts).toFixed(6),

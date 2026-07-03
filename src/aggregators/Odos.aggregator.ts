@@ -77,7 +77,7 @@ export default class OdosAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.ODOS,
       route: "Odos",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(data?.outValues?.[0] ?? 0),
       networkFee: Number(data?.gasEstimateValue ?? 0).toFixed(6),
       platformFee: Number(data?.partnerFeePercent ?? 0),

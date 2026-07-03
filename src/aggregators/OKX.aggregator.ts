@@ -121,7 +121,7 @@ export default class OKXAggregator extends Base {
       id: uuidv4(),
       aggregator: AGGREGATORS.OKX,
       route: "OKX",
-      amount: Number(Number(swapAmount).toFixed(4)),
+      amount: Number(swapAmount),
       usdAmount: Number(router?.toTokenAmountUsd ?? 0),
       networkFee: 0,
       platformFee: 0,
