@@ -37,6 +37,8 @@ export enum ChainName {
   MOONBEAM = `moonbeam`,
   ABSTRACT = `abstract`,
   ETHERLINK = `etherlink`,
+  // Destination-only bridge target — no BlazpayRelayer deployed (bridge INTO only).
+  ROBINHOOD = `robinhood`,
 }
 export enum ChainId {
   MAINNET = 1,
@@ -76,6 +78,8 @@ export enum ChainId {
   MOONBEAM = 1284,
   ABSTRACT = 2741,
   ETHERLINK = 42793,
+  // Destination-only bridge target — no BlazpayRelayer deployed (bridge INTO only).
+  ROBINHOOD = 4663,
 }
 export enum ChainContractAddress {
   MAINNET = "0xd3f64BAa732061F8B3626ee44bab354f854877AC",
@@ -135,6 +139,7 @@ export function getChainNameById(chainId: ChainId): ChainName | undefined {
     [ChainId.MOONBEAM]: ChainName.MOONBEAM,
     [ChainId.ABSTRACT]: ChainName.ABSTRACT,
     [ChainId.ETHERLINK]: ChainName.ETHERLINK,
+    [ChainId.ROBINHOOD]: ChainName.ROBINHOOD,
   };
   return chainMapping[chainId];
 }
