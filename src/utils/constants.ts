@@ -195,6 +195,7 @@ const RELAYER_ADDRESSES: Record<number, string> = {
   43114: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Avalanche
   59144: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Linea
   534352: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
+  4663: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Robinhood (deterministic CREATE, nonce-0 deployer)
   // ── Not deployed ───────────────────────────────────────────────────────
   // 1     : Ethereum — intentionally skipped (no funds bridged, gas too high)
   // 42793 : Etherlink — intentionally skipped
@@ -228,6 +229,7 @@ export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
   59144,  // Linea
   80094,  // Berachain
   534352, // Scroll
+  4663,   // Robinhood
 ]);
 
 export const relayerAddresses = (chain: number): string => {
