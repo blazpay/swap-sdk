@@ -24,6 +24,7 @@ import {
   DeBridgeAggregator,
   XYFinanceAggregator,
   HoudiniAggregator,
+  UniswapAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -114,6 +115,7 @@ export class TradeManager {
     this.aggregatorFactory.register(AGGREGATORS.DEBRIDGE, new DeBridgeAggregator());
     this.aggregatorFactory.register(AGGREGATORS.XY_FINANCE, new XYFinanceAggregator());
     this.aggregatorFactory.register(AGGREGATORS.HOUDINI, new HoudiniAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.UNISWAP, new UniswapAggregator());
   }
 
   async getQuotes(params: IBaseQuoteParams) {

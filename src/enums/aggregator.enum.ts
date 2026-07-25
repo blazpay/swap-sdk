@@ -25,4 +25,5 @@ export enum AGGREGATORS {
   DEBRIDGE = "debridge",
   XY_FINANCE = "xy_finance",
   HOUDINI = "houdini",
+  UNISWAP = "uniswap",
 }
