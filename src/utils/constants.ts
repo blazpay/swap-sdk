@@ -170,9 +170,10 @@ export const addressE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 // address that has no code.
 const RELAYER_ADDRESSES: Record<number, string> = {
   // ── v2 cohort: deterministic CREATE address from TX_SIGNER (nonce 2→3). ─
-  // The 12 EVM chains below all share the same proxy address. Abstract uses
+  // The 13 EVM chains below all share the same proxy address. Abstract uses
   // zkSync-stack CREATE so its address differs, and Unichain landed at a
   // distinct address (its TX_SIGNER nonce had drifted before deploy).
+  1: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Ethereum (2026-09-04)
   137: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Polygon (redeployed v2)
   146: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // Sonic
   204: '0x7d98E59FabFBaDD5eCB61CC2cf876AA97f505531', // opBNB
@@ -197,7 +198,6 @@ const RELAYER_ADDRESSES: Record<number, string> = {
   534352: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
   4663: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Robinhood (deterministic CREATE, nonce-0 deployer)
   // ── Not deployed ───────────────────────────────────────────────────────
-  // 1     : Ethereum — intentionally skipped (no funds bridged, gas too high)
   // 42793 : Etherlink — intentionally skipped
 };
 
@@ -208,6 +208,7 @@ const RELAYER_ADDRESSES: Record<number, string> = {
 // (TX_SIGNER), 0.1% fees enabled (inPercentFee=10). Ethereum and Etherlink are
 // intentionally not deployed.
 export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
+  1,      // Ethereum
   10,     // Optimism
   56,     // BSC
   130,    // Unichain
