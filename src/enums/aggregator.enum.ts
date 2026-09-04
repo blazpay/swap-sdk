@@ -26,4 +26,7 @@ export enum AGGREGATORS {
   XY_FINANCE = "xy_finance",
   HOUDINI = "houdini",
   UNISWAP = "uniswap",
+  // Issuer primary market for tokenized equities — mints/redeems at NAV
+  // instead of routing through a pool. Env-gated (ONDO_API_KEY).
+  ONDO_STOCKS = "ondo_stocks",
 }

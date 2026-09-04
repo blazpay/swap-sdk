@@ -24,6 +24,17 @@ export type SDKConfig = {
    * Houdini Swap partner API key (required for private-mode routes).
    */
   houdiniApiKey?: string;
+
+  /**
+   * Ondo Stocks API key. Presence is what ENABLES the Ondo issuer
+   * primary-market provider: TradeManager skips registering it when this is
+   * absent, so a deployment without credentials quotes exactly as before
+   * rather than emitting a provider that always errors.
+   *
+   * Only the backend needs this — the browser reaches Ondo through the
+   * /defi/ondo proxy and never holds the key.
+   */
+  ondoApiKey?: string;
 };
 
 let config: SDKConfig = {};

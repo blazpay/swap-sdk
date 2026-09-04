@@ -26,3 +26,4 @@ export { default as DeBridgeAggregator } from './DeBridge.aggregator.js';
 export { default as XYFinanceAggregator } from './XYFinance.aggregator.js';
 export { default as HoudiniAggregator } from './Houdini.aggregator.js';
 export { default as UniswapAggregator } from './Uniswap.aggregator.js';
+export { default as OndoStocksAggregator } from './OndoStocks.aggregator.js';

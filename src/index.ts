@@ -25,6 +25,7 @@ import {
   XYFinanceAggregator,
   HoudiniAggregator,
   UniswapAggregator,
+  OndoStocksAggregator,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -35,7 +36,7 @@ import RelayerFactory from './relayer.js';
 import { relayerAddresses } from './utils/constants.js';
 import { IQueryStatus } from './utils/types.js';
 import KimaSwapAggregator from './aggregators/Kima.aggregator.js';
-import { configure } from './utils/config.js';
+import { configure, getConfig } from './utils/config.js';
 
 export class TradeManager {
   aggregatorFactory: AggregatorFactory;
@@ -116,6 +117,17 @@ export class TradeManager {
     this.aggregatorFactory.register(AGGREGATORS.XY_FINANCE, new XYFinanceAggregator());
     this.aggregatorFactory.register(AGGREGATORS.HOUDINI, new HoudiniAggregator());
     this.aggregatorFactory.register(AGGREGATORS.UNISWAP, new UniswapAggregator());
+
+    // Ondo Stocks is the only provider gated on credentials at registration
+    // time. It mints/redeems tokenized equities against the issuer, which
+    // needs an onboarded API key; without one every call would 503 and just
+    // add noise to the quote stream, so it is simply not registered.
+    if (getConfig().ondoApiKey) {
+      this.aggregatorFactory.register(
+        AGGREGATORS.ONDO_STOCKS,
+        new OndoStocksAggregator(),
+      );
+    }
   }
 
   async getQuotes(params: IBaseQuoteParams) {
