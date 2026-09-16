@@ -39,6 +39,12 @@ export enum ChainName {
   ETHERLINK = `etherlink`,
   // Destination-only bridge target — no BlazpayRelayer deployed (bridge INTO only).
   ROBINHOOD = `robinhood`,
+  // Circle's Arc L1. Gas is USDC: `msg.value` is 18-decimal, and the SAME
+  // balance is exposed as a 6-decimal ERC-20 predeploy at
+  // 0x3600…0000 (verified on-chain — Celo's model, not a wrapped token).
+  // Aggregators quote the ERC-20 form, so Arc goes through the relayer's
+  // ERC-20 path, not its native path.
+  ARC = `arc`,
 }
 export enum ChainId {
   MAINNET = 1,
@@ -80,6 +86,7 @@ export enum ChainId {
   ETHERLINK = 42793,
   // Destination-only bridge target — no BlazpayRelayer deployed (bridge INTO only).
   ROBINHOOD = 4663,
+  ARC = 5042,
 }
 export enum ChainContractAddress {
   MAINNET = "0xd3f64BAa732061F8B3626ee44bab354f854877AC",
@@ -140,6 +147,7 @@ export function getChainNameById(chainId: ChainId): ChainName | undefined {
     [ChainId.ABSTRACT]: ChainName.ABSTRACT,
     [ChainId.ETHERLINK]: ChainName.ETHERLINK,
     [ChainId.ROBINHOOD]: ChainName.ROBINHOOD,
+    [ChainId.ARC]: ChainName.ARC,
   };
   return chainMapping[chainId];
 }
@@ -197,6 +205,11 @@ const RELAYER_ADDRESSES: Record<number, string> = {
   59144: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Linea
   534352: '0x5c23c9a42626Ade38ae1c9a3407096d4381EE6E6', // Scroll
   4663: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Robinhood (deterministic CREATE, nonce-0 deployer)
+  // Arc (deployed 2026-09-16 from TX_SIGNER nonce 0 → joins cohort C).
+  // Gas on Arc is USDC, and the 6-decimal ERC-20 at 0x3600…0000 is a predeploy
+  // view of the SAME balance, so Arc swaps take the ERC-20 path here, not the
+  // native one.
+  5042: '0xb8Bd470f3C2610F83025D049085A64f1C7b78F14', // Arc
   // ── Not deployed ───────────────────────────────────────────────────────
   // 42793 : Etherlink — intentionally skipped
 };
@@ -204,7 +217,7 @@ const RELAYER_ADDRESSES: Record<number, string> = {
 // Whitelist of chains where the relayer is confirmed deployed and operational.
 // Used by the SDK's relayer flows to fail fast when a swap is attempted on an
 // unsupported chain instead of sending funds to a non-existent contract.
-// All 20 cohort chains are v2, signer = 0x75a8b522FC3195e3a3570F11f111AC89c0D35975
+// All 24 cohort chains are v2, signer = 0x75a8b522FC3195e3a3570F11f111AC89c0D35975
 // (TX_SIGNER), 0.1% fees enabled (inPercentFee=10). Ethereum and Etherlink are
 // intentionally not deployed.
 export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
@@ -231,6 +244,7 @@ export const RELAYER_DEPLOYED_CHAINS: ReadonlySet<number> = new Set([
   80094,  // Berachain
   534352, // Scroll
   4663,   // Robinhood
+  5042,   // Arc
 ]);
 
 export const relayerAddresses = (chain: number): string => {
