@@ -402,6 +402,18 @@ Total integration: 1 file added (~100 lines), 3 lines added to enum/index/factor
 - SDK calls `baseUrl + "/odos/quote"` and `/odos/assemble` (the proxy).
 - `pathId` expires after 60s — in `getTransactionData` we **re-quote** first to get a fresh pathId, then assemble. The Redis-cached 5-min `Quote` ensures the FE can pick a quote any time, but the pathId is always refreshed before assembling.
 
+## Worked example: RAVN (proxied meta-aggregator, venue allow-list measured)
+
+`Ravn.aggregator.ts` + `bz-backend/controllers/defi/ravn.js`:
+- RAVN races ~20 venues. `POST /quote` returns a winner plus ranked `alternatives`, each with its own `quoteToken`. `POST /execute` turns one into `TRANSACTION`, `SIGNATURE` or `DEPOSIT`. `POST /status` takes the execute-time `quoteToken` and a ref.
+- The relayer is `msg.sender` to the venue, so which venues work was measured, not assumed: `scripts/ravn-relayer-probe.mjs` eth_calls each venue's transaction from the Base relayer. Excluded: `cow` and `0x_gasless` (signature only, they skip the relayer), `flytrade` (reverts), `bebop` (unproven), `thorchain` (refunds go to the on-chain sender, which is the relayer). Skipped per quote: `relay` on ERC-20 input (it answers with a permit SIGNATURE), and native-coin deposits to any venue except NEAR Intents.
+- `userAddress` and `refundAddress` are the user's wallet, not the relayer, so venues that refund the depositor named in calldata (Across) refund the user.
+- The spender is `approval.spender`. It is NOT always `transaction.to` (OKX uses an approve proxy).
+- DEPOSIT pushes the input to the deposit address through the relayer, the Near 1Click way.
+- Status: `getTransactionData` returns `metaData.trackUrl`. The pages save it as the record's `txTrackUrl`, and `ravnTrackingKey({ trackUrl, txHash })` builds the key `getTxStatus` takes. The FE, the history page and `bridgeStatusCron` all use that one helper.
+- A quote RAVN no longer holds (`QUOTE_EXPIRED` etc.) is re-quoted, but only built if the new route still meets the minimum the user was shown.
+- Proof: `scripts/ravn-e2e-sim.mjs` (needs the proxy on :5077) runs quote, Redis round trip, build and a full `executeMetaTransactionSwap` eth_call with a throwaway signer installed by state override. `--controls` runs the cases that must fail.
+
 ## Worked example: KyberSwap (direct, two-step routes→build)
 
 - Single-chain only; throws on cross-chain.

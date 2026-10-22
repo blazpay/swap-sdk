@@ -29,4 +29,6 @@ export enum AGGREGATORS {
   // Issuer primary market for tokenized equities — mints/redeems at NAV
   // instead of routing through a pool. Env-gated (ONDO_API_KEY).
   ONDO_STOCKS = "ondo_stocks",
+  // Meta-aggregator (RFQ, intents, solvers, DEX aggregators) incl. native BTC out.
+  RAVN = "ravn",
 }

@@ -26,6 +26,8 @@ import {
   HoudiniAggregator,
   UniswapAggregator,
   OndoStocksAggregator,
+  RavnAggregator,
+  ravnTrackingKey,
 } from './aggregators/index.js';
 import aggregatorFactory, { AggregatorFactory } from './aggregator.factory.js';
 import { AGGREGATORS } from './enums/aggregator.enum.js';
@@ -117,6 +119,7 @@ export class TradeManager {
     this.aggregatorFactory.register(AGGREGATORS.XY_FINANCE, new XYFinanceAggregator());
     this.aggregatorFactory.register(AGGREGATORS.HOUDINI, new HoudiniAggregator());
     this.aggregatorFactory.register(AGGREGATORS.UNISWAP, new UniswapAggregator());
+    this.aggregatorFactory.register(AGGREGATORS.RAVN, new RavnAggregator());
 
     // Ondo Stocks is the only provider gated on credentials at registration
     // time. It mints/redeems tokenized equities against the issuer, which
@@ -208,4 +211,5 @@ export class TradeManager {
 }
 
 export { relayerAddresses };
+export { ravnTrackingKey };
 export { configure };

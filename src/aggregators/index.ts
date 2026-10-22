@@ -27,3 +27,4 @@ export { default as XYFinanceAggregator } from './XYFinance.aggregator.js';
 export { default as HoudiniAggregator } from './Houdini.aggregator.js';
 export { default as UniswapAggregator } from './Uniswap.aggregator.js';
 export { default as OndoStocksAggregator } from './OndoStocks.aggregator.js';
+export { default as RavnAggregator, ravnTrackingKey } from './Ravn.aggregator.js';
