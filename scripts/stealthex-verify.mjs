@@ -5,6 +5,12 @@
 //
 //   STEALTHEX_API_KEY=... node scripts/stealthex-verify.mjs
 //
+//   STEALTHEX_API_KEY=... node scripts/stealthex-verify.mjs --exchange <evm refund addr> <btc payout addr>
+//     also creates ONE unfunded ETH->BTC exchange (it simply expires) and runs
+//     the SDK's real validateExchange on StealthEX's actual answer, so the
+//     explorer-link and field checks are tested against reality. Needs
+//     `npm run build` first.
+//
 // The key is read from the environment and never printed.
 
 const KEY = process.env.STEALTHEX_API_KEY;
@@ -85,6 +91,32 @@ for (const rate of ["fixed", "floating"]) {
   const range = await post("/rates/range", { route, estimation: "direct", rate });
   const est = await post("/rates/estimated-amount", { route, amount: 0.1, estimation: "direct", rate });
   console.log(`\nETH->BTC ${rate}: range ${JSON.stringify(range.body)}, 0.1 ETH -> ${JSON.stringify(est.body)}`);
+}
+
+const ex = process.argv.indexOf("--exchange");
+if (ex !== -1) {
+  const [refund, payout] = process.argv.slice(ex + 1, ex + 3);
+  const { validateExchange } = await import("../dist/aggregators/Stealthex.aggregator.js");
+  const created = await post("/exchanges", {
+    route, amount: 0.1, estimation: "direct", rate: "floating", address: payout, refund_address: refund,
+  });
+  console.log(`\nunfunded exchange: HTTP ${created.status}, deposit explorer link ${created.body?.deposit?.address_explorer_url}`);
+  try {
+    const r = validateExchange(created.body, {
+      payload: {
+        from: { symbol: "eth", network: "mainnet", kind: "evm", addressRegex: null },
+        to: { symbol: "btc", network: "mainnet", kind: "btc", addressRegex: null },
+        rate: "floating", rateId: null, rateValidUntil: null, amount: 0.1, amountBase: "100000000000000000",
+        shownAmount: 0, isNativeIn: true, fromTokenAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        fromDecimals: 18, sourceChainId: 1,
+      },
+      recipient: payout,
+      refund,
+    });
+    ok(true, `validateExchange accepts a real exchange (id ${r.id})`);
+  } catch (e) {
+    ok(false, `validateExchange refused a real exchange: ${e.message}`);
+  }
 }
 
 console.log(bad ? `\n${bad} assumption(s) FAILED: fix CHAINS before enabling` : "\nall assumptions hold");
