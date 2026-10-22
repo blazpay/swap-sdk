@@ -78,6 +78,7 @@ function exchangeFor(req) {
     expiring: () => { ex.expires_at = new Date(Date.now() + 30_000).toISOString(); },
     tokenAsDeposit: () => { ex.deposit.address = USDC; ex.deposit.address_explorer_url = `https://etherscan.io/address/${USDC}`; },
     btcDeposit: () => { ex.deposit.address = BTC_DEST; ex.deposit.address_explorer_url = `https://etherscan.io/address/${BTC_DEST}`; },
+    noLink: () => { ex.deposit.address_explorer_url = null; },
   }[mode];
   if (tamper) tamper();
   return ex;
@@ -178,7 +179,7 @@ check("ERC-20 deposit = USDC.transfer(deposit, 250e6)", b2.tx.to === USDC && to 
 // 3. every tampered exchange is refused
 const tampered = {
   payout: /payout address/, refund: /refund address/, network: /deposit currency/, memo: /memo/,
-  explorer: /explorer/, amount: /expects/, status: /status is confirming/, expiring: /expires too soon/,
+  explorer: /another chain's explorer/, amount: /expects/, status: /status is confirming/, expiring: /expires too soon/,
   tokenAsDeposit: /token contract/, btcDeposit: /wrong format/,
 };
 for (const [m, re] of Object.entries(tampered)) {
@@ -188,10 +189,20 @@ for (const [m, re] of Object.entries(tampered)) {
   await mustThrow(`refuse tampered exchange: ${m}`, () => roundTrip(q).getTransactionData(), re);
 }
 
+// 3b. no explorer link at all is fine (StealthEX sends none for some tokens)
+{
+  mode = "honest";
+  const q = await sxAgg.getQuotes(ethToBtc);
+  mode = "noLink";
+  try { await roundTrip(q).getTransactionData(); check("exchange without an explorer link is accepted", true); }
+  catch (e) { check("exchange without an explorer link is accepted", false, e.message); }
+}
+
 // 4. quote-side refusals
 mode = "honest";
 await mustThrow("refuse same-chain / swap page", () => sxAgg.getQuotes({ ...ethToBtc, toChain: ETH1, type: "SWAP" }), /cross-chain only/);
-await mustThrow("refuse unverified source chain (Base)", () => sxAgg.getQuotes({ ...ethToBtc, fromChain: chain(8453, "Base") }), /source chain 8453/);
+await mustThrow("refuse unverified source chain (Avalanche)", () => sxAgg.getQuotes({ ...ethToBtc, fromChain: chain(43114, "Avalanche") }), /source chain 43114/);
+await mustThrow("refuse native coin StealthEX does not list (ETH on Base)", () => sxAgg.getQuotes({ ...ethToBtc, fromChain: chain(8453, "Base") }), /no native coin entry for chain 8453/);
 await mustThrow("refuse SPL token payout (not verified)", () => sxAgg.getQuotes({ ...usdcToSol, toToken: tok("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", 6, "USDC") }), /tokens on chain 102/);
 await mustThrow("refuse BTC payout without recipient", () => sxAgg.getQuotes({ ...ethToBtc, dstWalletAddress: undefined }), /needs a recipient/);
 await mustThrow("refuse EVM recipient for BTC payout", () => sxAgg.getQuotes({ ...ethToBtc, dstWalletAddress: USER }), /recipient address is not valid/);

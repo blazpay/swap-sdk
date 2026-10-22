@@ -34,20 +34,52 @@ interface ChainEntry {
   // for any chain's base coin).
   native?: { symbol: string; network: string; name: string };
   // Where StealthEX may link a deposit address on this chain. A deposit
-  // address linked anywhere else is refused.
+  // address linked anywhere else is refused. StealthEX sends no link for
+  // some tokens (USDC on Optimism and Polygon, measured); that is allowed,
+  // since the verified network code, not the link, is what pins the chain.
   explorerPrefixes: string[];
 }
 
-// ONLY verified entries. The v4 network codes are not published without a
-// key: the old spec shows ERC-20 on Ethereum as network "eth", and v4 says a
-// chain's base coin is network "mainnet". Add a chain only after
-// scripts/stealthex-verify.mjs confirms it against the live currency list.
-const CHAINS: Readonly<Record<number, ChainEntry>> = {
+// ONLY verified entries (live API, 2026-10-22): each tokenNetwork is the
+// network that lists the chain's canonical USDC/USDT contract, each native
+// entry was read by symbol/network and name, and each explorer prefix is
+// what a real (unfunded) exchange linked its deposit to. Add a chain only
+// after scripts/stealthex-verify.mjs confirms it. Natives StealthEX does not
+// list (ETH on Base, POL on Polygon) are simply absent.
+export const STEALTHEX_CHAINS: Readonly<Record<number, ChainEntry>> = {
   1: {
     kind: "evm",
     tokenNetwork: "eth",
     native: { symbol: "eth", network: "mainnet", name: "Ethereum" },
     explorerPrefixes: ["https://etherscan.io/address/", "https://blockchair.com/ethereum/address/"],
+  },
+  10: {
+    kind: "evm",
+    tokenNetwork: "optimism",
+    native: { symbol: "eth", network: "optimism", name: "Ethereum" },
+    explorerPrefixes: ["https://optimistic.etherscan.io/address/"],
+  },
+  56: {
+    kind: "evm",
+    tokenNetwork: "bsc",
+    native: { symbol: "bnb", network: "bsc", name: "Binance Coin" },
+    explorerPrefixes: ["https://bscscan.com/address/"],
+  },
+  137: {
+    kind: "evm",
+    tokenNetwork: "matic",
+    explorerPrefixes: ["https://polygonscan.com/address/"],
+  },
+  8453: {
+    kind: "evm",
+    tokenNetwork: "base",
+    explorerPrefixes: ["https://basescan.org/address/"],
+  },
+  42161: {
+    kind: "evm",
+    tokenNetwork: "arbitrum",
+    native: { symbol: "eth", network: "arbitrum", name: "Ethereum" },
+    explorerPrefixes: ["https://arbiscan.io/address/"],
   },
   // Destination only: no wallet here signs on these chains.
   20000000000001: {
@@ -233,11 +265,14 @@ export function validateExchange(ex: unknown, { payload, recipient, refund }: Ex
   if (!addressOk(depositAddress, payload.from.kind, payload.from.addressRegex)) fail("deposit address has the wrong format");
   if (depositAddress.toLowerCase() === payload.fromTokenAddress.toLowerCase()) fail("deposit address is the token contract");
 
-  const chain = CHAINS[payload.sourceChainId];
-  const explorer = optStr(field(deposit, "address_explorer_url"))?.toLowerCase() ?? "";
-  const onChain = chain?.explorerPrefixes.some((p) => explorer.startsWith(p.toLowerCase())) ?? false;
-  if (!onChain || !explorer.includes(depositAddress.toLowerCase())) {
-    fail(`deposit address is not shown on chain ${payload.sourceChainId}'s explorer (${explorer || "no link"})`);
+  const chain = STEALTHEX_CHAINS[payload.sourceChainId];
+  if (!chain) fail(`chain ${payload.sourceChainId} is not verified`);
+  const explorer = optStr(field(deposit, "address_explorer_url"))?.toLowerCase() ?? null;
+  if (explorer !== null) {
+    const onChain = chain?.explorerPrefixes.some((p) => explorer.startsWith(p.toLowerCase())) ?? false;
+    if (!onChain || !explorer.includes(depositAddress.toLowerCase())) {
+      fail(`deposit address is linked to another chain's explorer (${explorer})`);
+    }
   }
 
   const expected = num(field(deposit, "expected_amount"), "deposit expected_amount");
@@ -286,7 +321,7 @@ export default class StealthexAggregator extends Base {
   }
 
   private async currency(chainId: number, tokenAddress: string): Promise<SxCurrency> {
-    const chain = CHAINS[chainId];
+    const chain = STEALTHEX_CHAINS[chainId];
     if (!chain) throw new Error(`StealthEX: chain ${chainId} is not verified`);
 
     if (this.isNativeOn(chain.kind, tokenAddress)) {
@@ -355,8 +390,8 @@ export default class StealthexAggregator extends Base {
     if (params.type !== "BRIDGE" || params.fromChain.id === params.toChain.id) {
       throw new Error("StealthEX: cross-chain only");
     }
-    const source = CHAINS[params.fromChain.id];
-    const dest = CHAINS[params.toChain.id];
+    const source = STEALTHEX_CHAINS[params.fromChain.id];
+    const dest = STEALTHEX_CHAINS[params.toChain.id];
     if (!source || source.kind !== "evm") throw new Error(`StealthEX: source chain ${params.fromChain.id} not supported`);
     if (!dest) throw new Error(`StealthEX: destination chain ${params.toChain.id} not supported`);
 

@@ -43,11 +43,17 @@ const KNOWN = {
   43114: { USDC: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E" },
   59144: { USDC: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff" },
 };
-// What Stealthex.aggregator.ts assumes today.
-const ASSUMED = {
-  tokenNetwork: { 1: "eth" },
-  native: { "eth/mainnet": "Ethereum", "btc/mainnet": "Bitcoin", "sol/mainnet": "Solana" },
-};
+// What Stealthex.aggregator.ts assumes, read from the built SDK so the
+// check and the code cannot drift apart.
+const { STEALTHEX_CHAINS, validateExchange } = await import("../dist/aggregators/Stealthex.aggregator.js");
+const ASSUMED = { tokenNetwork: {}, native: {} };
+for (const [id, c] of Object.entries(STEALTHEX_CHAINS)) {
+  if (c.tokenNetwork) ASSUMED.tokenNetwork[id] = c.tokenNetwork;
+  if (c.native) ASSUMED.native[`${c.native.symbol}/${c.native.network}`] = c.native.name;
+}
+for (const id of Object.keys(ASSUMED.tokenNetwork)) {
+  if (!KNOWN[id]) { console.log(`FAIL chain ${id} has a tokenNetwork but no known contract to check it with`); process.exitCode = 1; }
+}
 
 let bad = 0;
 const ok = (cond, msg) => { console.log(`${cond ? "OK  " : "FAIL"} ${msg}`); if (!cond) bad += 1; };
@@ -95,27 +101,42 @@ for (const rate of ["fixed", "floating"]) {
 
 const ex = process.argv.indexOf("--exchange");
 if (ex !== -1) {
+  // One unfunded exchange per source chain (never funded, it expires): the
+  // native coin where listed, and the chain's USDC (or USDT), each into BTC.
+  // The SDK's real validateExchange must accept every one.
   const [refund, payout] = process.argv.slice(ex + 1, ex + 3);
-  const { validateExchange } = await import("../dist/aggregators/Stealthex.aggregator.js");
-  const created = await post("/exchanges", {
-    route, amount: 0.1, estimation: "direct", rate: "floating", address: payout, refund_address: refund,
-  });
-  console.log(`\nunfunded exchange: HTTP ${created.status}, deposit explorer link ${created.body?.deposit?.address_explorer_url}`);
-  try {
-    const r = validateExchange(created.body, {
-      payload: {
-        from: { symbol: "eth", network: "mainnet", kind: "evm", addressRegex: null },
-        to: { symbol: "btc", network: "mainnet", kind: "btc", addressRegex: null },
-        rate: "floating", rateId: null, rateValidUntil: null, amount: 0.1, amountBase: "100000000000000000",
-        shownAmount: 0, isNativeIn: true, fromTokenAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        fromDecimals: 18, sourceChainId: 1,
-      },
-      recipient: payout,
-      refund,
+  const cases = [];
+  for (const [id, c] of Object.entries(STEALTHEX_CHAINS)) {
+    if (c.kind !== "evm") continue;
+    if (c.native) cases.push({ id: Number(id), symbol: c.native.symbol, network: c.native.network, token: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", decimals: 18 });
+    const [, addr] = Object.entries(KNOWN[id] ?? {})[0] ?? [];
+    const cur = addr && all.find((x) => x.network === c.tokenNetwork && x.contract_address?.toLowerCase() === addr.toLowerCase());
+    if (cur) cases.push({ id: Number(id), symbol: cur.symbol, network: cur.network, token: addr, decimals: 6 });
+  }
+  for (const k of cases) {
+    const isNative = k.token.startsWith("0xeeee");
+    const amount = isNative ? (k.symbol === "bnb" ? 1 : 0.2) : 300;
+    const created = await post("/exchanges", {
+      route: { from: { symbol: k.symbol, network: k.network }, to: { symbol: "btc", network: "mainnet" } },
+      amount, estimation: "direct", rate: "floating", address: payout, refund_address: refund,
     });
-    ok(true, `validateExchange accepts a real exchange (id ${r.id})`);
-  } catch (e) {
-    ok(false, `validateExchange refused a real exchange: ${e.message}`);
+    const label = `chain ${k.id} ${k.symbol}/${k.network}`;
+    if (created.status >= 300) { ok(false, `${label}: create failed ${JSON.stringify(created.body)}`); continue; }
+    try {
+      const r = validateExchange(created.body, {
+        payload: {
+          from: { symbol: k.symbol, network: k.network, kind: "evm", addressRegex: null },
+          to: { symbol: "btc", network: "mainnet", kind: "btc", addressRegex: null },
+          rate: "floating", rateId: null, rateValidUntil: null, amount, amountBase: "0", shownAmount: 0,
+          isNativeIn: isNative, fromTokenAddress: k.token, fromDecimals: k.decimals, sourceChainId: k.id,
+        },
+        recipient: payout,
+        refund,
+      });
+      ok(true, `${label}: validateExchange accepts a real exchange (id ${r.id}, link ${created.body.deposit.address_explorer_url})`);
+    } catch (e) {
+      ok(false, `${label}: validateExchange refused a real exchange: ${e.message}`);
+    }
   }
 }
 
