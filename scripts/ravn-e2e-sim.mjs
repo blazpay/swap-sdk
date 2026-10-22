@@ -19,6 +19,8 @@ import Quote from "../dist/utils/quote.js";
 import { relayerAbi } from "../dist/utils/jsons/relayerAbi.js";
 
 const CONTROLS = process.argv.includes("--controls");
+// Idempotency keys must be fresh per run: RAVN rejects a reused key with a new quote.
+const RUN = Date.now().toString(36);
 const API = process.argv.slice(2).find((a) => a.startsWith("http")) || "http://localhost:5077/api/defi";
 configure({ baseApiUrl: API });
 
@@ -165,11 +167,11 @@ if (CONTROLS) {
   });
   const rp = { srcWalletAddress: USER, slippageTolerance: 0.5, fromChain: { id: 8453, name: "base" }, toChain: { id: 42161, name: "arbitrum" } };
   await sleep(2200);
-  rows.push(await expectThrow("native deposit to a non-NEAR venue", () => ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("chainflip") }, { id: "ctl-1" }), /not credited/));
+  rows.push(await expectThrow("native deposit to a non-NEAR venue", () => ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("chainflip") }, { id: `ctl-1-${RUN}` }), /not credited/));
   await sleep(2200);
-  rows.push(await expectThrow("deposit amount differs from input", () => ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("near_intents", "1") }, { id: "ctl-2" }), /differs from input/));
+  rows.push(await expectThrow("deposit amount differs from input", () => ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("near_intents", "1") }, { id: `ctl-2-${RUN}` }), /differs from input/));
   await sleep(2200);
-  const nearBuilt = await ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("near_intents") }, { id: "ctl-3" });
+  const nearBuilt = await ravn.getTransactionData(null, { ...rp, quotePayload: nearPayload("near_intents") }, { id: `ctl-3-${RUN}` });
   rows.push({ control: "native NEAR deposit through relayer", result: `${nearBuilt.tx.data} -> ${await relayerSim(nearBuilt, { token: ETH, isNative: true, amountWei: 40000000000000000n })}`, pass: null });
 
   rows.push(await expectThrow("Solana payout without recipient", () => ravn.getQuotes({ ...PAIRS[6], fromChain: BASE, toChain: PAIRS[6].to, srcWalletAddress: USER, dstWalletAddress: undefined, type: "BRIDGE" }), /needs a recipient/));
