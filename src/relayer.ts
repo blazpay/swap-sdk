@@ -5,6 +5,18 @@ import { IRelayerRawTxData, IRelayerTxData } from "./@types/relayer.type.js";
 import { getErrorMessage } from "./utils/helper.js";
 import { apiCall } from "./utils/axios.js";
 
+// A deposit-address route (Houdini, StealthEX) is a plain transfer that has
+// to leave the user's own wallet. Through the relayer it would leave from
+// the contract instead: an exchange may not credit that, and a native-coin
+// transfer with empty calldata would never leave the relayer at all.
+export function assertRelayable(relayerTxData: IRelayerTxData): void {
+  if (relayerTxData?.metaData?.isDirectTransfer === true) {
+    throw new Error(
+      "This route is a direct transfer from the wallet and cannot run through BlazpayRelayer."
+    );
+  }
+}
+
 export class RelayerFactory {
   private provider?: ethers.BrowserProvider
   
@@ -54,6 +66,7 @@ export class RelayerFactory {
     let newQuotes: any[] = []
     await Promise.all(relayerTxs.map(async (relayerTxData: IRelayerTxData) => {
       try {
+        assertRelayable(relayerTxData);
         const metaTransaction = {
           user: address,
           targetContract: relayerTxData?.tx?.to,
@@ -91,6 +104,7 @@ export class RelayerFactory {
   }
 
   async simulateTransaction(relayerTxData: IRelayerTxData) {
+    assertRelayable(relayerTxData);
     const provider = this.requireProvider();
     const signer = await provider.getSigner()
     const chainId = Number((await provider.getNetwork()).chainId);
@@ -169,6 +183,7 @@ export class RelayerFactory {
   }
 
   async triggerContract(relayerTxData: IRelayerTxData) {
+    assertRelayable(relayerTxData);
     const provider = this.requireProvider();
     const signer = await provider.getSigner()
     const chainId = Number((await provider.getNetwork()).chainId);
@@ -295,6 +310,7 @@ export class RelayerFactory {
   }
 
   getMetaTransactionByteData(relayerTxData: IRelayerRawTxData) {
+    assertRelayable(relayerTxData);
     const relayerAddress = relayerAddresses(relayerTxData?.chainId)
     const amountBigInt = this.toBigIntWei(relayerTxData?.amount);
     let approvalData;

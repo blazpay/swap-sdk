@@ -35,6 +35,13 @@ export type SDKConfig = {
    * /defi/ondo proxy and never holds the key.
    */
   ondoApiKey?: string;
+
+  /**
+   * Turns on StealthEX quoting. Its API key lives only in bz-backend's
+   * /defi/stealthex proxy, so the backend sets this when STEALTHEX_API_KEY
+   * is present. The browser leaves it off and only polls status.
+   */
+  stealthexEnabled?: boolean;
 };
 
 let config: SDKConfig = {};

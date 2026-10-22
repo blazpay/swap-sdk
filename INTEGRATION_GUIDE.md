@@ -414,6 +414,18 @@ Total integration: 1 file added (~100 lines), 3 lines added to enum/index/factor
 - A quote RAVN no longer holds (`QUOTE_EXPIRED` etc.) is re-quoted, but only built if the new route still meets the minimum the user was shown.
 - Proof: `scripts/ravn-e2e-sim.mjs` (needs the proxy on :5077) runs quote, Redis round trip, build and a full `executeMetaTransactionSwap` eth_call with a throwaway signer installed by state override. `--controls` runs the cases that must fail.
 
+## Worked example: StealthEX (custodial deposit address, fail-closed)
+
+`Stealthex.aggregator.ts` + `bz-backend/controllers/defi/stealthex.js`:
+- StealthEX is a custodial instant exchange. We create an exchange, the user sends the input to its deposit address, and StealthEX pays out. Every v4 endpoint needs the key, so the proxy holds it (StealthEX's CORS also blocks browsers).
+- **Off until enabled.** It quotes only where `configure({ stealthexEnabled: true })` is set. bz-backend sets that when `STEALTHEX_API_KEY` exists.
+- **Bridge page only.** Its route is a plain wallet transfer (the Houdini path). bz-backend excludes it from every quote stream except one requested with `directDeposit=true`, which only the bridge page sends. The build carries `metaData.isDirectTransfer`, and `relayer.ts` (`assertRelayable`) refuses such a build at every entry point. A deposit sent from the relayer could go uncredited, or, for a native coin, never leave the contract.
+- **Identity, never ticker.** Tokens are matched by contract address inside a verified network. A native coin is matched by an explicit `{symbol, network, name}` entry, and the name is checked. The `CHAINS` table holds only verified chains (Ethereum as source; Bitcoin and Solana natives as destinations). Run `STEALTHEX_API_KEY=… node scripts/stealthex-verify.mjs` before enabling and before adding a chain.
+- **Every exchange is checked before the user signs** (`validateExchange`): status `waiting`, rate, deposit and payout currencies, payout = recipient, refund = sender, no memo, deposit-address format, explorer link on the source chain, expected amount, and fixed-rate expiry. Anything else throws, and nothing is sent.
+- Fixed rate is preferred (the user gets the shown amount). It is re-estimated near expiry and kept only at or above the shown amount, less slippage. No Blazpay relayer fee applies; StealthEX pays its standard partner share.
+- Status: the pages save `metaData.stealthexId` as `txTrackUrl`, and `bridgeStatusCron` polls it. The FE reports the deposit tx hash with `PATCH /defi/stealthex/exchanges/:id`.
+- Proof without a key: `scripts/stealthex-mock-test.mjs` runs the built SDK and the real proxy controller against a mock built from StealthEX's OpenAPI examples. It covers 38 checks, including every tampered exchange. It cannot prove StealthEX's real codes; only the verify script can.
+
 ## Worked example: KyberSwap (direct, two-step routes→build)
 
 - Single-chain only; throws on cross-chain.

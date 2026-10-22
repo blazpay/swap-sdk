@@ -12,4 +12,6 @@ export interface IRestQuoteProps {
   dstWalletAddress?: string;
   quotePayload?: any;
   type?: "SWAP" | "BRIDGE";
+  // Set by bz-backend's swap build from the browser's request.
+  clientContext?: { ip?: string; userAgent?: string; acceptLanguage?: string };
 }

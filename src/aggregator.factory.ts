@@ -38,7 +38,9 @@ export class AggregatorFactory {
           // which aggregator generated the route. Compute from the input side
           // (params.amount × fromToken.priceUSD) — aggregator-reported USD
           // figures are unreliable (OKX/Nordstern return 0).
-          if (quote && quote.meta) {
+          // A provider that does not run through the relayer (StealthEX)
+          // sets blazpayFeePercent = 0 itself and is left alone.
+          if (quote && quote.meta && quote.meta.blazpayFeePercent === undefined) {
             const inputUsd =
               Number(params.amount) * Number(params.fromToken?.priceUSD ?? 0) ||
               Number((quote.meta as any).fromAmountUsd) ||

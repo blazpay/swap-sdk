@@ -31,4 +31,6 @@ export enum AGGREGATORS {
   ONDO_STOCKS = "ondo_stocks",
   // Meta-aggregator (RFQ, intents, solvers, DEX aggregators) incl. native BTC out.
   RAVN = "ravn",
+  // Custodial instant exchange; deposit is a direct wallet transfer.
+  STEALTHEX = "stealthex",
 }

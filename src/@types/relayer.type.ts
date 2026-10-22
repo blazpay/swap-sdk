@@ -9,7 +9,10 @@ export interface IRelayerTxData {
     amount: number,
     token: string,
     isNative: boolean,
-    quote?: any
+    quote?: any,
+    // The build's metaData. Deposit-address providers (Houdini, StealthEX)
+    // set isDirectTransfer: their tx must be sent from the user's wallet.
+    metaData?: { isDirectTransfer?: boolean }
 }
 
 export interface ITokenAndWalletInfo {
